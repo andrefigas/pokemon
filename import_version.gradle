@@ -15,7 +15,7 @@ class Version{
     static def dagger = "2.31.2"
     static def dagger_compiler = "2.31.2"
     static def picasso = "2.71828"
-    static def gson = "2.8.6"
+    static def gson = "2.9.0"
 }
 
 ext.import_version = new Version()

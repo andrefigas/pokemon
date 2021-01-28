@@ -15,6 +15,7 @@ android {
         versionCode project_settings.versionCode
         versionName project_settings.versionName
 
+        buildConfigField "String", "API_URL", "$project_settings.apiUrl"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -28,6 +29,7 @@ android {
     }
 
     buildTypes {
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -48,7 +50,7 @@ dependencies {
     testImplementation "junit:junit:$import_version.junit"
     testImplementation "com.squareup.okhttp3:mockwebserver:$import_version.mockwebserver"
     implementation "com.google.dagger:dagger:$import_version.dagger"
-    implementation "com.google.code.gson:gson:$import_version.gson"
+    implementation "com.squareup.retrofit2:converter-gson:$import_version.gson"
     implementation "com.squareup.picasso:picasso:$import_version.picasso"
     annotationProcessor "com.google.dagger:dagger-compiler:$import_version.dagger_compiler"
     androidTestImplementation "androidx.test.ext:junit:$import_version.androidx_junit"
