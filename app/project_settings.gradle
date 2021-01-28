@@ -1,0 +1,11 @@
+class Settings {
+    static def compileSdkVersion = 30
+    static def buildToolsVersion = "29.0.3"
+    static def applicationId = "andrefigas.com.github.pokemon"
+    static def minSdkVersion = 23
+    static def targetSdkVersion = 30
+    static def versionCode = 1
+    static def versionName = "1.0"
+}
+
+ext.project_settings = new Settings()

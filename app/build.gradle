@@ -1,19 +1,30 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply from: '../import_version.gradle'
+apply from: 'project_settings.gradle'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "29.0.3"
+    compileSdkVersion project_settings.compileSdkVersion
+    buildToolsVersion project_settings.buildToolsVersion
 
     defaultConfig {
-        applicationId "andrefigas.com.github.pokemon"
-        minSdkVersion 23
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        applicationId project_settings.applicationId
+        minSdkVersion project_settings.minSdkVersion
+        targetSdkVersion project_settings.targetSdkVersion
+        versionCode project_settings.versionCode
+        versionName project_settings.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     buildTypes {
@@ -26,11 +37,19 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$import_version.kotlin"
+    implementation "androidx.core:core-ktx:$import_version.core_ktx"
+    implementation "androidx.appcompat:appcompat:$import_version.appcompat"
+    implementation "com.squareup.retrofit2:retrofit:$import_version.retrofit"
+    implementation "com.squareup.okhttp3:okhttp:$import_version.okhttp"
+    implementation "io.reactivex.rxjava3:rxkotlin:$import_version.rxkotlin"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$import_version.adapter_rxjava2"
+    implementation "io.reactivex.rxjava2:rxandroid:$import_version.rxandroid"
+    testImplementation "junit:junit:$import_version.junit"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$import_version.mockwebserver"
+    implementation "com.google.dagger:dagger:$import_version.dagger"
+    annotationProcessor "com.google.dagger:dagger-compiler:$import_version.dagger_compiler"
+    androidTestImplementation "androidx.test.ext:junit:$import_version.androidx_junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$import_version.espresso_core"
 
 }
