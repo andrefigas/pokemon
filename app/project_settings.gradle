@@ -7,7 +7,7 @@ class Settings {
     static def versionCode = 1
     static def versionName = "1.0"
 
-    static def apiUrl = '\"https://pokeapi.co123/\"'
+    static def apiUrl = '\"https://pokeapi.co/\"'
 }
 
 ext.project_settings = new Settings()
