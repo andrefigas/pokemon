@@ -14,6 +14,7 @@ class Version{
     static def rxandroid = "2.1.1"
     static def dagger = "2.31.2"
     static def dagger_compiler = "2.31.2"
+    static def picasso = "2.71828"
 }
 
 ext.import_version = new Version()
