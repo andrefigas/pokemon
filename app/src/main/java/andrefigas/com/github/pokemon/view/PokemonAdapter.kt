@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.ImageLoader
@@ -86,9 +87,14 @@ class PokemonAdapter : RecyclerView.Adapter<ViewHolder>() {
         var disposable : Disposable? = null
 
         fun drawView() {
+
+           itemView.setOnClickListener {
+               Toast.makeText(itemView.context, pokemon.name, Toast.LENGTH_SHORT).show()
+           }
+
             val tvName = itemView.findViewById<TextView>(R.id.pokemon_item_name)
-            tvName.text = pokemon!!.name
-            val sprites = pokemon!!.spritesCollection
+            tvName.text = pokemon.name
+            val sprites = pokemon.spritesCollection
             if (sprites != null) {
                 val imageUrl = sprites.getBetterImage()
                 if (imageUrl != null) {
