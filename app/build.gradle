@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply from: '../import_version.gradle'
 apply from: 'project_settings.gradle'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion project_settings.compileSdkVersion
@@ -42,6 +43,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
@@ -50,6 +52,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$import_version.kotlin"
     implementation "androidx.core:core-ktx:$import_version.core_ktx"
     implementation "androidx.appcompat:appcompat:$import_version.appcompat"
+    implementation "androidx.recyclerview:recyclerview:$import_version.recyclerview"
+    implementation "androidx.cardview:cardview:$import_version.cardview"
     implementation "com.squareup.retrofit2:retrofit:$import_version.retrofit"
     implementation "com.squareup.okhttp3:okhttp:$import_version.okhttp"
     implementation "io.reactivex.rxjava3:rxkotlin:$import_version.rxkotlin"
@@ -58,13 +62,17 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation "junit:junit:$import_version.junit"
     testImplementation "com.squareup.okhttp3:mockwebserver:$import_version.mockwebserver"
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
 
     implementation "com.google.dagger:dagger:$import_version.dagger"
     kapt "com.google.dagger:dagger-compiler:$import_version.dagger_compiler"
     compileOnly "javax.annotation:jsr250-api:$import_version.jsr250_api"
 
     implementation "com.squareup.retrofit2:converter-gson:$import_version.gson"
-    implementation "com.squareup.picasso:picasso:$import_version.picasso"
+
+    implementation("io.coil-kt:coil:0.12.0")
+    implementation("io.coil-kt:coil-svg:0.12.0")
+
     annotationProcessor "com.google.dagger:dagger-compiler:$import_version.dagger_compiler"
 
     androidTestImplementation "androidx.test.ext:junit:$import_version.androidx_junit"
