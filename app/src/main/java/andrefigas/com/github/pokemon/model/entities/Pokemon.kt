@@ -7,4 +7,9 @@ class Pokemon(name : String, url : String) : BaseEntity(name, url)  {
     @SerializedName("weight") var weight : Int = 0
     @SerializedName("height") var height : Int = 0
 
+    constructor(name : String, url : String, weight : Int, height : Int) : this(name, url){
+        this.weight = weight
+        this.height
+    }
+
 }

@@ -67,7 +67,7 @@ class ApiClientTest {
     }
 
     @Test
-    fun initialLoad() {
+    fun initialLoadTest() {
         val server = MockWebServer()
         server.start()
 
@@ -88,7 +88,7 @@ class ApiClientTest {
     }
 
     @Test
-    fun paginationNext() {
+    fun paginationNextTest() {
         val server = MockWebServer()
         server.start()
 
@@ -122,7 +122,7 @@ class ApiClientTest {
     }
 
     @Test
-    fun paginationEnd() {
+    fun paginationEndTest() {
         val server = MockWebServer()
         server.start()
 
