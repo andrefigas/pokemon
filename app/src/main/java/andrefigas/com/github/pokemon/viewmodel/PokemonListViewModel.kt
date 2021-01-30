@@ -74,6 +74,7 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread()).map { pokemon ->
                             Pokemon(
+                                pokemon.id,
                                 baseEntity.name,
                                 baseEntity.url,
                                 pokemon.weight,

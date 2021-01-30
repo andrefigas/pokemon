@@ -2,6 +2,7 @@ package andrefigas.com.github.pokemon.injection.modules
 
 import andrefigas.com.github.pokemon.BuildConfig
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
+import andrefigas.com.github.pokemon.model.repository.api.WebHookClient
 import android.content.Context
 import android.util.Log
 import dagger.Module
@@ -29,12 +30,13 @@ class NetworkModule @Inject constructor() {
     private lateinit var httpClient: OkHttpClient
 
     private lateinit var apiClient: ApiClient
+    private lateinit var webHookClient: WebHookClient
 
     @Singleton
     @Provides
     fun providesHttpClient(context: Context): OkHttpClient {
 
-        val httpCacheDirectory = File(context.getCacheDir(), CACHE_DIRECTORY)
+        val httpCacheDirectory = File(context.cacheDir, CACHE_DIRECTORY)
 
         var cache: Cache? = null
         try {
@@ -48,17 +50,29 @@ class NetworkModule @Inject constructor() {
         return httpClient
     }
 
-    @Singleton
-    @Provides
-    fun provideApiClient(context: Context): ApiClient {
-        apiClient = Retrofit.Builder()
-            .baseUrl(BuildConfig.API_URL)
+    private fun provideApiClient(context: Context, url : String): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(url)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .client(providesHttpClient(context))
             .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideApiClient(context: Context): ApiClient {
+        apiClient = provideApiClient(context, BuildConfig.API_URL)
             .create(ApiClient::class.java)
         return apiClient
+    }
+
+    @Singleton
+    @Provides
+    fun provideWebHookClient(context: Context): WebHookClient {
+        webHookClient = provideApiClient(context, BuildConfig.WEBHOOK_URL)
+            .create(WebHookClient::class.java)
+        return webHookClient
     }
 
 

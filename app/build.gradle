@@ -18,6 +18,7 @@ android {
         versionName project_settings.versionName
 
         buildConfigField "String", "API_URL", "$project_settings.apiUrl"
+        buildConfigField "String", "WEBHOOK_URL", "$project_settings.webHookUrl"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -62,7 +63,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation "junit:junit:$import_version.junit"
     testImplementation "com.squareup.okhttp3:mockwebserver:$import_version.mockwebserver"
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
+    implementation'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
 
     implementation "com.google.dagger:dagger:$import_version.dagger"
     kapt "com.google.dagger:dagger-compiler:$import_version.dagger_compiler"
@@ -78,7 +79,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$import_version.androidx_junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$import_version.espresso_core"
 
-    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:2.2.2') {
         //this library has conflicts with app dependencies
         exclude group: 'com.android.support', module: 'appcompat'
         exclude group: 'com.android.support', module: 'support-v4'

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:visible="false"
+        android:title="@string/favorite_uncheck"
+        android:id="@+id/action_favorite_uncheck"
+        android:icon="@drawable/ic_favorite_checked"
+        app:showAsAction="always"/>
+
+    <item
+        android:visible="false"
+        android:id="@+id/action_favorite_check"
+        android:title="@string/favorite_uncheck"
+        android:icon="@drawable/ic_favorite_unchecked"
+        app:showAsAction="always"/>
+
+</menu>

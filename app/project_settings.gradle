@@ -8,6 +8,8 @@ class Settings {
     static def versionName = "1.0"
 
     static def apiUrl = '\"https://pokeapi.co/\"'
+    static def webHookUrl = '\"https://webhook.site/\"'
+
 }
 
 ext.project_settings = new Settings()

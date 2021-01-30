@@ -6,16 +6,21 @@ import andrefigas.com.github.pokemon.utils.toString
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
 import kotlinx.android.synthetic.main.activity_details.*
 import javax.inject.Inject
+
 
 class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
     @Inject
     lateinit var pokemonDetailsViewModel: PokemonDetailsViewModel
+    lateinit var menu : Menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +32,13 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
         enableGoBack()
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        this.menu = menu
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_details, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun enableGoBack() {
@@ -96,11 +108,57 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
+    private fun addToFavorite(item: MenuItem) : Boolean{
+        if(pokemonDetailsViewModel.isUpdateProgressing()){
+            return false
         }
-        return super.onOptionsItemSelected(item)
+
+        item.isVisible = false
+        menu.findItem(R.id.action_favorite_check).isVisible = true
+        pokemonDetailsViewModel.updateFavorite(this, false, this)
+        return true
     }
 
+    private fun removeFromFavorite(item: MenuItem) : Boolean{
+        if(pokemonDetailsViewModel.isUpdateProgressing()){
+            return false
+        }
+
+        item.isVisible = false
+        menu.findItem(R.id.action_favorite_uncheck).isVisible = true
+        pokemonDetailsViewModel.updateFavorite(this, true, this)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+
+            R.id.action_favorite_uncheck -> addToFavorite(item)
+            R.id.action_favorite_check -> removeFromFavorite(item)
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    }
+
+    override fun showFavoriteChecked() {
+        menu.findItem(R.id.action_favorite_check).isVisible = true
+        menu.findItem(R.id.action_favorite_check).isVisible = false
+    }
+
+    override fun showFavoriteUnchecked() {
+        menu.findItem(R.id.action_favorite_check).isVisible = false
+        menu.findItem(R.id.action_favorite_check).isVisible = true
+    }
+
+    override fun showAddFavoriteUpdateSuccess(name: String) {
+        Toast.makeText(this, getString(R.string.add_favorite_message, name), Toast.LENGTH_LONG).show()
+    }
+
+    override fun showRemoveFavoriteUpdateSuccess(name: String) {
+        Toast.makeText(this, getString(R.string.add_favorite_message, name), Toast.LENGTH_LONG).show()
+    }
 }

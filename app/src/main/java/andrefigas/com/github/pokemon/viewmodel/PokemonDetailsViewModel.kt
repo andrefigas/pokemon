@@ -1,10 +1,13 @@
 package andrefigas.com.github.pokemon.viewmodel
 
 import andrefigas.com.github.pokemon.injection.modules.NetworkModule
+import andrefigas.com.github.pokemon.model.entities.FavoritePokemon
+import andrefigas.com.github.pokemon.model.entities.FavoriteResponse
 import andrefigas.com.github.pokemon.model.entities.Pokemon
 import andrefigas.com.github.pokemon.model.entities.Specie
 import andrefigas.com.github.pokemon.utils.ImageUtils
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
+import andrefigas.com.github.pokemon.utils.pair
 import andrefigas.com.github.pokemon.view.details.DetailsActivityContract
 import android.content.Context
 import android.content.Intent
@@ -18,14 +21,42 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class PokemonDetailsViewModel @Inject constructor(private val networkModule: NetworkModule) :
     ViewModel() {
 
-    val livedata = MutableLiveData<Specie>()
-    var specieDisposable: Disposable? = null
+    private val specieLiveData = MutableLiveData<Specie>()
+    private val favoriteLiveData = MutableLiveData<FavoriteResponse>()
+
+    var fetchDisposable : Disposable? = null
+    var updateDisposable : Disposable? = null
     var imageDisposable: coil.request.Disposable? = null
+
+
+    lateinit var pokemon: Pokemon
+
+    fun <T> updateFavorite(
+        context: Context,
+        favorite : Boolean,
+        view: T
+    ) where  T : DetailsActivityContract, T : LifecycleOwner {
+        updateDisposable = networkModule.provideWebHookClient(context)
+            .updateFavoritePokemon(FavoritePokemon(pokemon.id, favorite))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+            Consumer {
+                if(favorite){
+                    view.showAddFavoriteUpdateSuccess(pokemon.name)
+                }else{
+                    view.showRemoveFavoriteUpdateSuccess(pokemon.name)
+                }
+            }, Consumer {
+                it.printStackTrace()
+            })
+    }
 
     fun <T> fetchData(
         context: Context,
@@ -35,13 +66,15 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
 
         val pokemon = IntentArgsUtils.getPokemonByArgs(intent) ?: return
 
+        this.pokemon = pokemon
+
         bindPreloadedInformation(context, view, pokemon)
 
         val specieUrl: String = pokemon.species?.url ?: return
 
         view.showStartingDataProgress()
 
-        livedata.observe(view, Observer { specie ->
+        specieLiveData.observe(view, Observer { specie ->
 
             view.hideStartingDataProgress()
 
@@ -54,11 +87,25 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
 
         })
 
-        specieDisposable = networkModule.provideApiClient(context).getSpecie(specieUrl)
+        favoriteLiveData.observe(view, Observer {favoriteResponse ->
+            if(favoriteResponse.favorite){
+                view.showFavoriteChecked()
+            }else{
+                view.showFavoriteUnchecked()
+            }
+
+        })
+
+        fetchDisposable = networkModule.provideApiClient(context).getSpecie(specieUrl)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer { specie ->
-                livedata.value = specie
+            .pair(networkModule.provideWebHookClient(context).getFavoriteByPokemon(pokemon.id).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()))
+            .subscribe (Consumer {pair->
+                specieLiveData.value = pair.first
+                favoriteLiveData.value = pair.second
+            }, Consumer {
+                it.stackTrace
             })
 
     }
@@ -116,7 +163,12 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
 
     override fun onCleared() {
         super.onCleared()
-        specieDisposable?.dispose()
+        fetchDisposable?.dispose()
         imageDisposable?.dispose()
     }
+
+    fun isUpdateProgressing() : Boolean{
+        return !(updateDisposable?.isDisposed ?: true)
+    }
+
 }

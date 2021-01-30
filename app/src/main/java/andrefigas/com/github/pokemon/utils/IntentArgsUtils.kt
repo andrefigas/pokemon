@@ -6,7 +6,7 @@ import android.os.Bundle
 
 object IntentArgsUtils {
 
-    const val IK_POKEMON = "pokemon"
+    private const val IK_POKEMON = "pokemon"
 
     fun putPokemonInArgs(intent: Intent, pokemon: Pokemon?) =  intent.putExtra(IK_POKEMON, pokemon)
 

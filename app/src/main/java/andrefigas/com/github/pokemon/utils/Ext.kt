@@ -4,10 +4,12 @@ import android.app.Activity
 import android.graphics.Insets
 import android.os.Build
 import android.util.DisplayMetrics
+import android.util.Pair
 import android.view.WindowInsets
 import android.view.WindowMetrics
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Single
 
 fun RecyclerView.doOnScrollEnding(offset : Int, onScrollEnding : ()-> Unit, isProgressing : ()->Boolean) : RecyclerView.OnScrollListener?{
 
@@ -70,3 +72,9 @@ fun List<String>.toString(separator : String) : String{
     sb.delete(sb.length - separator.length, sb.length)
     return sb.toString()
 }
+
+fun <I, O> Single<I>.pair(b: Single<O>
+): Single<Pair<I, O>> {
+    return flatMap { i -> b.map { o -> Pair(i, o) } }
+}
+

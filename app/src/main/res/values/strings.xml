@@ -9,6 +9,14 @@
 
     <string name="height">Height</string>
 
+    <string name="favorite_check">add as favorite</string>
+
+    <string name="favorite_uncheck">remove from favorites</string>
+
+    <string name="add_favorite_message">%s successfully added to favorites</string>
+
+    <string name="remove_favorite_message">%s successfully removed from favorites</string>
+
     <string name="moves">Moves</string>
 
     <string name="types_separator" translatable="false">&#160;,&#160;</string>

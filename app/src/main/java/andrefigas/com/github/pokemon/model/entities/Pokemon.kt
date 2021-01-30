@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 class Pokemon(name : String, url : String) : BaseEntity(name, url), Parcelable {
 
+    @SerializedName("id") var id : Int = 0
     @SerializedName("weight") var weight : Int = 0
     @SerializedName("height") var height : Int = 0
     @SerializedName("sprites") var spritesCollection : SpritesCollection? = null
@@ -17,6 +18,7 @@ class Pokemon(name : String, url : String) : BaseEntity(name, url), Parcelable {
         parcel.readString()?:"",
         parcel.readString()?:""
     ) {
+        id = parcel.readInt()
         weight = parcel.readInt()
         height = parcel.readInt()
         spritesCollection = parcel.readParcelable(SpritesCollection::class.java.classLoader)
@@ -25,8 +27,9 @@ class Pokemon(name : String, url : String) : BaseEntity(name, url), Parcelable {
         moves = parcel.readParcelableArray(Move::class.java.classLoader)?.map{ it as Move }?.toTypedArray()
     }
 
-    constructor(name : String, url : String, weight : Int, height : Int, spritesCollection : SpritesCollection?,
+    constructor(id : Int,name : String, url : String, weight : Int, height : Int, spritesCollection : SpritesCollection?,
                 species : BaseEntity?, types : Array<Type>?, moves : Array<Move>? = null) : this(name, url){
+        this.id = id
         this.weight = weight
         this.height = height
         this.spritesCollection = spritesCollection
@@ -38,6 +41,7 @@ class Pokemon(name : String, url : String) : BaseEntity(name, url), Parcelable {
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeString(url)
+        parcel.writeInt(id)
         parcel.writeInt(weight)
         parcel.writeInt(height)
         parcel.writeParcelable(spritesCollection, flags)
