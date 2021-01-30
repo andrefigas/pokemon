@@ -27,12 +27,12 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
     private var previous: String? = null
 
     fun <T> configView(view: T) where  T : MainActivityContract, T : LifecycleOwner {
-        val firstRequest = nextUrl == null
+        val firstRequest = previous == null
         if(firstRequest){
             view.showStartingDataProgress()
             view.createPokemonList()
             livedata.observe(view, Observer { pokemons ->
-                if (firstRequest) {
+                if (firstRequest && nextUrl != null) {
                     view.hideStartingDataProgress()
                 }else{
                     view.hideIncreasingDataProgress()
@@ -48,6 +48,10 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
 
     fun <T> fetchData(context: Context, view: T) where  T : MainActivityContract, T : LifecycleOwner {
 
+        if(nextUrl == null && previous != null){
+            return
+        }
+
         configView(view)
 
         val apiClient : ApiClient =  networkModule.provideApiClient(context)
@@ -61,7 +65,7 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
             apiClient.fetchPokemons(limit, offset) else //first request
             apiClient.fetchPokemons(url) //next requests
 
-        //getting pokemon list (each item cotains just name and url)
+        //getting pokemon list (each item contains just name and url)
         disposable =  resultPage
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -97,6 +101,8 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(Consumer {
                 livedata.value = it.toMutableList()
+            }, Consumer {
+                it.printStackTrace()
             })
 
     }

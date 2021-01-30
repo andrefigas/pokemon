@@ -25,10 +25,10 @@ class NetworkModule @Inject constructor() {
         const val TAG : String = "NetworkModule"
         const val CACHE_DIRECTORY = "responses"
         const val CACHE_SIZE = 10L * 1024 * 1024
+
     }
 
     private lateinit var httpClient: OkHttpClient
-
     private lateinit var apiClient: ApiClient
     private lateinit var webHookClient: WebHookClient
 

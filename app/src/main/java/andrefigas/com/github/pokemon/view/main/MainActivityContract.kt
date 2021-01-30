@@ -19,4 +19,8 @@ interface MainActivityContract {
 
     fun navigateToDetails(pokemon : Pokemon, target: View)
 
+    fun showInitialLoadDataError()
+
+    fun showIncreasingDataDataError()
+
 }

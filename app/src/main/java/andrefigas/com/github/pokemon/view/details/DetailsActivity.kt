@@ -159,6 +159,6 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
     }
 
     override fun showRemoveFavoriteUpdateSuccess(name: String) {
-        Toast.makeText(this, getString(R.string.add_favorite_message, name), Toast.LENGTH_LONG).show()
+        Toast.makeText(this, getString(R.string.remove_favorite_message, name), Toast.LENGTH_LONG).show()
     }
 }

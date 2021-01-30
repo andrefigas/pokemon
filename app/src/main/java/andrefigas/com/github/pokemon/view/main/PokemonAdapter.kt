@@ -58,6 +58,10 @@ class PokemonAdapter(val mainActivityContract: MainActivityContract) : RecyclerV
     }
 
     fun addPokemons(pokemons: List<Pokemon>) {
+        if(pokemons.size == pokemonList.size){
+            return
+        }
+
         val startIndex = itemCount
         val count = pokemons.size
         pokemonList.addAll(pokemons)

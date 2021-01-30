@@ -112,4 +112,12 @@ class MainActivity : AppCompatActivity(),
     override fun hideStartingDataProgress() {
         pb_initial.visibility = View.GONE
     }
+
+    override fun showInitialLoadDataError() {
+        TODO("Not yet implemented")
+    }
+
+    override fun showIncreasingDataDataError() {
+        TODO("Not yet implemented")
+    }
 }
