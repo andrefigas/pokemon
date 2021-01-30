@@ -1,7 +1,7 @@
 package andrefigas.com.github.pokemon
 
 import andrefigas.com.github.pokemon.Utils.atPositionOnView
-import andrefigas.com.github.pokemon.view.MainActivity
+import andrefigas.com.github.pokemon.view.main.MainActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -18,11 +18,12 @@ import org.junit.runner.RunWith
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class MainActivityTest {
 
     @JvmField
     @Rule
-    val activityRule = ActivityTestRule<MainActivity>(MainActivity::class.java)
+    val activityRule = ActivityTestRule<MainActivity>(
+        MainActivity::class.java)
 
     @Test
     fun initialLoadTest() {

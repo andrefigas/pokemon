@@ -1,15 +1,18 @@
-package andrefigas.com.github.pokemon.view
+package andrefigas.com.github.pokemon.view.main
 
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.ext.loadSvg
 import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.utils.ImageUtils
+import andrefigas.com.github.pokemon.utils.IntentArgsUtils
+import andrefigas.com.github.pokemon.view.details.DetailsActivity
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
+import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.ImageLoader
@@ -17,10 +20,11 @@ import coil.decode.SvgDecoder
 import coil.request.Disposable
 import coil.request.ImageRequest
 import coil.target.Target
-import coil.util.CoilUtils
+import kotlinx.android.synthetic.main.pokemon_item.view.*
 import java.util.*
 
-class PokemonAdapter : RecyclerView.Adapter<ViewHolder>() {
+
+class PokemonAdapter(val mainActivityContract: MainActivityContract) : RecyclerView.Adapter<ViewHolder>() {
     val pokemonList: MutableList<Pokemon> = ArrayList()
     private var isProgressing = false
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,7 +35,8 @@ class PokemonAdapter : RecyclerView.Adapter<ViewHolder>() {
             )
             ITEM_TYPE -> ItemViewHolder(
                 LayoutInflater.from(parent.context)
-                    .inflate(R.layout.pokemon_item, parent, false)
+                    .inflate(R.layout.pokemon_item, parent, false),
+                mainActivityContract
             )
             else -> throw IllegalArgumentException()
         }
@@ -82,48 +87,28 @@ class PokemonAdapter : RecyclerView.Adapter<ViewHolder>() {
         }
     }
 
-    class ItemViewHolder(itemView: View) : ViewHolder(itemView), Target {
+    class ItemViewHolder(itemView: View, val mainActivityContract: MainActivityContract) : ViewHolder(itemView), Target {
         lateinit var pokemon: Pokemon
-        var disposable : Disposable? = null
+        var disposable: Disposable? = null
 
         fun drawView() {
 
-           itemView.setOnClickListener {
-               Toast.makeText(itemView.context, pokemon.name, Toast.LENGTH_SHORT).show()
-           }
-
-            val tvName = itemView.findViewById<TextView>(R.id.pokemon_item_name)
-            tvName.text = pokemon.name
-            val sprites = pokemon.spritesCollection
-            if (sprites != null) {
-                val imageUrl = sprites.getBetterImage()
-                if (imageUrl != null) {
-                    val imageView = itemView.findViewById<ImageView>(R.id.pokemon_item_image)
-                    imageView.loadSvg(itemView.context, imageUrl)
-
-                    val imageLoader = ImageLoader.Builder(imageView.context)
-                        .componentRegistry { add(SvgDecoder(imageView.context)) }
-                        .build()
-
-                    val request = ImageRequest.Builder(imageView.context)
-                        .crossfade(true)
-                        .crossfade(500)
-                        .data(imageUrl)
-                        .target(this)
-                        .build()
-
-                    disposable = imageLoader.enqueue(request)
-
-                }
+            itemView.setOnClickListener {
+                mainActivityContract.navigateToDetails(pokemon, itemView.pokemon_item_image)
             }
+
+            val tvName = itemView.pokemon_item_name
+            tvName.text = pokemon.name.capitalize()
+
+            disposable = ImageUtils.loadPokemonImage(itemView.context, pokemon, this)
         }
 
-        fun unload(){
+        fun unload() {
             disposable?.dispose()
         }
 
         override fun onSuccess(result: Drawable) {
-            val imageView = itemView.findViewById<ImageView>(R.id.pokemon_item_image)
+            val imageView = itemView.pokemon_item_image
             imageView.setImageDrawable(result)
         }
 

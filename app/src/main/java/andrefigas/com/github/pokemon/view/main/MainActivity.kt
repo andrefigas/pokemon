@@ -1,21 +1,27 @@
-package andrefigas.com.github.pokemon.view
+package andrefigas.com.github.pokemon.view.main
 
 import andrefigas.com.github.pokemon.AndroidApplication
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.ext.doOnScrollEnding
-import andrefigas.com.github.pokemon.ext.getDisplayWidth
+import andrefigas.com.github.pokemon.utils.doOnScrollEnding
+import andrefigas.com.github.pokemon.utils.getDisplayWidth
 import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.utils.IntentArgsUtils
+import andrefigas.com.github.pokemon.view.details.DetailsActivity
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
 
-class MainActivity : AppCompatActivity(), MainActivityContract {
+class MainActivity : AppCompatActivity(),
+    MainActivityContract {
 
     @Inject
     lateinit var pokemonListViewModel: PokemonListViewModel
@@ -32,7 +38,7 @@ class MainActivity : AppCompatActivity(), MainActivityContract {
     }
 
     override fun createPokemonList() {
-        adapter = PokemonAdapter()
+        adapter = PokemonAdapter(this)
         rv_pokemons.adapter = adapter
         configureLayoutManager(adapter)
         configureScrollListener()
@@ -45,7 +51,7 @@ class MainActivity : AppCompatActivity(), MainActivityContract {
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 if (adapter.getItemViewType(position) == PokemonAdapter.PROGRESS_TYPE) {
-                    return rows;
+                    return rows
                 }
 
                 return 1
@@ -61,11 +67,29 @@ class MainActivity : AppCompatActivity(), MainActivityContract {
         rv_pokemons.doOnScrollEnding(
             offsetTriggerScroll,
             {
-                pokemonListViewModel.fetchData(this@MainActivity, this@MainActivity);
+                pokemonListViewModel.fetchData(this@MainActivity, this@MainActivity)
             },
             {
                 pokemonListViewModel.isProgressing()
             }
+        )
+    }
+
+    override fun navigateToDetails(pokemon: Pokemon, target: View ) {
+        val options: ActivityOptionsCompat =
+            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                target,
+                getString(R.string.image_key)
+            )
+
+        startActivity(
+            IntentArgsUtils.putPokemonInArgs(
+                Intent(
+                    this,
+                    DetailsActivity::class.java
+                ), pokemon
+            ), options.toBundle()
         )
     }
 

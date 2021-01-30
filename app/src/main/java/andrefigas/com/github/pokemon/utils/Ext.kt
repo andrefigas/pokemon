@@ -1,19 +1,13 @@
-package andrefigas.com.github.pokemon.ext
+package andrefigas.com.github.pokemon.utils
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Insets
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowInsets
 import android.view.WindowMetrics
-import android.widget.ImageView
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.decode.SvgDecoder
-import coil.request.ImageRequest
 
 fun RecyclerView.doOnScrollEnding(offset : Int, onScrollEnding : ()-> Unit, isProgressing : ()->Boolean) : RecyclerView.OnScrollListener?{
 
@@ -61,17 +55,18 @@ fun Activity.getDisplayWidth(): Int{
     }
 }
 
-fun ImageView.loadSvg(context : Context, url: String) {
-    val imageLoader = ImageLoader.Builder(this.context)
-        .componentRegistry { add(SvgDecoder(context)) }
-        .build()
+fun List<String>.toString(separator : String) : String{
+    if(size == 0){
+        return ""
+    }
 
-    val request = ImageRequest.Builder(this.context)
-        .crossfade(true)
-        .crossfade(500)
-        .data(url)
-        .target(this)
-        .build()
+    val sb = StringBuilder()
 
-    imageLoader.enqueue(request)
+    forEach{
+        sb.append(it)
+        sb.append(separator)
+    }
+
+    sb.delete(sb.length - separator.length, sb.length)
+    return sb.toString()
 }

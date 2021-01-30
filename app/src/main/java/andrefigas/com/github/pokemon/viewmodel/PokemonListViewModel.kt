@@ -4,8 +4,7 @@ import andrefigas.com.github.pokemon.injection.modules.NetworkModule
 import andrefigas.com.github.pokemon.model.entities.BaseEntity
 import andrefigas.com.github.pokemon.model.entities.Pokemon
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
-import andrefigas.com.github.pokemon.view.MainActivityContract
-import andrefigas.com.github.pokemon.view.PokemonAdapter
+import andrefigas.com.github.pokemon.view.main.MainActivityContract
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -13,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -23,7 +21,7 @@ import javax.inject.Inject
 
 class PokemonListViewModel @Inject constructor(private val networkModule: NetworkModule) :
     ViewModel() {
-    private lateinit var disposable: Disposable
+    private var disposable: Disposable? = null
     private val livedata = MutableLiveData<MutableList<Pokemon>>()
     private var nextUrl: String? = null
     private var previous: String? = null
@@ -67,7 +65,6 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
         disposable =  resultPage
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .delay(5, TimeUnit.SECONDS)
             .flatMap {
                 nextUrl = it.next
                 previous = it.previous
@@ -81,7 +78,10 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
                                 baseEntity.url,
                                 pokemon.weight,
                                 pokemon.height,
-                                pokemon.spritesCollection
+                                pokemon.spritesCollection,
+                                pokemon.species,
+                                pokemon.types,
+                                pokemon.moves
                             )
                         }
                 }
@@ -102,11 +102,11 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
 
     override fun onCleared() {
         super.onCleared()
-        disposable.dispose()
+        disposable?.dispose()
     }
 
     fun isProgressing() : Boolean{
-        return !disposable.isDisposed
+        return !(disposable?.isDisposed ?: true)
     }
 
 }

@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Pokemon</string>
+
+    <string name="types">Types</string>
+
+    <string name="habitat">Habitat</string>
+
+    <string name="weight">Weight</string>
+
+    <string name="height">Height</string>
+
+    <string name="moves">Moves</string>
+
+    <string name="types_separator" translatable="false">&#160;,&#160;</string>
+
+    <string name="image_key" translatable="false">pokemon_image_key</string>
+
 </resources>

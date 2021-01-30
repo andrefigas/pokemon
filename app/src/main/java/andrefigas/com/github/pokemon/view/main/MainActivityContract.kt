@@ -1,6 +1,7 @@
-package andrefigas.com.github.pokemon.view
+package andrefigas.com.github.pokemon.view.main
 
 import andrefigas.com.github.pokemon.model.entities.Pokemon
+import android.view.View
 
 interface MainActivityContract {
 
@@ -15,5 +16,7 @@ interface MainActivityContract {
     fun  showStartingDataProgress()
 
     fun  hideStartingDataProgress()
+
+    fun navigateToDetails(pokemon : Pokemon, target: View)
 
 }

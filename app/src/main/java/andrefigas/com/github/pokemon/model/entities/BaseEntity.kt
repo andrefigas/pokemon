@@ -1,6 +1,14 @@
 package andrefigas.com.github.pokemon.model.entities
 
-open class BaseEntity(val name : String, val url : String){
+import android.os.Parcel
+import android.os.Parcelable
+
+open class BaseEntity(val name : String, val url : String) : Parcelable{
+
+    constructor(parcel: Parcel) : this(
+        parcel.readString()?:"",
+        parcel.readString()?:""
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -12,6 +20,25 @@ open class BaseEntity(val name : String, val url : String){
         if (url != other.url) return false
 
         return true
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
+        parcel.writeString(url)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<BaseEntity> {
+        override fun createFromParcel(parcel: Parcel): BaseEntity {
+            return BaseEntity(parcel)
+        }
+
+        override fun newArray(size: Int): Array<BaseEntity?> {
+            return arrayOfNulls(size)
+        }
     }
 
 }
