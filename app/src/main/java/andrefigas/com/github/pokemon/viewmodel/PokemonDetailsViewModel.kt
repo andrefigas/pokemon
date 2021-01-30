@@ -102,6 +102,14 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
                 super.onSuccess(result)
                 view.showPokemonImage(result)
             }
+
+            override fun onError(error: Drawable?) {
+                super.onError(error)
+                if(error != null){
+                    view.showPokemonErrorImage(error)
+                }
+
+            }
         })
 
     }

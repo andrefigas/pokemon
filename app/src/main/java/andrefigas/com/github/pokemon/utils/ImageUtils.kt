@@ -1,5 +1,6 @@
 package andrefigas.com.github.pokemon.utils
 
+import andrefigas.com.github.pokemon.R
 import andrefigas.com.github.pokemon.model.entities.Pokemon
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -25,6 +26,8 @@ object ImageUtils {
                     .crossfade(true)
                     .crossfade(500)
                     .data(imageUrl)
+                    .placeholder(R.drawable.ic_pokeball_pb)
+                    .error(R.drawable.ic_pokeball)
                     .target(target)
                     .build()
 

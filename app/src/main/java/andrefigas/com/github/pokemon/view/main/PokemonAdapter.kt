@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.MainThread
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -108,10 +109,17 @@ class PokemonAdapter(val mainActivityContract: MainActivityContract) : RecyclerV
         }
 
         override fun onSuccess(result: Drawable) {
-            val imageView = itemView.pokemon_item_image
-            imageView.setImageDrawable(result)
+            itemView.pokemon_item_image.setImageDrawable(result)
         }
 
+
+        override fun onStart(placeholder: Drawable?) {
+            itemView.pokemon_item_image.setImageDrawable(placeholder)
+        }
+
+        override fun onError(error: Drawable?) {
+            itemView.pokemon_item_image.setImageDrawable(error)
+        }
 
     }
 

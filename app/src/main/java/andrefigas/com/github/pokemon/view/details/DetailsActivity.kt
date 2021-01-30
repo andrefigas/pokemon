@@ -38,6 +38,10 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         details_image.setImageDrawable(drawable)
     }
 
+    override fun showPokemonErrorImage(drawable: Drawable) {
+        details_image.setImageDrawable(drawable)
+    }
+
     override fun showPokemonName(name: String) {
         supportActionBar?.let{
             title = name

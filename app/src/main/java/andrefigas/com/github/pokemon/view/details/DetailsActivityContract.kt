@@ -6,6 +6,8 @@ interface DetailsActivityContract {
 
     fun showPokemonImage(drawable : Drawable)
 
+    fun showPokemonErrorImage(drawable : Drawable)
+
     fun showPokemonName(name : String)
 
     fun showPokemonDescription(description : String)
@@ -22,6 +24,6 @@ interface DetailsActivityContract {
 
     fun showPokemonHeight(height: Int)
 
-    abstract fun showPokemonMoves(moves: List<String>)
+    fun showPokemonMoves(moves: List<String>)
 
 }
