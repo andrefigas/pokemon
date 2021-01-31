@@ -34,4 +34,16 @@ interface DetailsActivityContract {
 
     fun showRemoveFavoriteUpdateSuccess(name: String)
 
+    fun showPreloadedFields()
+
+    fun hideAllFields()
+
+    fun showAllFields()
+
+    fun toggleFavoriteCheck()
+
+    fun showErrorOnAddFavorite(name: String)
+
+    fun showErrorOnRemoveFavorite(name: String)
+
 }

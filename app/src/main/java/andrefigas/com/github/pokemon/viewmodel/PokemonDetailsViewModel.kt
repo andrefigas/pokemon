@@ -1,10 +1,7 @@
 package andrefigas.com.github.pokemon.viewmodel
 
 import andrefigas.com.github.pokemon.injection.modules.NetworkModule
-import andrefigas.com.github.pokemon.model.entities.FavoritePokemon
-import andrefigas.com.github.pokemon.model.entities.FavoriteResponse
-import andrefigas.com.github.pokemon.model.entities.Pokemon
-import andrefigas.com.github.pokemon.model.entities.Specie
+import andrefigas.com.github.pokemon.model.entities.*
 import andrefigas.com.github.pokemon.utils.ImageUtils
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.utils.pair
@@ -12,6 +9,7 @@ import andrefigas.com.github.pokemon.view.details.DetailsActivityContract
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.util.Pair
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -27,34 +25,34 @@ import javax.inject.Inject
 class PokemonDetailsViewModel @Inject constructor(private val networkModule: NetworkModule) :
     ViewModel() {
 
-    private val specieLiveData = MutableLiveData<Specie>()
-    private val favoriteLiveData = MutableLiveData<FavoriteResponse>()
+    //private val specieLiveData = MutableLiveData<Specie?>()
+    //private val favoriteLiveData = MutableLiveData<FavoriteResponse?>()
+    private val pokeDetailsDataModel = MutableLiveData<PokemonDetailsDataModel>()
+    private val updateFavoriteResponse = MutableLiveData<UpdateFavoriteResponse>()
 
     var fetchDisposable : Disposable? = null
     var updateDisposable : Disposable? = null
     var imageDisposable: coil.request.Disposable? = null
-
     lateinit var pokemon: Pokemon
 
-    fun <T> updateFavorite(
+    fun updateFavorite(
         context: Context,
-        favorite : Boolean,
-        view: T
-    ) where  T : DetailsActivityContract, T : LifecycleOwner {
+        favorite : Boolean
+    )  {
         updateDisposable = networkModule.provideWebHookClient(context)
             .updateFavoritePokemon(FavoritePokemon(pokemon.id, favorite))
+            .map { updateFavoriteResponse->
+                updateFavoriteResponse.favorite = favorite
+                updateFavoriteResponse
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-            Consumer {
-                if(favorite){
-                    view.showAddFavoriteUpdateSuccess(pokemon.name.capitalize())
-                }else{
-                    view.showRemoveFavoriteUpdateSuccess(pokemon.name.capitalize())
-                }
-            }, Consumer {
-                it.printStackTrace()
-            })
+                {
+                    updateFavoriteResponse.value =UpdateFavoriteResponse(it.message, favorite, false)
+                }, {
+                        updateFavoriteResponse.value =UpdateFavoriteResponse("", favorite, true)
+                })
     }
 
     fun <T> fetchData(
@@ -67,15 +65,47 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
 
         this.pokemon = pokemon
 
+        pokeDetailsDataModel.value = PokemonDetailsDataModel(pokemon)
+
         bindPreloadedInformation(context, view, pokemon)
 
         val specieUrl: String = pokemon.species?.url ?: return
 
         view.showStartingDataProgress()
+        view.hideAllFields()
 
-        specieLiveData.observe(view, Observer { specie ->
+        updateFavoriteResponse.observe(view, Observer { updateFavoriteResponse->
+            if(updateFavoriteResponse.error){
+
+                view.toggleFavoriteCheck()
+
+                if(updateFavoriteResponse.favorite){
+                    view.showErrorOnAddFavorite(pokeDetailsDataModel.value?.pokemon?.name?:"")
+                }else{
+                    view.showErrorOnRemoveFavorite(pokeDetailsDataModel.value?.pokemon?.name?:"")
+                }
+
+
+            }else if(updateFavoriteResponse.favorite){
+                view.showAddFavoriteUpdateSuccess(pokemon.name.capitalize())
+            }else{
+                view.showRemoveFavoriteUpdateSuccess(pokemon.name.capitalize())
+            }
+        })
+
+        pokeDetailsDataModel.observe(view, Observer{ model ->
+            if (!model.initted){
+                return@Observer
+            }
 
             view.hideStartingDataProgress()
+
+            val specie = model.species
+
+            if(specie == null){
+                view.showPreloadedFields()
+                return@Observer
+            }
 
             val description: String? = getDescription(specie)
             if (description != null) {
@@ -83,10 +113,10 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
             }
 
             view.showHabitat(specie.habitat?.name ?: "")
+            view.showAllFields()
 
-        })
+            val favoriteResponse = model.favoriteResponse ?: return@Observer
 
-        favoriteLiveData.observe(view, Observer {favoriteResponse ->
             if(favoriteResponse.favorite){
                 view.showFavoriteChecked()
             }else{
@@ -100,19 +130,19 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
             .observeOn(AndroidSchedulers.mainThread())
             .pair(networkModule.provideWebHookClient(context).getFavoriteByPokemon(pokemon.id).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()))
-            .subscribe ({ pair->
-                specieLiveData.value = pair.first
-                favoriteLiveData.value = pair.second
-            }, {
-                it.stackTrace
-            })
+            .onErrorReturnItem(Pair(null, null))
+            .subscribe { pair->
+                val pokemonDetailsDataModel = PokemonDetailsDataModel(pokemon)
+                pokemonDetailsDataModel.initted = true
+                pokemonDetailsDataModel.species = pair.first
+                pokemonDetailsDataModel.favoriteResponse = pair.second
+                pokeDetailsDataModel.value = pokemonDetailsDataModel
+            }
 
     }
 
     private fun getDescription(specie: Specie): String? {
-
         val defLanguage = "en"
-
         return specie.labels.firstOrNull { it.language?.name == defLanguage }?.label
     }
 

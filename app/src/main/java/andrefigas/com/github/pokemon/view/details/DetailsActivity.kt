@@ -66,6 +66,13 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
     override fun showStartingDataProgress() {
         details_progress.visibility = View.VISIBLE
+    }
+
+    override fun hideStartingDataProgress() {
+        details_progress.visibility = View.GONE
+    }
+
+    override fun hideAllFields() {
         //labels
         details_types_label.visibility = View.GONE
         details_habitat_label.visibility = View.GONE
@@ -80,8 +87,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         details_moves_value.visibility = View.GONE
     }
 
-    override fun hideStartingDataProgress() {
-        details_progress.visibility = View.GONE
+    override fun showAllFields() {
         //labels
         details_types_label.visibility = View.VISIBLE
         details_habitat_label.visibility = View.VISIBLE
@@ -91,6 +97,19 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         //values
         details_types_values.visibility = View.VISIBLE
         details_habitat_value.visibility = View.VISIBLE
+        details_weight_value.visibility = View.VISIBLE
+        details_height_value.visibility = View.VISIBLE
+        details_moves_value.visibility = View.VISIBLE
+    }
+
+    override fun showPreloadedFields() {
+        //labels
+        details_types_label.visibility = View.VISIBLE
+        details_weight_label.visibility = View.VISIBLE
+        details_height_label.visibility = View.VISIBLE
+        details_moves_label.visibility = View.VISIBLE
+        //values
+        details_types_values.visibility = View.VISIBLE
         details_weight_value.visibility = View.VISIBLE
         details_height_value.visibility = View.VISIBLE
         details_moves_value.visibility = View.VISIBLE
@@ -127,7 +146,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
         item.isVisible = false
         menu.findItem(R.id.action_favorite_check).isVisible = true
-        pokemonDetailsViewModel.updateFavorite(this, false, this)
+        pokemonDetailsViewModel.updateFavorite(this, false)
         return true
     }
 
@@ -138,7 +157,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
         item.isVisible = false
         menu.findItem(R.id.action_favorite_uncheck).isVisible = true
-        pokemonDetailsViewModel.updateFavorite(this, true, this)
+        pokemonDetailsViewModel.updateFavorite(this, true)
         return true
     }
 
@@ -157,12 +176,12 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
     }
 
     override fun showFavoriteChecked() {
-        menu.findItem(R.id.action_favorite_check).isVisible = true
+        menu.findItem(R.id.action_favorite_uncheck).isVisible = true
         menu.findItem(R.id.action_favorite_check).isVisible = false
     }
 
     override fun showFavoriteUnchecked() {
-        menu.findItem(R.id.action_favorite_check).isVisible = false
+        menu.findItem(R.id.action_favorite_uncheck).isVisible = false
         menu.findItem(R.id.action_favorite_check).isVisible = true
     }
 
@@ -172,5 +191,18 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
     override fun showRemoveFavoriteUpdateSuccess(name: String) {
         Toast.makeText(this, getString(R.string.remove_favorite_message, name), Toast.LENGTH_LONG).show()
+    }
+
+    override fun toggleFavoriteCheck() {
+        menu.findItem(R.id.action_favorite_check).isVisible = !menu.findItem(R.id.action_favorite_check).isVisible
+        menu.findItem(R.id.action_favorite_uncheck).isVisible = !menu.findItem(R.id.action_favorite_uncheck).isVisible
+    }
+
+    override fun showErrorOnAddFavorite(name: String) {
+        Toast.makeText(this, getString(R.string.pokemon_add_to_favorite_error, name), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun showErrorOnRemoveFavorite(name: String) {
+        Toast.makeText(this, getString(R.string.pokemon_remove_from_favorite_error, name), Toast.LENGTH_SHORT).show()
     }
 }

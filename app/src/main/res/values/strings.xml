@@ -25,6 +25,10 @@
 
     <string name="pokemon_list_initial_data_error">Sorry, our server is not working at moment.\n<b>Try again</b></string>
 
+    <string name="pokemon_add_to_favorite_error">Sorry, we can\'t add %s as favorite at moment</string>
+
+    <string name="pokemon_remove_from_favorite_error">Sorry, we can\'t add %s as favorite at moment</string>
+
     <string name="pokemon_list_increase_data_error">Sorry, our server is not working at moment.</string>
 
 </resources>
