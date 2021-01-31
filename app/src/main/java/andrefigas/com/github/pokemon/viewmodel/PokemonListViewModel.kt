@@ -41,7 +41,7 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
 
             if (model.failed) { //failure
 
-                if (model.previous == null) {//first request
+                if (model.nextUrl == null) {//first request
                     view.hideStartingDataProgress()
                     view.showInitialLoadDataError()
                 } else {//next request
