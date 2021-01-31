@@ -48,9 +48,9 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
             .subscribe(
             Consumer {
                 if(favorite){
-                    view.showAddFavoriteUpdateSuccess(pokemon.name)
+                    view.showAddFavoriteUpdateSuccess(pokemon.name.capitalize())
                 }else{
-                    view.showRemoveFavoriteUpdateSuccess(pokemon.name)
+                    view.showRemoveFavoriteUpdateSuccess(pokemon.name.capitalize())
                 }
             }, Consumer {
                 it.printStackTrace()
