@@ -18,12 +18,13 @@ import org.junit.runner.RunWith
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class DetailsActivityTest : BaseTests(){
+class DetailsActivityTest : BaseTests() {
 
     @Before
     override fun setUp() {
         super.setUp()
-        MainActivityPage.providePokemonList().perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0,click()))
+        MainActivityPage.providePokemonList()
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
         Thread.sleep(DEFAULT_REQUEST_WAIT)
     }
 
@@ -39,7 +40,7 @@ class DetailsActivityTest : BaseTests(){
     }
 
     @Test
-    fun favoriteTest(){
+    fun favoriteTest() {
         DetailsPage.markAsFavorite()
         DetailsPage.checkFavoriteChecked()
     }

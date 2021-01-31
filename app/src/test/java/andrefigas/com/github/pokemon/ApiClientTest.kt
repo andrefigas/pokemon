@@ -11,11 +11,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class ApiClientTest {
 
     companion object {
@@ -82,7 +77,7 @@ class ApiClientTest {
             )
         )
 
-        provideApiClient(server).fetchPokemons("1", "0").test().assertValue(Predicate {
+        provideApiClient(server).fetchPokemons(1, 0).test().assertValue(Predicate {
             it.results.size == 1 && it.results.first() == bulbasaur
         })
     }
@@ -114,7 +109,7 @@ class ApiClientTest {
             )
         )
 
-        provideApiClient(server).fetchPokemons("1", "0").flatMap {
+        provideApiClient(server).fetchPokemons(1, 0).flatMap {
             provideApiClient(server).fetchPokemons(it.next)
         }.test().assertValue(Predicate {
             it.results.size == 1 && it.results.first() == ivysaur
@@ -137,7 +132,7 @@ class ApiClientTest {
             )
         )
 
-        provideApiClient(server).fetchPokemons("1", "0").test().assertValue(Predicate {
+        provideApiClient(server).fetchPokemons(1, 0).test().assertValue(Predicate {
             it.next == NULL
         })
     }

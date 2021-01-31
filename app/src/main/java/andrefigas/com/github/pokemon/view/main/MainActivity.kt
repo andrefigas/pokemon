@@ -2,10 +2,10 @@ package andrefigas.com.github.pokemon.view.main
 
 import andrefigas.com.github.pokemon.AndroidApplication
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.utils.doOnScrollEnding
-import andrefigas.com.github.pokemon.utils.getDisplayWidth
 import andrefigas.com.github.pokemon.model.entities.Pokemon
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
+import andrefigas.com.github.pokemon.utils.doOnScrollEnding
+import andrefigas.com.github.pokemon.utils.getDisplayWidth
 import andrefigas.com.github.pokemon.view.details.DetailsActivity
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import android.content.Intent
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity(),
     @Inject
     lateinit var pokemonListViewModel: PokemonListViewModel
     lateinit var adapter: PokemonAdapter
-    var infinityScrollListener : RecyclerView.OnScrollListener? = null
+    var infinityScrollListener: RecyclerView.OnScrollListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +41,8 @@ class MainActivity : AppCompatActivity(),
 
     override fun onResume() {
         super.onResume()
+        //infinity scroll could be disabled on last request error
+        //try enable again
         configureInfinityScroll()
     }
 
@@ -58,6 +60,7 @@ class MainActivity : AppCompatActivity(),
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 if (adapter.getItemViewType(position) == PokemonAdapter.PROGRESS_TYPE) {
+                    //progress item must fills display width
                     return rows
                 }
 
@@ -70,7 +73,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun configureInfinityScroll() {
-        val offsetTriggerScroll = 3
+        val offsetTriggerScroll = 3 //refresh when in the last 3 items
         infinityScrollListener = rv_pokemons.doOnScrollEnding(
             offsetTriggerScroll,
             {
@@ -82,7 +85,8 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
-    override fun navigateToDetails(pokemon: Pokemon, target: View ) {
+    override fun navigateToDetails(pokemon: Pokemon, target: View) {
+        //animation
         val options: ActivityOptionsCompat =
             ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this,
@@ -132,7 +136,11 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showIncreasingDataDataError() {
-        Toast.makeText(this, getString(R.string.pokemon_list_increase_data_error), Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            this,
+            getString(R.string.pokemon_list_increase_data_error),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun disableInfinityScroll() {

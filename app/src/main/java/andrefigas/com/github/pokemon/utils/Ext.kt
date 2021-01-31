@@ -11,11 +11,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Single
 
-fun RecyclerView.doOnScrollEnding(offset : Int, onScrollEnding : ()-> Unit, isProgressing : ()->Boolean) : RecyclerView.OnScrollListener?{
+/**
+ *EXTENSION FUNCTIONS
+ */
+
+/**
+ * infinity scroll
+ */
+fun RecyclerView.doOnScrollEnding(
+    offset: Int,
+    onScrollEnding: () -> Unit,
+    isProgressing: () -> Boolean
+): RecyclerView.OnScrollListener? {
 
     val adapter = adapter
     val layoutManager = layoutManager
-    if(layoutManager is LinearLayoutManager && adapter != null){
+    if (layoutManager is LinearLayoutManager && adapter != null) {
 
         val listener = object : RecyclerView.OnScrollListener() {
             override fun onScrolled(
@@ -25,9 +36,9 @@ fun RecyclerView.doOnScrollEnding(offset : Int, onScrollEnding : ()-> Unit, isPr
             ) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                val lastPosition = adapter.itemCount -1
-                val lastVisiblePosition =  layoutManager.findLastCompletelyVisibleItemPosition()
-                if(dy > 0 && !isProgressing.invoke() && adapter.itemCount > 0 && lastPosition - lastVisiblePosition  <= offset){
+                val lastPosition = adapter.itemCount - 1
+                val lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition()
+                if (dy > 0 && !isProgressing.invoke() && adapter.itemCount > 0 && lastPosition - lastVisiblePosition <= offset) {
                     onScrollEnding.invoke()
                 }
 
@@ -38,13 +49,13 @@ fun RecyclerView.doOnScrollEnding(offset : Int, onScrollEnding : ()-> Unit, isPr
 
         return listener
 
-    }else{
+    } else {
         return null
     }
 
 }
 
-fun Activity.getDisplayWidth(): Int{
+fun Activity.getDisplayWidth(): Int {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         val windowMetrics: WindowMetrics = windowManager.currentWindowMetrics
         val insets: Insets = windowMetrics.windowInsets
@@ -57,14 +68,18 @@ fun Activity.getDisplayWidth(): Int{
     }
 }
 
-fun List<String>.toString(separator : String) : String{
-    if(size == 0){
+/**
+ * build a string with data list and a string separator
+ * @param separator splitter
+ */
+fun List<String>.toString(separator: String): String {
+    if (size == 0) {
         return ""
     }
 
     val sb = StringBuilder()
 
-    forEach{
+    forEach {
         sb.append(it)
         sb.append(separator)
     }
@@ -73,7 +88,11 @@ fun List<String>.toString(separator : String) : String{
     return sb.toString()
 }
 
-fun <I, O> Single<I>.pair(b: Single<O>
+/**
+ * getting a request and make a pair with a response from another request
+ */
+fun <I, O> Single<I>.pair(
+    b: Single<O>
 ): Single<Pair<I, O>> {
     return flatMap { i -> b.map { o -> Pair(i, o) } }
 }

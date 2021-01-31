@@ -11,7 +11,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import kotlinx.android.synthetic.main.activity_details.*
 import javax.inject.Inject
 
@@ -20,7 +19,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
     @Inject
     lateinit var pokemonDetailsViewModel: PokemonDetailsViewModel
-    lateinit var menu : Menu
+    lateinit var menu: Menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +40,9 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         return super.onCreateOptionsMenu(menu)
     }
 
+    /**
+     * enable actionbar's arrow back
+     */
     private fun enableGoBack() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -55,7 +57,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
     }
 
     override fun showPokemonName(name: String) {
-        supportActionBar?.let{
+        supportActionBar?.let {
             title = name
         }
     }
@@ -134,13 +136,15 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
     override fun showPokemonMoves(moves: List<String>) {
         details_moves_value.text = moves.toString(getString(R.string.types_separator))
         details_moves_value.setOnClickListener {
+            //expand shorted text
             details_moves_value.ellipsize = null
             details_moves_value.maxLines = Int.MAX_VALUE
         }
     }
 
-    private fun addToFavorite(item: MenuItem) : Boolean{
-        if(pokemonDetailsViewModel.isUpdateProgressing()){
+    private fun addToFavorite(item: MenuItem): Boolean {
+        //retains interactions while progress
+        if (pokemonDetailsViewModel.isUpdateProgressing()) {
             return false
         }
 
@@ -150,8 +154,9 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         return true
     }
 
-    private fun removeFromFavorite(item: MenuItem) : Boolean{
-        if(pokemonDetailsViewModel.isUpdateProgressing()){
+    private fun removeFromFavorite(item: MenuItem): Boolean {
+        //retains interactions while progress
+        if (pokemonDetailsViewModel.isUpdateProgressing()) {
             return false
         }
 
@@ -162,7 +167,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
+        return when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
                 return true
@@ -186,23 +191,35 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
     }
 
     override fun showAddFavoriteUpdateSuccess(name: String) {
-        Toast.makeText(this, getString(R.string.add_favorite_message, name), Toast.LENGTH_LONG).show()
+        Toast.makeText(this, getString(R.string.add_favorite_message, name), Toast.LENGTH_LONG)
+            .show()
     }
 
     override fun showRemoveFavoriteUpdateSuccess(name: String) {
-        Toast.makeText(this, getString(R.string.remove_favorite_message, name), Toast.LENGTH_LONG).show()
+        Toast.makeText(this, getString(R.string.remove_favorite_message, name), Toast.LENGTH_LONG)
+            .show()
     }
 
     override fun toggleFavoriteCheck() {
-        menu.findItem(R.id.action_favorite_check).isVisible = !menu.findItem(R.id.action_favorite_check).isVisible
-        menu.findItem(R.id.action_favorite_uncheck).isVisible = !menu.findItem(R.id.action_favorite_uncheck).isVisible
+        menu.findItem(R.id.action_favorite_check).isVisible =
+            !menu.findItem(R.id.action_favorite_check).isVisible
+        menu.findItem(R.id.action_favorite_uncheck).isVisible =
+            !menu.findItem(R.id.action_favorite_uncheck).isVisible
     }
 
     override fun showErrorOnAddFavorite(name: String) {
-        Toast.makeText(this, getString(R.string.pokemon_add_to_favorite_error, name), Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            this,
+            getString(R.string.pokemon_add_to_favorite_error, name),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun showErrorOnRemoveFavorite(name: String) {
-        Toast.makeText(this, getString(R.string.pokemon_remove_from_favorite_error, name), Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            this,
+            getString(R.string.pokemon_remove_from_favorite_error, name),
+            Toast.LENGTH_LONG
+        ).show()
     }
 }

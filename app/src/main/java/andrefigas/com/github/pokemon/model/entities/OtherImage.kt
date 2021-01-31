@@ -5,8 +5,8 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 
 data class OtherImage(
-    @SerializedName("dream_world") val dreamWorld : Sprite?,
-    @SerializedName("official-artwork") val officialArtwork : Sprite?
+    @SerializedName("dream_world") val dreamWorld: Sprite?,
+    @SerializedName("official-artwork") val officialArtwork: Sprite?
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(Sprite::class.java.classLoader),

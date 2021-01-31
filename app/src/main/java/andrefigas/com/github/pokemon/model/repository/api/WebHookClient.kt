@@ -6,6 +6,9 @@ import andrefigas.com.github.pokemon.model.entities.UpdateFavoriteResponse
 import io.reactivex.Single
 import retrofit2.http.*
 
+/**
+ * Client for access and change (without effetct) favorite services
+ */
 interface WebHookClient {
 
     @GET("/073c48f8-ead8-4daf-a49a-a8552b5af628")

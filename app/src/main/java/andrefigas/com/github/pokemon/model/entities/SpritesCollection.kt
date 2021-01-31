@@ -4,71 +4,72 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 
-data class SpritesCollection (
+data class SpritesCollection(
 
-	@SerializedName("back_default") val backDefault : String?,
-	@SerializedName("back_female") val backFemale : String?,
-	@SerializedName("back_shiny") val backShiny : String?,
-	@SerializedName("back_shiny_female") val backShinyFemale : String?,
-	@SerializedName("front_default") val frontDefault : String?,
-	@SerializedName("front_female") val frontFemale : String?,
-	@SerializedName("front_shiny") val frontShiny : String?,
-	@SerializedName("front_shiny_female") val frontShinyFemale : String?,
-	@SerializedName("other") val other : OtherImage?) : Parcelable{
+    @SerializedName("back_default") val backDefault: String?,
+    @SerializedName("back_female") val backFemale: String?,
+    @SerializedName("back_shiny") val backShiny: String?,
+    @SerializedName("back_shiny_female") val backShinyFemale: String?,
+    @SerializedName("front_default") val frontDefault: String?,
+    @SerializedName("front_female") val frontFemale: String?,
+    @SerializedName("front_shiny") val frontShiny: String?,
+    @SerializedName("front_shiny_female") val frontShinyFemale: String?,
+    @SerializedName("other") val other: OtherImage?
+) : Parcelable {
 
-	constructor(parcel: Parcel) : this(
-		parcel.readString(),
-		parcel.readString(),
-		parcel.readString(),
-		parcel.readString(),
-		parcel.readString(),
-		parcel.readString(),
-		parcel.readString(),
-		parcel.readString(),
-		parcel.readParcelable(OtherImage::class.java.classLoader)
-	) {
-	}
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readParcelable(OtherImage::class.java.classLoader)
+    ) {
+    }
 
-	fun getBetterImage() : String?{
-		val all = listOfNotNull(
-			other?.officialArtwork?.image,
-			other?.dreamWorld?.image,
+    fun getBetterImage(): String? {
+        val all = listOfNotNull(
+            other?.officialArtwork?.image,
+            other?.dreamWorld?.image,
 
-			frontDefault, frontFemale, frontShiny, frontShinyFemale,
-			backDefault, backFemale, backShiny, backShinyFemale
+            frontDefault, frontFemale, frontShiny, frontShinyFemale,
+            backDefault, backFemale, backShiny, backShinyFemale
 
-		)
+        )
 
-		val SVG = ".svg"
+        val SVG = ".svg"
 
-		return all.firstOrNull { it.endsWith(SVG, true) } ?: all.firstOrNull()
-	}
+        return all.firstOrNull { it.endsWith(SVG, true) } ?: all.firstOrNull()
+    }
 
-	override fun writeToParcel(parcel: Parcel, flags: Int) {
-		parcel.writeString(backDefault)
-		parcel.writeString(backFemale)
-		parcel.writeString(backShiny)
-		parcel.writeString(backShinyFemale)
-		parcel.writeString(frontDefault)
-		parcel.writeString(frontFemale)
-		parcel.writeString(frontShiny)
-		parcel.writeString(frontShinyFemale)
-		parcel.writeParcelable(other, flags)
-	}
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(backDefault)
+        parcel.writeString(backFemale)
+        parcel.writeString(backShiny)
+        parcel.writeString(backShinyFemale)
+        parcel.writeString(frontDefault)
+        parcel.writeString(frontFemale)
+        parcel.writeString(frontShiny)
+        parcel.writeString(frontShinyFemale)
+        parcel.writeParcelable(other, flags)
+    }
 
-	override fun describeContents(): Int {
-		return 0
-	}
+    override fun describeContents(): Int {
+        return 0
+    }
 
-	companion object CREATOR : Parcelable.Creator<SpritesCollection> {
-		override fun createFromParcel(parcel: Parcel): SpritesCollection {
-			return SpritesCollection(parcel)
-		}
+    companion object CREATOR : Parcelable.Creator<SpritesCollection> {
+        override fun createFromParcel(parcel: Parcel): SpritesCollection {
+            return SpritesCollection(parcel)
+        }
 
-		override fun newArray(size: Int): Array<SpritesCollection?> {
-			return arrayOfNulls(size)
-		}
-	}
+        override fun newArray(size: Int): Array<SpritesCollection?> {
+            return arrayOfNulls(size)
+        }
+    }
 
 }
 

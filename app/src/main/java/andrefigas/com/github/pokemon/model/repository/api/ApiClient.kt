@@ -9,6 +9,9 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.http.Url
 
+/**
+ * Client for API access
+ */
 interface ApiClient {
 
     companion object{

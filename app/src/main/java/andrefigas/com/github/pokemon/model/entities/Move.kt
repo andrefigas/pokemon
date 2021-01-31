@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 
-data class Move(@SerializedName("move") val content : BaseEntity?) : Parcelable {
+data class Move(@SerializedName("move") val content: BaseEntity?) : Parcelable {
 
     constructor(parcel: Parcel) : this(parcel.readParcelable<BaseEntity>(BaseEntity::class.java.classLoader)) {
     }

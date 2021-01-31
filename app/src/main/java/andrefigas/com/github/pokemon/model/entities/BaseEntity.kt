@@ -3,11 +3,11 @@ package andrefigas.com.github.pokemon.model.entities
 import android.os.Parcel
 import android.os.Parcelable
 
-open class BaseEntity(var name : String, var url : String) : Parcelable{
+open class BaseEntity(var name: String, var url: String) : Parcelable {
 
     constructor(parcel: Parcel) : this(
-        parcel.readString()?:"",
-        parcel.readString()?:""
+        parcel.readString() ?: "",
+        parcel.readString() ?: ""
     )
 
     override fun equals(other: Any?): Boolean {
