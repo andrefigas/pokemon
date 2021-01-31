@@ -11,9 +11,14 @@ import retrofit2.http.Url
 
 interface ApiClient {
 
+    companion object{
+        const val LIMIT = 10
+        const val OFFSET = 0
+    }
+
     @GET("api/v2/pokemon")
     fun fetchPokemons(
-        @Query("limit") limit: Int = 10, @Query("offset") offset: Int = 0
+        @Query("limit") limit: Int = LIMIT, @Query("offset") offset: Int = OFFSET
     ): Single<ResultPage<BaseEntity>>
 
     @GET

@@ -199,10 +199,10 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
     }
 
     override fun showErrorOnAddFavorite(name: String) {
-        Toast.makeText(this, getString(R.string.pokemon_add_to_favorite_error, name), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.pokemon_add_to_favorite_error, name), Toast.LENGTH_LONG).show()
     }
 
     override fun showErrorOnRemoveFavorite(name: String) {
-        Toast.makeText(this, getString(R.string.pokemon_remove_from_favorite_error, name), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.pokemon_remove_from_favorite_error, name), Toast.LENGTH_LONG).show()
     }
 }

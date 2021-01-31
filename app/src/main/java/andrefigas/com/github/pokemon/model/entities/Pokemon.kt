@@ -27,17 +27,6 @@ class Pokemon(name : String, url : String) : BaseEntity(name, url), Parcelable {
         moves = parcel.readParcelableArray(Move::class.java.classLoader)?.map{ it as Move }?.toTypedArray()
     }
 
-    constructor(id : Int,name : String, url : String, weight : Int, height : Int, spritesCollection : SpritesCollection?,
-                species : BaseEntity?, types : Array<Type>?, moves : Array<Move>? = null) : this(name, url){
-        this.id = id
-        this.weight = weight
-        this.height = height
-        this.spritesCollection = spritesCollection
-        this.species = species
-        this.types = types
-        this.moves = moves
-    }
-
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeString(url)

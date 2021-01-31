@@ -20,11 +20,13 @@ import javax.inject.Singleton
 @Module
 class NetworkModule @Inject constructor() {
 
-    companion object{
+    companion object {
 
-        const val TAG : String = "NetworkModule"
+        const val TAG: String = "NetworkModule"
         const val CACHE_DIRECTORY = "responses"
         const val CACHE_SIZE = 10L * 1024 * 1024
+
+        fun provideCacheFile(context: Context) = File(context.cacheDir, CACHE_DIRECTORY)
 
     }
 
@@ -36,11 +38,9 @@ class NetworkModule @Inject constructor() {
     @Provides
     fun providesHttpClient(context: Context): OkHttpClient {
 
-        val httpCacheDirectory = File(context.cacheDir, CACHE_DIRECTORY)
-
         var cache: Cache? = null
         try {
-            cache = Cache(httpCacheDirectory, CACHE_SIZE)
+            cache = Cache(provideCacheFile(context), CACHE_SIZE)
         } catch (e: IOException) {
             Log.e(TAG, "Could not create http cache", e)
         }
@@ -50,7 +50,7 @@ class NetworkModule @Inject constructor() {
         return httpClient
     }
 
-    private fun provideApiClient(context: Context, url : String): Retrofit {
+    private fun provideApiClient(context: Context, url: String): Retrofit {
         return Retrofit.Builder()
             .baseUrl(url)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

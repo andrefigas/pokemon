@@ -25,8 +25,6 @@ import javax.inject.Inject
 class PokemonDetailsViewModel @Inject constructor(private val networkModule: NetworkModule) :
     ViewModel() {
 
-    //private val specieLiveData = MutableLiveData<Specie?>()
-    //private val favoriteLiveData = MutableLiveData<FavoriteResponse?>()
     private val pokeDetailsDataModel = MutableLiveData<PokemonDetailsDataModel>()
     private val updateFavoriteResponse = MutableLiveData<UpdateFavoriteResponse>()
 
@@ -142,7 +140,7 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
     }
 
     private fun getDescription(specie: Specie): String? {
-        val defLanguage = "en"
+        val defLanguage = "en" //todo: get dynamically
         return specie.labels.firstOrNull { it.language?.name == defLanguage }?.label
     }
 
@@ -194,6 +192,7 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
         super.onCleared()
         fetchDisposable?.dispose()
         imageDisposable?.dispose()
+        updateDisposable?.dispose()
     }
 
     fun isUpdateProgressing() : Boolean{
