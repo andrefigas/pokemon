@@ -1,4 +1,4 @@
-package andrefigas.com.github.pokemon.test
+package andrefigas.com.github.pokemon.tests
 
 import andrefigas.com.github.pokemon.MockApiClient
 import andrefigas.com.github.pokemon.data.DataTest
