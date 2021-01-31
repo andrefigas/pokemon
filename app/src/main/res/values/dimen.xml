@@ -2,5 +2,8 @@
 <resources>
 
     <dimen name="aproximated_item_width">200dp</dimen>
+    <dimen name="default_margin">16dp</dimen>
+    <dimen name="default_padding">16dp</dimen>
+    <dimen name="item_progress_height">100dp</dimen>
 
 </resources>

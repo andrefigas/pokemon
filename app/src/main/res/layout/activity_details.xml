@@ -8,189 +8,151 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.details.DetailsActivity"
-        android:padding="16dp">
+        android:padding="@dimen/default_padding"
+        tools:context=".view.details.DetailsActivity">
 
         <ImageView
-            android:layout_marginBottom="16dp"
-            android:transitionName="@string/image_key"
+            style="@style/DetailsImage"
             android:id="@+id/details_image"
             android:layout_width="0dp"
-            android:layout_height="100dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/default_margin"
+            android:layout_marginBottom="@dimen/default_margin"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:layout_editor_absoluteY="32dp"
+            app:layout_constraintStart_toStartOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
 
         <ProgressBar
-            android:layout_marginTop="16dp"
             android:id="@+id/details_progress"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/default_margin"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/details_image"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/details_image" />
 
         <TextView
-            android:textStyle="italic"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_description"
+            style="@style/DetailsDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="This is a cool pokemon"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/default_margin"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_image"
-            />
+            tools:text="This is a cool pokemon" />
 
         <TextView
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_types_label"
+            style="@style/DetailsTextLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="@string/types"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/details_description"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/details_description" />
 
         <TextView
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_types_values"
+            style="@style/DetailsText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="grass, poison"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/default_margin"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_types_label"
-            />
+            tools:text="grass, poison" />
 
         <TextView
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_habitat_label"
+            style="@style/DetailsTextLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="habitat"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/default_margin"
+            android:text="@string/habitat"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/details_types_values"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/details_types_values" />
 
         <TextView
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_habitat_value"
+            style="@style/DetailsText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="grassland"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/default_margin"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_habitat_label"
-            />
+            tools:text="grassland" />
 
         <TextView
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_weight_label"
+            style="@style/DetailsTextLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="@string/weight"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/details_habitat_value"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/details_habitat_value" />
 
         <TextView
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_weight_value"
+            style="@style/DetailsText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="0"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/default_margin"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_weight_label"
-            />
+            tools:text="0" />
 
         <TextView
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_height_label"
+            style="@style/DetailsTextLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin"
             android:text="@string/height"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/details_weight_value"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/details_weight_value" />
 
         <TextView
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_height_value"
+            style="@style/DetailsText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="0"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/default_margin"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_height_label"
-            />
+            tools:text="0" />
 
         <TextView
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
             android:id="@+id/details_moves_label"
+            style="@style/DetailsTextLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin"
+            android:gravity="center"
             android:text="@string/moves"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/details_height_value"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/details_height_value" />
 
         <TextView
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
             android:id="@+id/details_moves_value"
+            style="@style/DetailsMoves"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="eat"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/default_margin"
+            android:layout_marginBottom="@dimen/default_margin"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_moves_label"
-            />
-
-
+            tools:text="eat" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
