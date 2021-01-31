@@ -13,7 +13,7 @@ interface ApiClient {
 
     @GET("api/v2/pokemon")
     fun fetchPokemons(
-        @Query("limit") limit: String, @Query("offset") offset: String
+        @Query("limit") limit: Int = 10, @Query("offset") offset: Int = 0
     ): Single<ResultPage<BaseEntity>>
 
     @GET

@@ -3,7 +3,7 @@ package andrefigas.com.github.pokemon.model.entities
 import android.os.Parcel
 import android.os.Parcelable
 
-open class BaseEntity(val name : String, val url : String) : Parcelable{
+open class BaseEntity(var name : String, var url : String) : Parcelable{
 
     constructor(parcel: Parcel) : this(
         parcel.readString()?:"",

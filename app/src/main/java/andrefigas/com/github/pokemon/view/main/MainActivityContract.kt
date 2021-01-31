@@ -21,6 +21,10 @@ interface MainActivityContract {
 
     fun showInitialLoadDataError()
 
+    fun hideInitialLoadDataError()
+
     fun showIncreasingDataDataError()
+
+    fun disableInfinityScroll()
 
 }

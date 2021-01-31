@@ -34,7 +34,6 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
     var updateDisposable : Disposable? = null
     var imageDisposable: coil.request.Disposable? = null
 
-
     lateinit var pokemon: Pokemon
 
     fun <T> updateFavorite(
@@ -101,10 +100,10 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
             .observeOn(AndroidSchedulers.mainThread())
             .pair(networkModule.provideWebHookClient(context).getFavoriteByPokemon(pokemon.id).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()))
-            .subscribe (Consumer {pair->
+            .subscribe ({ pair->
                 specieLiveData.value = pair.first
                 favoriteLiveData.value = pair.second
-            }, Consumer {
+            }, {
                 it.stackTrace
             })
 

@@ -23,4 +23,8 @@
 
     <string name="image_key" translatable="false">pokemon_image_key</string>
 
+    <string name="pokemon_list_initial_data_error">Sorry, our server is not working at moment.\n<b>Try again</b></string>
+
+    <string name="pokemon_list_increase_data_error">Sorry, our server is not working at moment.</string>
+
 </resources>

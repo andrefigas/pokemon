@@ -3,6 +3,7 @@ package andrefigas.com.github.pokemon.viewmodel
 import andrefigas.com.github.pokemon.injection.modules.NetworkModule
 import andrefigas.com.github.pokemon.model.entities.BaseEntity
 import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.model.entities.PokemonListDataModel
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 import andrefigas.com.github.pokemon.view.main.MainActivityContract
 import android.content.Context
@@ -13,97 +14,140 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import repository.entities.ResultPage
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class PokemonListViewModel @Inject constructor(private val networkModule: NetworkModule) :
     ViewModel() {
-    private var disposable: Disposable? = null
-    private val livedata = MutableLiveData<MutableList<Pokemon>>()
-    private var nextUrl: String? = null
-    private var previous: String? = null
 
-    fun <T> configView(view: T) where  T : MainActivityContract, T : LifecycleOwner {
-        val firstRequest = previous == null
-        if(firstRequest){
-            view.showStartingDataProgress()
-            view.createPokemonList()
-            livedata.observe(view, Observer { pokemons ->
-                if (firstRequest && nextUrl != null) {
+    private var disposable: Disposable? = null
+    private val liveData = MutableLiveData<PokemonListDataModel>()
+
+    init {
+        liveData.value = PokemonListDataModel()
+    }
+
+    private fun <T> configObserver(view: T) where  T : MainActivityContract, T : LifecycleOwner {
+        if (liveData.hasObservers()) {
+            return
+        }
+
+        liveData.observe(view, Observer { model ->
+
+            if (!model.initted) {
+                return@Observer
+            }
+
+            if (model.failed) { //failure
+
+                if (model.previous == null) {//first request
                     view.hideStartingDataProgress()
-                }else{
+                    view.showInitialLoadDataError()
+                } else {//next request
+                    view.hideIncreasingDataProgress()
+                    view.showIncreasingDataDataError()
+                    view.disableInfinityScroll()
+                }
+
+            } else { //success
+
+                if (model.currentUrl == null) {//first request
+                    view.hideStartingDataProgress()
+                    view.createPokemonList()
+                } else {//next request
                     view.hideIncreasingDataProgress()
                 }
 
-                view.increasePokemonList(pokemons)
-            })
-        }else{
+                view.increasePokemonList(model.pokemons)
+            }
+
+
+        })
+    }
+
+    private fun <T> configView(view: T) where  T : MainActivityContract, T : LifecycleOwner {
+        if (providePokemonListDataModel().nextUrl == null) {
+            view.showStartingDataProgress()
+        } else {
             view.showIncreasingDataProgress()
         }
 
     }
 
-    fun <T> fetchData(context: Context, view: T) where  T : MainActivityContract, T : LifecycleOwner {
+    private fun providePokemonListDataModel(): PokemonListDataModel {
+        return liveData.value as PokemonListDataModel
+    }
 
-        if(nextUrl == null && previous != null){
+    fun <T> fetchData(
+        context: Context,
+        view: T
+    ) where  T : MainActivityContract, T : LifecycleOwner {
+
+        view.hideInitialLoadDataError()
+
+        if (providePokemonListDataModel().nextUrl == null && providePokemonListDataModel().previous != null) {
             return
         }
 
+        configObserver(view)
         configView(view)
 
-        val apiClient : ApiClient =  networkModule.provideApiClient(context)
+        val apiClient: ApiClient = networkModule.provideApiClient(context)
 
-        val limit = "10"
-        val offset = "0"
+        val url = providePokemonListDataModel().nextUrl
 
-        val url = nextUrl
-
-        val resultPage : Single<ResultPage<BaseEntity>> = if (url == null)
-            apiClient.fetchPokemons(limit, offset) else //first request
+        val resultPage: Single<ResultPage<BaseEntity>> = if (url == null)
+            apiClient.fetchPokemons() else //first request
             apiClient.fetchPokemons(url) //next requests
 
         //getting pokemon list (each item contains just name and url)
-        disposable =  resultPage
+        disposable = resultPage
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .flatMap {
-                nextUrl = it.next
-                previous = it.previous
-
-                val requests = it.results.map { baseEntity ->
-                    networkModule.provideApiClient(context).getPokemon(baseEntity.url)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread()).map { pokemon ->
-                            Pokemon(
-                                pokemon.id,
-                                baseEntity.name,
-                                baseEntity.url,
-                                pokemon.weight,
-                                pokemon.height,
-                                pokemon.spritesCollection,
-                                pokemon.species,
-                                pokemon.types,
-                                pokemon.moves
-                            )
-                        }
-                }
-
+            .flatMap { resultPage ->
                 //getting data details for each pokemon
-                Single.zip(requests) { pokemonPages ->
-                    pokemonPages.map { pokemon ->
-                        pokemon as Pokemon
-                    }
-                }
+                fetchPokemonsForPage(context, resultPage, url)
             }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                livedata.value = it.toMutableList()
-            }, Consumer {
-                it.printStackTrace()
+            .subscribe({
+                liveData.value = it
+            }, {
+                //error
+                val model = liveData.value
+                model?.initted = true
+                model?.failed = true
+                liveData.value = model
             })
+
+    }
+
+    fun fetchPokemonsForPage(
+        context: Context,
+        resultPage: ResultPage<BaseEntity>,
+        url: String?
+    ): Single<PokemonListDataModel> {
+        return Single.zip(resultPage.results.map { baseEntity ->
+            networkModule.provideApiClient(context).getPokemon(baseEntity.url)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).map { pokemon ->
+                    pokemon.name = baseEntity.name
+                    pokemon.url = baseEntity.url
+                    pokemon
+                }
+        }) { pokemonPages ->
+            pokemonPages.map { pokemon ->
+                pokemon as Pokemon
+            }
+        }.map { pokemons ->
+            val previousItems = providePokemonListDataModel().pokemons.toMutableList()
+            previousItems.addAll(pokemons)
+            PokemonListDataModel(
+                previousItems,
+                resultPage,
+                url
+            )
+        }
 
     }
 
@@ -112,7 +156,7 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
         disposable?.dispose()
     }
 
-    fun isProgressing() : Boolean{
+    fun isProgressing(): Boolean {
         return !(disposable?.isDisposed ?: true)
     }
 

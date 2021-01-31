@@ -72,6 +72,12 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         details_weight_label.visibility = View.GONE
         details_height_label.visibility = View.GONE
         details_moves_label.visibility = View.GONE
+        //values
+        details_types_values.visibility = View.GONE
+        details_habitat_value.visibility = View.GONE
+        details_weight_value.visibility = View.GONE
+        details_height_value.visibility = View.GONE
+        details_moves_value.visibility = View.GONE
     }
 
     override fun hideStartingDataProgress() {
@@ -82,6 +88,12 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         details_weight_label.visibility = View.VISIBLE
         details_height_label.visibility = View.VISIBLE
         details_moves_label.visibility = View.VISIBLE
+        //values
+        details_types_values.visibility = View.VISIBLE
+        details_habitat_value.visibility = View.VISIBLE
+        details_weight_value.visibility = View.VISIBLE
+        details_height_value.visibility = View.VISIBLE
+        details_moves_value.visibility = View.VISIBLE
     }
 
     override fun showTypes(types: List<String>) {

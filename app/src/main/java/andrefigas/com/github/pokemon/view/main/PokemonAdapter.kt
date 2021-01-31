@@ -3,29 +3,20 @@ package andrefigas.com.github.pokemon.view.main
 import andrefigas.com.github.pokemon.R
 import andrefigas.com.github.pokemon.model.entities.Pokemon
 import andrefigas.com.github.pokemon.utils.ImageUtils
-import andrefigas.com.github.pokemon.utils.IntentArgsUtils
-import andrefigas.com.github.pokemon.view.details.DetailsActivity
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.annotation.MainThread
-import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import coil.ImageLoader
-import coil.decode.SvgDecoder
 import coil.request.Disposable
-import coil.request.ImageRequest
 import coil.target.Target
 import kotlinx.android.synthetic.main.pokemon_item.view.*
 import java.util.*
 
 
-class PokemonAdapter(val mainActivityContract: MainActivityContract) : RecyclerView.Adapter<ViewHolder>() {
+class PokemonAdapter(val mainActivityContract: MainActivityContract) :
+    RecyclerView.Adapter<ViewHolder>() {
     val pokemonList: MutableList<Pokemon> = ArrayList()
     private var isProgressing = false
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -58,17 +49,19 @@ class PokemonAdapter(val mainActivityContract: MainActivityContract) : RecyclerV
     }
 
     fun addPokemons(pokemons: List<Pokemon>) {
-        if(pokemons.size == pokemonList.size){
+        if (pokemons.size == pokemonList.size) {
             return
         }
 
         val startIndex = itemCount
         val count = pokemons.size
-        pokemonList.addAll(pokemons)
+        pokemonList.addAll(pokemons.subList(startIndex, count - 1))
         notifyItemRangeInserted(startIndex, count)
     }
 
     fun setProgressing(progressing: Boolean) {
+        if (progressing == isProgressing) return
+
         if (progressing) {
             isProgressing = true
             notifyItemInserted(itemCount)
@@ -92,7 +85,8 @@ class PokemonAdapter(val mainActivityContract: MainActivityContract) : RecyclerV
         }
     }
 
-    class ItemViewHolder(itemView: View, val mainActivityContract: MainActivityContract) : ViewHolder(itemView), Target {
+    class ItemViewHolder(itemView: View, val mainActivityContract: MainActivityContract) :
+        ViewHolder(itemView), Target {
         lateinit var pokemon: Pokemon
         var disposable: Disposable? = null
 

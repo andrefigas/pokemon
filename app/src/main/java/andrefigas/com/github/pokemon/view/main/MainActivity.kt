@@ -11,10 +11,11 @@ import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity(),
     @Inject
     lateinit var pokemonListViewModel: PokemonListViewModel
     lateinit var adapter: PokemonAdapter
+    var infinityScrollListener : RecyclerView.OnScrollListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,11 +39,16 @@ class MainActivity : AppCompatActivity(),
         pokemonListViewModel.fetchData(this, this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        configureInfinityScroll()
+    }
+
     override fun createPokemonList() {
         adapter = PokemonAdapter(this)
         rv_pokemons.adapter = adapter
         configureLayoutManager(adapter)
-        configureScrollListener()
+        configureInfinityScroll()
     }
 
     private fun configureLayoutManager(adapter: PokemonAdapter) {
@@ -62,9 +69,9 @@ class MainActivity : AppCompatActivity(),
         rv_pokemons.layoutManager = layoutManager
     }
 
-    private fun configureScrollListener() {
+    private fun configureInfinityScroll() {
         val offsetTriggerScroll = 3
-        rv_pokemons.doOnScrollEnding(
+        infinityScrollListener = rv_pokemons.doOnScrollEnding(
             offsetTriggerScroll,
             {
                 pokemonListViewModel.fetchData(this@MainActivity, this@MainActivity)
@@ -114,10 +121,26 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun showInitialLoadDataError() {
-        TODO("Not yet implemented")
+        initial_load_error_message.visibility = View.VISIBLE
+        initial_load_error_message.setOnClickListener {
+            pokemonListViewModel.fetchData(this, this)
+        }
+    }
+
+    override fun hideInitialLoadDataError() {
+        initial_load_error_message.visibility = View.GONE
     }
 
     override fun showIncreasingDataDataError() {
-        TODO("Not yet implemented")
+        Toast.makeText(this, getString(R.string.pokemon_list_increase_data_error), Toast.LENGTH_LONG).show()
+    }
+
+    override fun disableInfinityScroll() {
+        infinityScrollListener?.let {
+            rv_pokemons.removeOnScrollListener(it)
+        }
+
+        infinityScrollListener = null
+
     }
 }
