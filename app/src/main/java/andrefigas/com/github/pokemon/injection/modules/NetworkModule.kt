@@ -18,7 +18,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
-class NetworkModule @Inject constructor() {
+open class NetworkModule @Inject constructor() {
 
     companion object {
 
@@ -36,13 +36,17 @@ class NetworkModule @Inject constructor() {
 
     @Singleton
     @Provides
-    fun providesHttpClient(context: Context): OkHttpClient {
+   fun providesHttpClient(context: Context?): OkHttpClient {
 
         var cache: Cache? = null
-        try {
-            cache = Cache(provideCacheFile(context), CACHE_SIZE)
-        } catch (e: IOException) {
-            Log.e(TAG, "Could not create http cache", e)
+
+        if(context != null){
+            try {
+                cache = Cache(provideCacheFile(context), CACHE_SIZE)
+            } catch (e: IOException) {
+                Log.e(TAG, "Could not create http cache", e)
+            }
+
         }
 
         httpClient = OkHttpClient.Builder().cache(cache).build()
@@ -50,7 +54,7 @@ class NetworkModule @Inject constructor() {
         return httpClient
     }
 
-    private fun provideApiClient(context: Context, url: String): Retrofit {
+    open fun provideApiClient(context: Context?, url: String): Retrofit {
         return Retrofit.Builder()
             .baseUrl(url)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -61,7 +65,7 @@ class NetworkModule @Inject constructor() {
 
     @Singleton
     @Provides
-    fun provideApiClient(context: Context): ApiClient {
+    fun provideApiClient(context: Context?): ApiClient {
         apiClient = provideApiClient(context, BuildConfig.API_URL)
             .create(ApiClient::class.java)
         return apiClient
@@ -69,7 +73,7 @@ class NetworkModule @Inject constructor() {
 
     @Singleton
     @Provides
-    fun provideWebHookClient(context: Context): WebHookClient {
+    fun provideWebHookClient(context: Context?): WebHookClient {
         webHookClient = provideApiClient(context, BuildConfig.WEBHOOK_URL)
             .create(WebHookClient::class.java)
         return webHookClient

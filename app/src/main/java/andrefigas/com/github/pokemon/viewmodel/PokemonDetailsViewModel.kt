@@ -54,10 +54,12 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
     }
 
     fun <T> fetchData(
-        context: Context,
+        context: Context?,
         intent: Intent,
         view: T
     ) where  T : DetailsActivityContract, T : LifecycleOwner {
+
+        view.hideAllFields()
 
         val pokemon = IntentArgsUtils.getPokemonByArgs(intent) ?: return
 
@@ -145,7 +147,7 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
     }
 
     private fun bindPreloadedInformation(
-        context: Context,
+        context: Context?,
         view: DetailsActivityContract,
         pokemon: Pokemon
     ) {
@@ -170,7 +172,11 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
         bindImage(context, view, pokemon)
     }
 
-    private fun bindImage(context: Context, view: DetailsActivityContract, pokemon: Pokemon) {
+    private fun bindImage(context: Context?, view: DetailsActivityContract, pokemon: Pokemon) {
+        if(context == null){
+            return
+        }
+
         imageDisposable = ImageUtils.loadPokemonImage(context, pokemon, object : Target {
             override fun onSuccess(result: Drawable) {
                 super.onSuccess(result)

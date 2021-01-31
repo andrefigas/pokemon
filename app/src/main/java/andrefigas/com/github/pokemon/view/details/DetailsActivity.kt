@@ -6,6 +6,7 @@ import andrefigas.com.github.pokemon.utils.toString
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -27,10 +28,31 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
         (applicationContext as AndroidApplication).appComponent.inject(this)
 
-        pokemonDetailsViewModel.fetchData(this, intent, this)
-
         enableGoBack()
 
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+
+        pokemonDetailsViewModel.fetchData(this, intent, this)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+    }
+
+    override fun onRestoreInstanceState(
+        savedInstanceState: Bundle?,
+        persistentState: PersistableBundle?
+    ) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -87,6 +109,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         details_weight_value.visibility = View.GONE
         details_height_value.visibility = View.GONE
         details_moves_value.visibility = View.GONE
+        details_description.visibility = View.GONE
     }
 
     override fun showAllFields() {
@@ -102,6 +125,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         details_weight_value.visibility = View.VISIBLE
         details_height_value.visibility = View.VISIBLE
         details_moves_value.visibility = View.VISIBLE
+        details_description.visibility = View.VISIBLE
     }
 
     override fun showPreloadedFields() {

@@ -19,6 +19,15 @@ class Version{
     static def picasso = "2.71828"
     static def gson = "2.9.0"
     static def jsr250_api = "1.0"
+    static def coil = "1.1.1"
+    static def coil_svg = "1.1.1"
+    static def espresso_contrib = "2.2.2"
+    static def core_testing= "2.1.0"
+    static def rules = "1.0.2"
+    static def runner = "1.0.2"
+    static def constraintlayout = "2.0.4"
+    static def okhttp_urlconnection = "2.2.0"
+    static def mockito_core = "1.10.19"
 }
 
 ext.import_version = new Version()

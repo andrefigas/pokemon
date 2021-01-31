@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -18,15 +19,11 @@ import io.reactivex.schedulers.Schedulers
 import repository.entities.ResultPage
 import javax.inject.Inject
 
-class PokemonListViewModel @Inject constructor(private val networkModule: NetworkModule) :
+open class PokemonListViewModel @Inject constructor(private val networkModule: NetworkModule) :
     ViewModel() {
 
     private var disposable: Disposable? = null
     private val liveData = MutableLiveData<PokemonListDataModel>()
-
-    init {
-        liveData.value = PokemonListDataModel()
-    }
 
     private fun <T> configObserver(view: T) where  T : MainActivityContract, T : LifecycleOwner {
         if (liveData.hasObservers()) {
@@ -76,12 +73,13 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
     }
 
     private fun providePokemonListDataModel(): PokemonListDataModel {
-        return liveData.value as PokemonListDataModel
+        return liveData.value ?: PokemonListDataModel()
     }
 
     fun <T> fetchData(
-        context: Context,
-        view: T
+        context: Context?,
+        view: T,
+        subscribeOn: Scheduler? = Schedulers.io(), observeOn: Scheduler? = AndroidSchedulers.mainThread()
     ) where  T : MainActivityContract, T : LifecycleOwner {
 
         view.hideInitialLoadDataError()
@@ -93,23 +91,8 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
         configObserver(view)
         configView(view)
 
-        val apiClient: ApiClient = networkModule.provideApiClient(context)
-
-        val url = providePokemonListDataModel().nextUrl
-
-        val resultPage: Single<ResultPage<BaseEntity>> = if (url == null)
-            apiClient.fetchPokemons() else //first request
-            apiClient.fetchPokemons(url) //next requests
-
         //getting pokemon list (each item contains just name and url)
-        disposable = resultPage
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .flatMap { resultPage ->
-                //getting data details for each pokemon
-                fetchPokemonsForPage(context, resultPage, url)
-            }.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        disposable = fetchResultPage(context, subscribeOn, observeOn)
             .subscribe({
                 liveData.value = it
             }, {
@@ -122,19 +105,82 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
 
     }
 
+    fun fetchResultPage(
+        context: Context?,
+        subscribeOn: Scheduler? = Schedulers.io(), observeOn: Scheduler? =  AndroidSchedulers.mainThread()
+    ): Single<PokemonListDataModel> {
+
+        val apiClient: ApiClient = networkModule.provideApiClient(context)
+
+        val url = providePokemonListDataModel().nextUrl
+
+        var resultPage: Single<ResultPage<BaseEntity>> = if (url == null)
+            apiClient.fetchPokemons() else //first request
+            apiClient.fetchPokemons(url) //next requests
+
+        //getting pokemon list (each item contains just name and url)
+        if (subscribeOn != null) {
+            resultPage = resultPage.subscribeOn(Schedulers.io())
+        }
+
+        if (observeOn != null) {
+            resultPage = resultPage.observeOn(observeOn)
+        }
+
+        //getting pokemon list (each item contains just name and url)
+        var result = resultPage
+            .flatMap { resultPage ->
+                //getting data details for each pokemon
+                fetchPokemonsForPage(context, resultPage, url, subscribeOn, observeOn)
+            }
+
+
+        //getting pokemon list (each item contains just name and url)
+        if (subscribeOn != null) {
+            result = result.subscribeOn(Schedulers.io())
+        }
+
+        if (observeOn != null) {
+            result = result.observeOn(observeOn)
+        }
+
+        return result
+
+    }
+
+    fun fetchPokemon(
+        context: Context?,
+        baseEntity: BaseEntity,
+        subscribeOn: Scheduler? = Schedulers.io(),
+        observeOn: Scheduler? =  AndroidSchedulers.mainThread()
+    ): Single<Pokemon> {
+        var request = networkModule.provideApiClient(context).getPokemon(provideUrl(baseEntity))
+            .map { pokemon ->
+                pokemon.name = baseEntity.name
+                pokemon.url = baseEntity.url
+                pokemon
+            }
+
+        //getting pokemon list (each item contains just name and url)
+        if (subscribeOn != null) {
+            request = request.subscribeOn(Schedulers.io())
+        }
+
+        if (observeOn != null) {
+            request = request.observeOn(observeOn)
+        }
+
+        return request
+    }
+
     fun fetchPokemonsForPage(
-        context: Context,
+        context: Context?,
         resultPage: ResultPage<BaseEntity>,
-        url: String?
+        url: String?,
+        subscribeOn: Scheduler? = Schedulers.io(), observeOn: Scheduler? = AndroidSchedulers.mainThread()
     ): Single<PokemonListDataModel> {
         return Single.zip(resultPage.results.map { baseEntity ->
-            networkModule.provideApiClient(context).getPokemon(baseEntity.url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).map { pokemon ->
-                    pokemon.name = baseEntity.name
-                    pokemon.url = baseEntity.url
-                    pokemon
-                }
+            fetchPokemon(context, baseEntity, subscribeOn, observeOn)
         }) { pokemonPages ->
             pokemonPages.map { pokemon ->
                 pokemon as Pokemon
@@ -149,6 +195,10 @@ class PokemonListViewModel @Inject constructor(private val networkModule: Networ
             )
         }
 
+    }
+
+    open fun provideUrl(baseEntity: BaseEntity): String {
+        return baseEntity.url
     }
 
     override fun onCleared() {

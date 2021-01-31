@@ -29,7 +29,7 @@ interface ApiClient {
         @Url url: String
     ): Single<ResultPage<BaseEntity>>
 
-    @GET
+    @GET()
     fun getPokemon(
         @Url url: String
     ): Single<Pokemon>

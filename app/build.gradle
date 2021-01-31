@@ -7,6 +7,11 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
     compileSdkVersion project_settings.compileSdkVersion
     buildToolsVersion project_settings.buildToolsVersion
 
@@ -60,10 +65,10 @@ dependencies {
     implementation "io.reactivex.rxjava3:rxkotlin:$import_version.rxkotlin"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$import_version.adapter_rxjava2"
     implementation "io.reactivex.rxjava2:rxandroid:$import_version.rxandroid"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation "androidx.constraintlayout:constraintlayout:$import_version.constraintlayout"
     testImplementation "junit:junit:$import_version.junit"
     testImplementation "com.squareup.okhttp3:mockwebserver:$import_version.mockwebserver"
-    implementation'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
+    implementation"com.squareup.okhttp:okhttp-urlconnection:$import_version.okhttp_urlconnection"
 
     implementation "com.google.dagger:dagger:$import_version.dagger"
     kapt "com.google.dagger:dagger-compiler:$import_version.dagger_compiler"
@@ -71,23 +76,30 @@ dependencies {
 
     implementation "com.squareup.retrofit2:converter-gson:$import_version.gson"
 
-    implementation("io.coil-kt:coil:0.12.0")
-    implementation("io.coil-kt:coil-svg:0.12.0")
+    implementation "io.coil-kt:coil:$import_version.coil"
+    implementation "io.coil-kt:coil-svg:$import_version.coil_svg"
 
     annotationProcessor "com.google.dagger:dagger-compiler:$import_version.dagger_compiler"
 
     androidTestImplementation "androidx.test.ext:junit:$import_version.androidx_junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$import_version.espresso_core"
 
-    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:2.2.2') {
-        //this library has conflicts with app dependencies
+    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:$import_version.espresso_contrib") {
         exclude group: 'com.android.support', module: 'appcompat'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude group: 'com.android.support', module: 'design'
         exclude module: 'recyclerview-v7'
     }
+
+    testImplementation("android.arch.core:core-testing:$import_version.core_testing", {
+        exclude group: 'com.android.support', module: 'supp.ort-compat'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+    })
+
+    testImplementation "org.mockito:mockito-core:$import_version.mockito_core"
     
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation "com.android.support.test:rules:$import_version.rules"
+    androidTestImplementation "com.android.support.test:runner:$import_version.runner"
 
 }
