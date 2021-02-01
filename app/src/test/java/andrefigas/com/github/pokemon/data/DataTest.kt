@@ -53,6 +53,8 @@ object DataTest {
 
     val BULBASAUR_FAVORITE = FavoriteResponse(false)
 
+    val UPDATE_MESSAGE = "Pokemon successfully added"
+
     fun providePage(
         count: Int = Int.MAX_VALUE,
         offset: Int,
@@ -138,6 +140,12 @@ object DataTest {
         return "{\n" +
                 "  \"favorite\": ${response.favorite}\n" +
         "}"
+    }
+
+    fun provideUpdateFavoriteResponse(messsage : String): String {
+        return "{\n" +
+                "  \"message\": \"$messsage\"\n" +
+                "}"
     }
 
 

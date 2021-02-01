@@ -79,7 +79,8 @@ open class PokemonListViewModel @Inject constructor(private val networkModule: N
     fun <T> fetchData(
         context: Context?,
         view: T,
-        subscribeOn: Scheduler? = Schedulers.io(), observeOn: Scheduler? = AndroidSchedulers.mainThread()
+        subscribeOn: Scheduler? = Schedulers.io(),
+        observeOn: Scheduler? = AndroidSchedulers.mainThread()
     ) where  T : MainActivityContract, T : LifecycleOwner {
 
         view.hideInitialLoadDataError()
@@ -107,7 +108,8 @@ open class PokemonListViewModel @Inject constructor(private val networkModule: N
 
     fun fetchResultPage(
         context: Context?,
-        subscribeOn: Scheduler? = Schedulers.io(), observeOn: Scheduler? =  AndroidSchedulers.mainThread()
+        subscribeOn: Scheduler? = Schedulers.io(),
+        observeOn: Scheduler? = AndroidSchedulers.mainThread()
     ): Single<PokemonListDataModel> {
 
         val apiClient: ApiClient = networkModule.provideApiClient(context)
@@ -152,7 +154,7 @@ open class PokemonListViewModel @Inject constructor(private val networkModule: N
         context: Context?,
         baseEntity: BaseEntity,
         subscribeOn: Scheduler? = Schedulers.io(),
-        observeOn: Scheduler? =  AndroidSchedulers.mainThread()
+        observeOn: Scheduler? = AndroidSchedulers.mainThread()
     ): Single<Pokemon> {
         var request = networkModule.provideApiClient(context).getPokemon(provideUrl(baseEntity))
             .map { pokemon ->
@@ -177,7 +179,8 @@ open class PokemonListViewModel @Inject constructor(private val networkModule: N
         context: Context?,
         resultPage: ResultPage<BaseEntity>,
         url: String?,
-        subscribeOn: Scheduler? = Schedulers.io(), observeOn: Scheduler? = AndroidSchedulers.mainThread()
+        subscribeOn: Scheduler? = Schedulers.io(),
+        observeOn: Scheduler? = AndroidSchedulers.mainThread()
     ): Single<PokemonListDataModel> {
         return Single.zip(resultPage.results.map { baseEntity ->
             fetchPokemon(context, baseEntity, subscribeOn, observeOn)

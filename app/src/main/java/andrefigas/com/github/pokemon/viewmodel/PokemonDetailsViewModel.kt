@@ -18,9 +18,7 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 open class PokemonDetailsViewModel @Inject constructor(private val networkModule: NetworkModule) :
@@ -29,29 +27,50 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
     private val pokeDetailsDataModel = MutableLiveData<PokemonDetailsDataModel>()
     private val updateFavoriteResponse = MutableLiveData<UpdateFavoriteResponse>()
 
-    var fetchDisposable : Disposable? = null
-    var updateDisposable : Disposable? = null
+    var fetchDisposable: Disposable? = null
+    var updateDisposable: Disposable? = null
     var imageDisposable: coil.request.Disposable? = null
     lateinit var pokemon: Pokemon
 
     fun updateFavorite(
         context: Context,
-        favorite : Boolean
-    )  {
-        updateDisposable = networkModule.provideWebHookClient(context)
+        favorite: Boolean
+    ) {
+
+        updateDisposable = updateFavoriteRequest(context, favorite)
+            .subscribe(
+                {
+                    updateFavoriteResponse.value =
+                        UpdateFavoriteResponse(it.message, favorite, false)
+                }, {
+                    updateFavoriteResponse.value = UpdateFavoriteResponse("", favorite, true)
+                })
+    }
+
+    fun updateFavoriteRequest(
+        context: Context?,
+        favorite: Boolean,
+        subscribeOn: Scheduler? = Schedulers.io(),
+        observeOn: Scheduler? = AndroidSchedulers.mainThread()
+    ): Single<UpdateFavoriteResponse> {
+
+        var request = networkModule.provideWebHookClient(context)
             .updateFavoritePokemon(FavoritePokemon(pokemon.id, favorite))
-            .map { updateFavoriteResponse->
+            .map { updateFavoriteResponse ->
                 updateFavoriteResponse.favorite = favorite
                 updateFavoriteResponse
             }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    updateFavoriteResponse.value =UpdateFavoriteResponse(it.message, favorite, false)
-                }, {
-                        updateFavoriteResponse.value =UpdateFavoriteResponse("", favorite, true)
-                })
+
+        if (subscribeOn != null) {
+            request = request.subscribeOn(subscribeOn)
+        }
+
+        if (observeOn != null) {
+            request = request.observeOn(observeOn)
+        }
+
+        return request
+
     }
 
     fun <T> fetchData(
@@ -75,27 +94,27 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
         view.showStartingDataProgress()
         view.hideAllFields()
 
-        updateFavoriteResponse.observe(view, Observer { updateFavoriteResponse->
-            if(updateFavoriteResponse.error){
+        updateFavoriteResponse.observe(view, Observer { updateFavoriteResponse ->
+            if (updateFavoriteResponse.error) {
 
                 view.toggleFavoriteCheck()
 
-                if(updateFavoriteResponse.favorite){
-                    view.showErrorOnAddFavorite(pokeDetailsDataModel.value?.pokemon?.name?:"")
-                }else{
-                    view.showErrorOnRemoveFavorite(pokeDetailsDataModel.value?.pokemon?.name?:"")
+                if (updateFavoriteResponse.favorite) {
+                    view.showErrorOnAddFavorite(pokeDetailsDataModel.value?.pokemon?.name ?: "")
+                } else {
+                    view.showErrorOnRemoveFavorite(pokeDetailsDataModel.value?.pokemon?.name ?: "")
                 }
 
 
-            }else if(updateFavoriteResponse.favorite){
+            } else if (updateFavoriteResponse.favorite) {
                 view.showAddFavoriteUpdateSuccess(pokemon.name.capitalize())
-            }else{
+            } else {
                 view.showRemoveFavoriteUpdateSuccess(pokemon.name.capitalize())
             }
         })
 
-        pokeDetailsDataModel.observe(view, Observer{ model ->
-            if (!model.initted){
+        pokeDetailsDataModel.observe(view, Observer { model ->
+            if (!model.initted) {
                 return@Observer
             }
 
@@ -103,7 +122,7 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
 
             val specie = model.species
 
-            if(specie == null){
+            if (specie == null) {
                 view.showPreloadedFields()
                 return@Observer
             }
@@ -118,16 +137,16 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
 
             val favoriteResponse = model.favoriteResponse ?: return@Observer
 
-            if(favoriteResponse.favorite){
+            if (favoriteResponse.favorite) {
                 view.showFavoriteChecked()
-            }else{
+            } else {
                 view.showFavoriteUnchecked()
             }
 
         })
 
         fetchDisposable = fetchData(context, provideUrl(specieEntity))
-            .subscribe { pair->
+            .subscribe { pair ->
                 val pokemonDetailsDataModel = PokemonDetailsDataModel(pokemon)
                 pokemonDetailsDataModel.initted = true
                 pokemonDetailsDataModel.species = pair.first
@@ -137,32 +156,35 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
 
     }
 
-    open fun provideUrl(specie: BaseEntity) : String{
+    open fun provideUrl(specie: BaseEntity): String {
         return specie.url
     }
 
     fun fetchData(
         context: Context?,
-        specieUrl : String,
-        subscribeOn: Scheduler? = Schedulers.io(), observeOn: Scheduler? = AndroidSchedulers.mainThread()
-    ): Single<Pair<Specie, FavoriteResponse>> {
+        specieUrl: String,
+        subscribeOn: Scheduler? = Schedulers.io(),
+        observeOn: Scheduler? = AndroidSchedulers.mainThread()
+    ): Single<Pair<Specie?, FavoriteResponse?>> {
 
-        var specieRequest : Single<Specie> = networkModule.provideApiClient(context).getSpecie(specieUrl)
-        var favoriteRequest : Single<FavoriteResponse> =  networkModule.provideWebHookClient(context).getFavoriteByPokemon(pokemon.id)
+        var specieRequest: Single<Specie?> =
+            networkModule.provideApiClient(context).getSpecie(specieUrl)
+        var favoriteRequest: Single<FavoriteResponse?> =
+            networkModule.provideWebHookClient(context).getFavoriteByPokemon(pokemon.id)
 
-        if(subscribeOn != null){
+        if (subscribeOn != null) {
             specieRequest = specieRequest.subscribeOn(subscribeOn)
             favoriteRequest = favoriteRequest.subscribeOn(subscribeOn)
         }
 
-        if(observeOn != null){
+        if (observeOn != null) {
             specieRequest = specieRequest.observeOn(observeOn)
             favoriteRequest = favoriteRequest.observeOn(observeOn)
         }
 
         return specieRequest
             .pair(favoriteRequest)
-            //.onErrorReturnItem(Pair<Specie, FavoriteResponse>(null, null))
+            .onErrorReturnItem(Pair<Specie?, FavoriteResponse?>(null, null))
     }
 
     private fun getDescription(specie: Specie): String? {
@@ -189,7 +211,7 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
 
         val moves = pokemon.moves?.map { it.content?.name }?.filterNotNull()
 
-        if(moves != null && moves.isNotEmpty()){
+        if (moves != null && moves.isNotEmpty()) {
             view.showPokemonMoves(moves)
         }
 
@@ -197,7 +219,7 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
     }
 
     private fun bindImage(context: Context?, view: DetailsActivityContract, pokemon: Pokemon) {
-        if(context == null){
+        if (context == null) {
             return
         }
 
@@ -209,7 +231,7 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
 
             override fun onError(error: Drawable?) {
                 super.onError(error)
-                if(error != null){
+                if (error != null) {
                     view.showPokemonErrorImage(error)
                 }
 
@@ -225,7 +247,7 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
         updateDisposable?.dispose()
     }
 
-    fun isUpdateProgressing() : Boolean{
+    fun isUpdateProgressing(): Boolean {
         return !(updateDisposable?.isDisposed ?: true)
     }
 

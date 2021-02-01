@@ -37,7 +37,7 @@ interface ApiClient {
     @GET
     fun getSpecie(
         @Url url: String
-    ): Single<Specie>
+    ): Single<Specie?>
 
 
 }

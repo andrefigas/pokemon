@@ -4,10 +4,8 @@ import andrefigas.com.github.pokemon.MockApiClient
 import andrefigas.com.github.pokemon.data.DataTest
 import andrefigas.com.github.pokemon.model.entities.BaseEntity
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.MockitoAnnotations
 
 class PokemonDetailsTest : BaseUnitTests() {
 
@@ -16,11 +14,20 @@ class PokemonDetailsTest : BaseUnitTests() {
     @Test
     fun initialLoadData() {
 
-        viewModel.fetchData(null, "", null, null).test().assertValue{
+        viewModel.fetchData(null, "", null, null).test().assertValue {
             val specie = it.first
             val favoriteResponse = it.second
+
+            if (specie == null) {
+                return@assertValue false
+            }
+
+            if (favoriteResponse == null) {
+                return@assertValue false
+            }
+
             return@assertValue specie.labels[0].label == DataTest.BULBASAUR_SPECIE.labels[0].label && specie.labels[0].language?.name == DataTest.BULBASAUR_SPECIE.labels[0].language?.name &&
-                        specie.habitat?.name ==  DataTest.BULBASAUR_SPECIE.habitat?.name && favoriteResponse.favorite == DataTest.BULBASAUR_FAVORITE.favorite
+                    specie.habitat?.name == DataTest.BULBASAUR_SPECIE.habitat?.name && favoriteResponse.favorite == DataTest.BULBASAUR_FAVORITE.favorite
         }
 
     }
