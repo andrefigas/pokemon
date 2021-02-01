@@ -25,10 +25,29 @@ class PokemonListTest {
 
     }
 
+    @Test
+    fun increaseLoadData() {
+        pokeViewModel.fetchResultPage(null, null, null).flatMap {
+            pokeViewModel.fetchResultPage(null, null, null)
+        }.test().assertValue {pokeViewModel ->
+            val pokemon: Pokemon = pokeViewModel.pokemons[0]
+            return@assertValue pokemon.height == DataTest.IVYSAUR.height && pokemon.weight == DataTest.IVYSAUR.weight
+                    && pokemon.id == pokemon.id && pokemon.name == DataTest.IVYSAUR.name
+        }
+
+    }
+
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this);
-        networkModule = MockApiClient()
+        networkModule = MockApiClient(
+            listOf(
+                DataTest.providePage(offset = 0, limit = 1, results = listOf(DataTest.BULBASAUR_ENTITY)),
+                DataTest.providePokemon(DataTest.BULBASAUR),
+                DataTest.providePage(offset = 1, limit = 1, results = listOf(DataTest.IVYSAUR_ENTITY)),
+                DataTest.providePokemon(DataTest.IVYSAUR)
+            )
+        )
         pokeViewModel = object : PokemonListViewModel(networkModule) {
             override fun provideUrl(baseEntity: BaseEntity): String {
                 return networkModule.webServer.url("/").host
