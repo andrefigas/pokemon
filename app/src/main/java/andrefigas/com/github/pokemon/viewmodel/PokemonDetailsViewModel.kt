@@ -9,12 +9,13 @@ import andrefigas.com.github.pokemon.view.details.DetailsActivityContract
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.util.Pair
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import coil.target.Target
+import io.reactivex.Scheduler
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
@@ -22,7 +23,7 @@ import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class PokemonDetailsViewModel @Inject constructor(private val networkModule: NetworkModule) :
+open class PokemonDetailsViewModel @Inject constructor(private val networkModule: NetworkModule) :
     ViewModel() {
 
     private val pokeDetailsDataModel = MutableLiveData<PokemonDetailsDataModel>()
@@ -69,7 +70,7 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
 
         bindPreloadedInformation(context, view, pokemon)
 
-        val specieUrl: String = pokemon.species?.url ?: return
+        val specieEntity: BaseEntity = pokemon.species ?: return
 
         view.showStartingDataProgress()
         view.hideAllFields()
@@ -125,12 +126,7 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
 
         })
 
-        fetchDisposable = networkModule.provideApiClient(context).getSpecie(specieUrl)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .pair(networkModule.provideWebHookClient(context).getFavoriteByPokemon(pokemon.id).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()))
-            .onErrorReturnItem(Pair(null, null))
+        fetchDisposable = fetchData(context, provideUrl(specieEntity))
             .subscribe { pair->
                 val pokemonDetailsDataModel = PokemonDetailsDataModel(pokemon)
                 pokemonDetailsDataModel.initted = true
@@ -139,6 +135,34 @@ class PokemonDetailsViewModel @Inject constructor(private val networkModule: Net
                 pokeDetailsDataModel.value = pokemonDetailsDataModel
             }
 
+    }
+
+    open fun provideUrl(specie: BaseEntity) : String{
+        return specie.url
+    }
+
+    fun fetchData(
+        context: Context?,
+        specieUrl : String,
+        subscribeOn: Scheduler? = Schedulers.io(), observeOn: Scheduler? = AndroidSchedulers.mainThread()
+    ): Single<Pair<Specie, FavoriteResponse>> {
+
+        var specieRequest : Single<Specie> = networkModule.provideApiClient(context).getSpecie(specieUrl)
+        var favoriteRequest : Single<FavoriteResponse> =  networkModule.provideWebHookClient(context).getFavoriteByPokemon(pokemon.id)
+
+        if(subscribeOn != null){
+            specieRequest = specieRequest.subscribeOn(subscribeOn)
+            favoriteRequest = favoriteRequest.subscribeOn(subscribeOn)
+        }
+
+        if(observeOn != null){
+            specieRequest = specieRequest.observeOn(observeOn)
+            favoriteRequest = favoriteRequest.observeOn(observeOn)
+        }
+
+        return specieRequest
+            .pair(favoriteRequest)
+            //.onErrorReturnItem(Pair<Specie, FavoriteResponse>(null, null))
     }
 
     private fun getDescription(specie: Specie): String? {

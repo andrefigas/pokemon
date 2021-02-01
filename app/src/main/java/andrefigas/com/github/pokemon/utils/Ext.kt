@@ -4,7 +4,7 @@ import android.app.Activity
 import android.graphics.Insets
 import android.os.Build
 import android.util.DisplayMetrics
-import android.util.Pair
+
 import android.view.WindowInsets
 import android.view.WindowMetrics
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -94,6 +94,10 @@ fun List<String>.toString(separator: String): String {
 fun <I, O> Single<I>.pair(
     b: Single<O>
 ): Single<Pair<I, O>> {
-    return flatMap { i -> b.map { o -> Pair(i, o) } }
+    return flatMap { i ->
+        b.map { o ->
+            Pair(i, o)
+        }
+    }
 }
 

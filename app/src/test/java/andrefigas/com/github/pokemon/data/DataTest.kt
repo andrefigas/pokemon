@@ -1,8 +1,7 @@
 package andrefigas.com.github.pokemon.data
 
 import andrefigas.com.github.pokemon.MockApiClient
-import andrefigas.com.github.pokemon.model.entities.BaseEntity
-import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.model.entities.*
 
 object DataTest {
 
@@ -40,6 +39,20 @@ object DataTest {
         bulbasaur
     }
 
+    val BULBASAUR_SPECIE by lazy {
+
+        val flavorText = FlavorText()
+        flavorText.label = "When the bulb on its back grows large, it appears to lose the nability to stand on its hind legs."
+        flavorText.language = BaseEntity("en", "https://pokeapi.co/api/v2/language/9/")
+
+        Specie(
+            listOf(flavorText),
+            BaseEntity("grassland", "https://pokeapi.co/api/v2/pokemon-habitat/3/")
+        )
+    }
+
+    val BULBASAUR_FAVORITE = FavoriteResponse(false)
+
     fun providePage(
         count: Int = Int.MAX_VALUE,
         offset: Int,
@@ -67,10 +80,12 @@ object DataTest {
             sb.append("    {\n")
             sb.append("      \"name\": \"${it.name}\",\n")
             sb.append("      \"url\": \"${it.url}\"\n")
-            sb.append("    }\n")
+            sb.append("    },\n")
         }
 
-        sb.append("  ]\n")
+        sb.deleteCharAt(sb.length-2)//todo test
+
+        sb.append("  \n]\n")
         sb.append("}")
         return sb.toString()
     }
@@ -85,6 +100,44 @@ object DataTest {
         sb.append("}\n")
 
         return sb.toString()
+    }
+
+    fun provideSpecie(specie: Specie): String {
+
+        val sb = StringBuilder()
+        sb.append("{\n")
+        sb.append("      \"habitat\": \n")
+        sb.append("         {\n")
+        sb.append("           \"name\": \"${specie.habitat?.name}\",\n")
+        sb.append("           \"url\": \"${specie.habitat?.url}\"\n")
+        sb.append("         },\n")
+
+        sb.append("      \"flavor_text_entries\": [\n")
+
+        specie.labels.forEach {
+            sb.append("    {\n")
+            sb.append("      \"flavor_text\": \"${it.label}\",\n")
+            sb.append("      \"language\": \n")
+            sb.append("         {\n")
+            sb.append("           \"name\": \"${it.language?.name}\",\n")
+            sb.append("           \"url\": \"${it.language?.url}\"\n")
+            sb.append("         }\n")
+            sb.append("    },\n")
+        }
+
+        sb.deleteCharAt(sb.length-2)//todo test
+
+        sb.append("        \n]\n")
+
+        sb.append("}\n")
+
+        return sb.toString()
+    }
+
+    fun provideFavorite(response: FavoriteResponse): String {
+        return "{\n" +
+                "  \"favorite\": ${response.favorite}\n" +
+        "}"
     }
 
 

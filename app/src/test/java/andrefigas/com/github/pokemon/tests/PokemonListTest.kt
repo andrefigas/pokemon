@@ -10,9 +10,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 
-class PokemonListTest {
+class PokemonListTest : BaseUnitTests() {
 
-    lateinit var networkModule: MockApiClient
     lateinit var pokeViewModel: PokemonListViewModel
 
     @Test
@@ -38,8 +37,8 @@ class PokemonListTest {
     }
 
     @Before
-    fun setUp() {
-        MockitoAnnotations.initMocks(this);
+    override fun setUp() {
+        super.setUp()
         networkModule = MockApiClient(
             listOf(
                 DataTest.providePage(offset = 0, limit = 1, results = listOf(DataTest.BULBASAUR_ENTITY)),
@@ -54,11 +53,5 @@ class PokemonListTest {
             }
         }
     }
-
-    @After
-    fun tearDown() {
-        networkModule.webServer.close()
-    }
-
 
 }
