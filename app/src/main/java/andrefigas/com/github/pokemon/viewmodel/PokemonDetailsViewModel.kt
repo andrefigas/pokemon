@@ -19,10 +19,15 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 import javax.inject.Inject
 
 open class PokemonDetailsViewModel @Inject constructor(private val networkModule: NetworkModule) :
     ViewModel() {
+
+    companion object {
+        const val DEFAULT_LANG = "en"
+    }
 
     private val pokeDetailsDataModel = MutableLiveData<PokemonDetailsDataModel>()
     private val updateFavoriteResponse = MutableLiveData<UpdateFavoriteResponse>()
@@ -31,47 +36,6 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
     var updateDisposable: Disposable? = null
     var imageDisposable: coil.request.Disposable? = null
     lateinit var pokemon: Pokemon
-
-    fun updateFavorite(
-        context: Context,
-        favorite: Boolean
-    ) {
-
-        updateDisposable = updateFavoriteRequest(context, favorite)
-            .subscribe(
-                {
-                    updateFavoriteResponse.value =
-                        UpdateFavoriteResponse(it.message, favorite, false)
-                }, {
-                    updateFavoriteResponse.value = UpdateFavoriteResponse("", favorite, true)
-                })
-    }
-
-    fun updateFavoriteRequest(
-        context: Context?,
-        favorite: Boolean,
-        subscribeOn: Scheduler? = Schedulers.io(),
-        observeOn: Scheduler? = AndroidSchedulers.mainThread()
-    ): Single<UpdateFavoriteResponse> {
-
-        var request = networkModule.provideWebHookClient(context)
-            .updateFavoritePokemon(FavoritePokemon(pokemon.id, favorite))
-            .map { updateFavoriteResponse ->
-                updateFavoriteResponse.favorite = favorite
-                updateFavoriteResponse
-            }
-
-        if (subscribeOn != null) {
-            request = request.subscribeOn(subscribeOn)
-        }
-
-        if (observeOn != null) {
-            request = request.observeOn(observeOn)
-        }
-
-        return request
-
-    }
 
     fun <T> fetchData(
         context: Context?,
@@ -93,6 +57,8 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
 
         view.showStartingDataProgress()
         view.hideAllFields()
+
+        Locale.getDefault().language
 
         updateFavoriteResponse.observe(view, Observer { updateFavoriteResponse ->
             if (updateFavoriteResponse.error) {
@@ -156,10 +122,6 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
 
     }
 
-    open fun provideUrl(specie: BaseEntity): String {
-        return specie.url
-    }
-
     fun fetchData(
         context: Context?,
         specieUrl: String,
@@ -188,7 +150,7 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
     }
 
     private fun getDescription(specie: Specie): String? {
-        val defLanguage = "en" //todo: get dynamically
+        val defLanguage = DEFAULT_LANG
         return specie.labels.firstOrNull { it.language?.name == defLanguage }?.label
     }
 
@@ -216,6 +178,52 @@ open class PokemonDetailsViewModel @Inject constructor(private val networkModule
         }
 
         bindImage(context, view, pokemon)
+    }
+
+    fun updateFavorite(
+        context: Context,
+        favorite: Boolean
+    ) {
+
+        updateDisposable = updateFavoriteRequest(context, favorite)
+            .subscribe(
+                {
+                    updateFavoriteResponse.value =
+                        UpdateFavoriteResponse(it.message, favorite, false)
+                }, {
+                    updateFavoriteResponse.value = UpdateFavoriteResponse("", favorite, true)
+                })
+    }
+
+    fun updateFavoriteRequest(
+        context: Context?,
+        favorite: Boolean,
+        subscribeOn: Scheduler? = Schedulers.io(),
+        observeOn: Scheduler? = AndroidSchedulers.mainThread()
+    ): Single<UpdateFavoriteResponse> {
+
+        var request = networkModule.provideWebHookClient(context)
+            .updateFavoritePokemon(FavoritePokemon(pokemon.id, favorite))
+            .map { updateFavoriteResponse ->
+                updateFavoriteResponse.favorite = favorite
+                updateFavoriteResponse
+            }
+
+        if (subscribeOn != null) {
+            request = request.subscribeOn(subscribeOn)
+        }
+
+        if (observeOn != null) {
+            request = request.observeOn(observeOn)
+        }
+
+        return request
+
+    }
+
+
+    open fun provideUrl(specie: BaseEntity): String {
+        return specie.url
     }
 
     private fun bindImage(context: Context?, view: DetailsActivityContract, pokemon: Pokemon) {

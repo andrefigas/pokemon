@@ -59,7 +59,6 @@ open class PokemonListViewModel @Inject constructor(private val networkModule: N
                 view.increasePokemonList(model.pokemons)
             }
 
-
         })
     }
 

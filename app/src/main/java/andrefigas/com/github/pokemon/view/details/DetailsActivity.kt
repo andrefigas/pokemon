@@ -35,24 +35,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
     override fun onResume() {
         super.onResume()
-
-
         pokemonDetailsViewModel.fetchData(this, intent, this)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-    }
-
-    override fun onRestoreInstanceState(
-        savedInstanceState: Bundle?,
-        persistentState: PersistableBundle?
-    ) {
-        super.onRestoreInstanceState(savedInstanceState, persistentState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
