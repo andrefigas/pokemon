@@ -12,6 +12,7 @@
         tools:context=".view.details.DetailsActivity">
 
         <ImageView
+            app:layout_constraintTop_toTopOf="parent"
             style="@style/DetailsImage"
             android:id="@+id/details_image"
             android:layout_width="0dp"
