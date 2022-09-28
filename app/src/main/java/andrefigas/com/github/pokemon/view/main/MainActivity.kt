@@ -29,7 +29,7 @@ import kotlin.math.roundToInt
 class MainActivity : AppCompatActivity(),
     MainActivityContract {
 
-    private val pokemonListViewModel: PokemonListViewModel by viewModel<PokemonListViewModel> {
+    private val pokemonListViewModel: PokemonListViewModel by viewModel {
         parametersOf(
             ImageRequest.Builder(MainActivity@this)
                 .crossfade(true)

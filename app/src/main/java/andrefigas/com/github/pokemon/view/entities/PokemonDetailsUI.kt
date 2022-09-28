@@ -8,5 +8,5 @@ class PokemonDetailsUI(name: String,
                        photo: String,
                        val habitat: String,
                        types: List<String>,
-                       moves: List<String>,
+                       moves: String,
                        val favorite: Boolean) : PokemonUI(name, weight, height, photo, types, moves)

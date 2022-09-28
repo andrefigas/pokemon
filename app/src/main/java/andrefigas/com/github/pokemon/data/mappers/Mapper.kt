@@ -1,10 +1,12 @@
 package andrefigas.com.github.pokemon.data.mappers
 
+import andrefigas.com.github.pokemon.R
 import andrefigas.com.github.pokemon.data.entities.FavoriteResponse
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.data.entities.PokemonDetailsDataModel
 import andrefigas.com.github.pokemon.domain.entities.FavoritePokemon
 import andrefigas.com.github.pokemon.domain.entities.Specie
+import andrefigas.com.github.pokemon.utils.toString
 import andrefigas.com.github.pokemon.view.entities.PokemonDetailsUI
 import andrefigas.com.github.pokemon.view.entities.PokemonUI
 import android.content.Context
@@ -25,7 +27,7 @@ class Mapper(val context: Context) : MapperContract {
         val types = pokemon.types?.map {
             it.content?.name?:""
         }?: emptyList()
-        val moves = pokemon.moves?.map {
+        val moves : List<String> = pokemon.moves?.map {
             it.content?.name?:""
         }?: emptyList()
 
@@ -39,7 +41,7 @@ class Mapper(val context: Context) : MapperContract {
             photo,
             habitat,
             types,
-            moves,
+            moves.toString(context.getString(R.string.types_separator)),
             favourite
         )
     }
@@ -52,11 +54,11 @@ class Mapper(val context: Context) : MapperContract {
         val types = pokemon.types?.map {
             it.content?.name?:""
         }?: emptyList()
-        val moves = pokemon.moves?.map {
+        val moves :List<String> = pokemon.moves?.map {
             it.content?.name?:""
         }?: emptyList()
 
-        return PokemonUI(name, weight, height, photo,types, moves)
+        return PokemonUI(name, weight, height, photo,types, moves.toString(context.getString(R.string.types_separator)))
     }
 
     override fun fromUIToData(id: Int, check : Boolean) = FavoritePokemon(id, check)

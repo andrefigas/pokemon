@@ -8,7 +8,7 @@ sealed class PokemonDetailsData {
 
     class UpdateSuccess(val checked : Boolean) : PokemonDetailsData()
 
-    class ImageLoadSuccess(val data : Drawable) : PokemonDetailsData()
+    class LoadImage(val data : Drawable) : PokemonDetailsData()
 
     object DetailsError : PokemonDetailsData()
 

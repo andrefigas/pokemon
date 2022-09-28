@@ -5,4 +5,4 @@ open class PokemonUI(name: String,
                      val height: Int = 0,
                      val photo: String,
                      val types : List<String>,
-                     val moves: List<String>) : BaseEntity(name)
+                     val moves: String) : BaseEntity(name)

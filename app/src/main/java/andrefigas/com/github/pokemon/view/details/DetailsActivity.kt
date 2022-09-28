@@ -22,7 +22,7 @@ import org.koin.core.parameter.parametersOf
 
 class DetailsActivity : AppCompatActivity(){
 
-    private val pokemonDetailsViewModel by viewModel<PokemonDetailsViewModel> {
+    private val pokemonDetailsViewModel : PokemonDetailsViewModel by viewModel{
         parametersOf(
             IntentArgsUtils.getPokemonByArgs(intent),
             ImageRequest.Builder(DetailsActivity@this)
@@ -85,7 +85,7 @@ class DetailsActivity : AppCompatActivity(){
     }
 
     private fun observeImage(){
-        pokemonDetailsViewModel.image.observe(this, Observer<PokemonDetailsData.ImageLoadSuccess> { success ->
+        pokemonDetailsViewModel.image.observe(this, Observer<PokemonDetailsData.LoadImage> { success ->
             showPokemonImage(success.data)
         })
     }
@@ -162,8 +162,8 @@ class DetailsActivity : AppCompatActivity(){
         showPreloadedFields()
 
         listOf(
-            //labels
-            details_habitat_label,
+                    //labels
+                    details_habitat_label,
 
                     //values
                     details_habitat_value,
@@ -176,7 +176,7 @@ class DetailsActivity : AppCompatActivity(){
 
     private fun showPreloadedFields() {
         listOf(
-            //labels
+                    //labels
                     details_types_label,
                     details_weight_label,
                     details_height_label,
@@ -207,8 +207,8 @@ class DetailsActivity : AppCompatActivity(){
         details_height_value.text = height.toString()
     }
 
-    private fun showPokemonMoves(moves: List<String>) {
-        details_moves_value.text = moves.toString(getString(R.string.types_separator))
+    private fun showPokemonMoves(moves: String) {
+        details_moves_value.text = moves
         details_moves_value.setOnClickListener {
             //expand shorted text
             details_moves_value.ellipsize = null

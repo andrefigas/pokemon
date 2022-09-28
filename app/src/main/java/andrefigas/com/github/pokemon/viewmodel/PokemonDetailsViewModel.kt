@@ -5,6 +5,7 @@ import andrefigas.com.github.pokemon.view.entities.PokemonDetailsData
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonDetailsUseCase
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonImageUseCase
 import andrefigas.com.github.pokemon.domain.usecases.UpdatePokemonFavoriteUseCase
+import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
@@ -30,8 +31,8 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
     private val _detailsError = MutableLiveData<PokemonDetailsData.DetailsError>()
     val detailsError : LiveData<PokemonDetailsData.DetailsError> = _detailsError
 
-    private val _image = MutableLiveData<PokemonDetailsData.ImageLoadSuccess>()
-    val image : LiveData<PokemonDetailsData.ImageLoadSuccess> = _image
+    private val _image = MutableLiveData<PokemonDetailsData.LoadImage>()
+    val image : LiveData<PokemonDetailsData.LoadImage> = _image
 
     private val _updateFavorite = MutableLiveData<PokemonDetailsData.UpdateSuccess>()
     val updateFavorite : LiveData<PokemonDetailsData.UpdateSuccess> = _updateFavorite
@@ -66,7 +67,20 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
 
         val target = object : Target {
             override fun onSuccess(result: Drawable) {
-                _image.value = PokemonDetailsData.ImageLoadSuccess(result)
+                _image.value = PokemonDetailsData.LoadImage(result)
+            }
+
+            override fun onError(error: Drawable?) {
+                if(error != null){
+                    _image.value = PokemonDetailsData.LoadImage(error)
+                }
+
+            }
+
+            override fun onStart(placeholder: Drawable?) {
+                if(placeholder != null){
+                    _image.value = PokemonDetailsData.LoadImage(placeholder)
+                }
             }
         }
 
