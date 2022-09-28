@@ -5,11 +5,16 @@ import andrefigas.com.github.pokemon.data.entities.ResultPage
 import andrefigas.com.github.pokemon.domain.entities.BaseEntity
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.data.entities.PokemonListDataModel
+import andrefigas.com.github.pokemon.data.mappers.MapperContract
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 import android.content.Context
+import coil.request.ImageRequest
+import coil.target.Target
 import io.reactivex.Single
 
-class PokemonRepository(context: Context) :
+class PokemonRepository(context: Context, private val imageRequestBuilder : ImageRequest.Builder,
+                        private val mapperContract: MapperContract
+) :
     Repository(context, mapOf(BuildConfig.API_URL to ApiClient.PokemonClient::class.java)),
     PokemonRepositoryContract {
 
@@ -31,6 +36,22 @@ class PokemonRepository(context: Context) :
 
     override fun injectUrl(url: String) {
         this.url = url
+    }
+
+    override fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest {
+        val sprites = pokemon.spritesCollection
+        if (sprites != null) {
+            val imageUrl = sprites.getBetterImage()
+            if (imageUrl != null) {
+                return imageRequestBuilder
+                    .data(imageUrl)
+                    .target(target)
+                    .build()
+            }
+
+        }
+
+        return imageRequestBuilder.target(target).build()
     }
 
     private fun providePokemonList(): Single<ResultPage<BaseEntity>> {
@@ -81,5 +102,6 @@ interface PokemonRepositoryContract {
     fun providePokemons(): Single<PokemonListDataModel>
     fun isInitialRequest(): Boolean
     fun injectUrl(url: String)
+    fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest
 
 }

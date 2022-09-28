@@ -1,24 +1,41 @@
 package andrefigas.com.github.pokemon.view.main
 
 import andrefigas.com.github.pokemon.R
+import andrefigas.com.github.pokemon.data.mappers.MapperContract
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
-import andrefigas.com.github.pokemon.utils.ImageUtils
-import android.graphics.drawable.Drawable
+import andrefigas.com.github.pokemon.utils.IntentArgsUtils
+import andrefigas.com.github.pokemon.view.details.DetailsActivity
+import andrefigas.com.github.pokemon.view.entities.PokemonListData
+import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import coil.request.Disposable
-import coil.target.Target
 import kotlinx.android.synthetic.main.pokemon_item.view.*
 import java.util.*
 
 
-class PokemonAdapter(val mainActivityContract: MainActivityContract) :
+class PokemonAdapter(
+    private val viewModel: PokemonListViewModel,
+    private val options: (View) -> ActivityOptionsCompat) :
     RecyclerView.Adapter<ViewHolder>() {
-    val pokemonList: MutableList<Pokemon> = ArrayList()
+
+    private val pokemonList: MutableList<Pokemon> = ArrayList()
     private var isProgressing = false
+
+    lateinit var context: Context
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        context = recyclerView.context
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
             PROGRESS_TYPE -> ProgressViewHolder(
@@ -27,8 +44,7 @@ class PokemonAdapter(val mainActivityContract: MainActivityContract) :
             )
             ITEM_TYPE -> ItemViewHolder(
                 LayoutInflater.from(parent.context)
-                    .inflate(R.layout.pokemon_item, parent, false),
-                mainActivityContract
+                    .inflate(R.layout.pokemon_item, parent, false)
             )
             else -> throw IllegalArgumentException()
         }
@@ -36,7 +52,21 @@ class PokemonAdapter(val mainActivityContract: MainActivityContract) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (holder is ItemViewHolder) {
-            holder.pokemon = pokemonList[position]
+            val pokemon = pokemonList[position]
+            holder.pokemon = pokemon
+            holder.itemView.setOnClickListener {
+                //animation
+                ContextCompat.startActivity(
+                    holder.itemView.context,
+                    IntentArgsUtils.putPokemonInArgs(
+                        Intent(
+                            holder.itemView.context,
+                            DetailsActivity::class.java
+                        ), pokemon
+                    ), options(holder.itemView).toBundle()
+                )
+
+            }
         }
     }
 
@@ -74,49 +104,35 @@ class PokemonAdapter(val mainActivityContract: MainActivityContract) :
     override fun onViewAttachedToWindow(holder: ViewHolder) {
         super.onViewAttachedToWindow(holder)
         if (holder is ItemViewHolder) {
-            holder.drawView()
+            holder.drawView(viewModel.mapperContract)
+            viewModel.image.observeForever(holder)
+            viewModel.fetchImage(holder.itemView.context, holder.pokemon)
         }
     }
 
     override fun onViewDetachedFromWindow(holder: ViewHolder) {
         super.onViewDetachedFromWindow(holder)
         if (holder is ItemViewHolder) {
-            holder.unload()
+            viewModel.image.removeObserver(holder)
         }
     }
 
-    class ItemViewHolder(itemView: View, val mainActivityContract: MainActivityContract) :
-        ViewHolder(itemView), Target {
+    class ItemViewHolder(
+        itemView: View) :
+        ViewHolder(itemView) , Observer<PokemonListData.LoadImage>{
         lateinit var pokemon: Pokemon
-        var disposable: Disposable? = null
 
-        fun drawView() {
 
-            itemView.setOnClickListener {
-                mainActivityContract.navigateToDetails(pokemon, itemView.pokemon_item_image)
+        fun drawView(mapperContract: MapperContract) {
+            val tvName = itemView.pokemon_item_name
+            tvName.text = mapperContract.fromDataToUI(pokemon).name
+        }
+
+        override fun onChanged(result: PokemonListData.LoadImage) {
+            if(pokemon == result.pokemon){
+                itemView.pokemon_item_image.setImageDrawable(result.data)
             }
 
-            val tvName = itemView.pokemon_item_name
-            tvName.text = pokemon.name.capitalize()
-
-            disposable = ImageUtils.loadPokemonImage(itemView.context, pokemon, this)
-        }
-
-        fun unload() {
-            disposable?.dispose()
-        }
-
-        override fun onSuccess(result: Drawable) {
-            itemView.pokemon_item_image.setImageDrawable(result)
-        }
-
-
-        override fun onStart(placeholder: Drawable?) {
-            itemView.pokemon_item_image.setImageDrawable(placeholder)
-        }
-
-        override fun onError(error: Drawable?) {
-            itemView.pokemon_item_image.setImageDrawable(error)
         }
 
     }

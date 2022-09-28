@@ -24,8 +24,8 @@ val modules = module {
         Mapper(androidContext())
     }
 
-    factory<PokemonRepositoryContract> {
-        PokemonRepository(androidContext())
+    factory<PokemonRepositoryContract> { params ->
+        PokemonRepository(androidContext(), params.get(), get())
     }
 
     factory<PokemonDetailsRepositoryContract> { params ->
@@ -50,12 +50,19 @@ val modules = module {
         })
     }
 
-    factory<GetPokemonsUseCase> {
-        GetPokemonsUseCase(get())
+    factory<GetPokemonsUseCase> { params ->
+        GetPokemonsUseCase(get {
+            params
+        })
     }
 
-    viewModel {
-        PokemonListViewModel(get())
+    viewModel { params ->
+        PokemonListViewModel(
+            get {
+                params
+            },
+            get())
+
     }
 
     viewModel { params ->

@@ -7,6 +7,7 @@ import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.utils.doOnScrollEnding
 import andrefigas.com.github.pokemon.utils.getDisplayWidth
 import andrefigas.com.github.pokemon.view.details.DetailsActivity
+import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import android.content.Intent
 import android.os.Bundle
@@ -17,20 +18,28 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.request.ImageRequest
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity(),
     MainActivityContract {
 
-    private val pokemonListViewModel: PokemonListViewModel by lazy {
-        getViewModel<PokemonListViewModel>()
+    private val pokemonListViewModel: PokemonListViewModel by viewModel<PokemonListViewModel> {
+        parametersOf(
+            ImageRequest.Builder(MainActivity@this)
+                .crossfade(true)
+                .crossfade(500)
+                .placeholder(R.drawable.ic_pokeball_pb)
+                .error(R.drawable.ic_pokeball)
+        )
     }
 
     lateinit var adapter: PokemonAdapter
-
     private var infinityScrollListener: RecyclerView.OnScrollListener? = null
 
 
@@ -86,7 +95,14 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun createPokemonList() {
-        adapter = PokemonAdapter(this)
+        adapter = PokemonAdapter(pokemonListViewModel) { view ->
+            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                view,
+                getString(R.string.image_key)
+            )
+        }
+
         rv_pokemons.adapter = adapter
         configureLayoutManager(adapter)
         configureInfinityScroll()

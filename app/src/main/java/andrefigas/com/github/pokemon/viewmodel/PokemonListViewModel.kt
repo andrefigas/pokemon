@@ -1,15 +1,23 @@
 package andrefigas.com.github.pokemon.viewmodel
 
+import andrefigas.com.github.pokemon.data.mappers.MapperContract
+import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonsUseCase
+import android.content.Context
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.*
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.target.Target
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
 
-open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseCase) :
+open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseCase,
+                                 val mapperContract: MapperContract) :
     ViewModel() {
 
     private var disposable: Disposable? = null
@@ -25,6 +33,9 @@ open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseC
 
     private val _increaseError = MutableLiveData<PokemonListData.IncreaseError>()
     val increaseError : LiveData<PokemonListData.IncreaseError> = _increaseError
+
+    private val _image = MutableLiveData<PokemonListData.LoadImage>()
+    val image : LiveData<PokemonListData.LoadImage> = _image
 
     fun fetchData(){
 
@@ -51,6 +62,35 @@ open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseC
 
         })
     }
+
+    fun fetchImage(context : Context, pokemon: Pokemon){
+
+        val imageLoader = ImageLoader.Builder(context)
+            .componentRegistry { add(SvgDecoder(context)) }
+            .build()
+
+        val target = object : Target {
+            override fun onSuccess(result: Drawable) {
+                _image.value = PokemonListData.LoadImage(result, pokemon)
+            }
+
+            override fun onError(error: Drawable?) {
+                if(error != null){
+                    _image.value = PokemonListData.LoadImage(error, pokemon)
+                }
+
+            }
+
+            override fun onStart(placeholder: Drawable?) {
+                if(placeholder != null){
+                    _image.value = PokemonListData.LoadImage(placeholder, pokemon)
+                }
+            }
+        }
+
+        imageLoader.enqueue(getPokemonsUseCase.loadPokemonImage(pokemon, target))
+    }
+
 
     override fun onCleared() {
         super.onCleared()
