@@ -1,8 +1,8 @@
 package andrefigas.com.github.pokemon.view.main
 
-import andrefigas.com.github.pokemon.AndroidApplication
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.view.entities.PokemonListData
+import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.utils.doOnScrollEnding
 import andrefigas.com.github.pokemon.utils.getDisplayWidth
@@ -14,36 +14,75 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity(),
     MainActivityContract {
 
-    @Inject
-    lateinit var pokemonListViewModel: PokemonListViewModel
+    private val pokemonListViewModel: PokemonListViewModel by lazy {
+        getViewModel<PokemonListViewModel>()
+    }
+
     lateinit var adapter: PokemonAdapter
-    var infinityScrollListener: RecyclerView.OnScrollListener? = null
+
+    private var infinityScrollListener: RecyclerView.OnScrollListener? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        (applicationContext as AndroidApplication).appComponent.inject(this)
-
         setContentView(R.layout.activity_main)
 
-        pokemonListViewModel.fetchData(this, this)
+        observeChanges()
+
+        pokemonListViewModel.fetchData()
     }
 
-    override fun onResume() {
-        super.onResume()
-        //infinity scroll could be disabled on last request error
-        //try enable again
-        configureInfinityScroll()
+    private fun observeChanges(){
+        observeInitialLoad()
+        observeIncreaseLoad()
+        observeInitialError()
+        observeIncreaseError()
+    }
+
+    private fun observeInitialLoad(){
+        pokemonListViewModel.initialLoad.observe(this,
+            Observer<PokemonListData.Success> { dataSuccess ->
+                createPokemonList()
+                hideStartingDataProgress()
+                increasePokemonList(dataSuccess.pokemons)
+                configureInfinityScroll()
+            })
+    }
+
+    private fun observeIncreaseLoad(){
+        pokemonListViewModel.increaseLoad.observe(this,
+            Observer<PokemonListData.Success> { dataSuccess ->
+                hideIncreasingDataProgress()
+                increasePokemonList(dataSuccess.pokemons)
+            })
+    }
+
+    private fun observeInitialError(){
+        pokemonListViewModel.initialError.observe(this,
+            Observer<PokemonListData.InitialError> { dataError ->
+                hideStartingDataProgress()
+                disableInfinityScroll()
+            })
+    }
+
+    private fun observeIncreaseError(){
+        pokemonListViewModel.increaseError.observe(this,
+            Observer<PokemonListData.IncreaseError> { dataError ->
+                hideStartingDataProgress()
+                disableInfinityScroll()
+            })
     }
 
     override fun createPokemonList() {
@@ -77,7 +116,8 @@ class MainActivity : AppCompatActivity(),
         infinityScrollListener = rv_pokemons.doOnScrollEnding(
             offsetTriggerScroll,
             {
-                pokemonListViewModel.fetchData(this@MainActivity, this@MainActivity)
+                showIncreasingDataProgress()
+                pokemonListViewModel.fetchData()
             },
             {
                 pokemonListViewModel.isProgressing()
@@ -127,7 +167,7 @@ class MainActivity : AppCompatActivity(),
     override fun showInitialLoadDataError() {
         initial_load_error_message.visibility = View.VISIBLE
         initial_load_error_message.setOnClickListener {
-            pokemonListViewModel.fetchData(this, this)
+            pokemonListViewModel.fetchData()
         }
     }
 

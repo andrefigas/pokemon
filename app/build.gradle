@@ -70,16 +70,15 @@ dependencies {
     testImplementation "com.squareup.okhttp3:mockwebserver:$import_version.mockwebserver"
     implementation"com.squareup.okhttp:okhttp-urlconnection:$import_version.okhttp_urlconnection"
 
-    implementation "com.google.dagger:dagger:$import_version.dagger"
-    kapt "com.google.dagger:dagger-compiler:$import_version.dagger_compiler"
+    implementation "io.insert-koin:koin-core:3.0.1"
+    implementation "io.insert-koin:koin-android:3.0.1"
+
     compileOnly "javax.annotation:jsr250-api:$import_version.jsr250_api"
 
     implementation "com.squareup.retrofit2:converter-gson:$import_version.gson"
 
     implementation "io.coil-kt:coil:$import_version.coil"
     implementation "io.coil-kt:coil-svg:$import_version.coil_svg"
-
-    annotationProcessor "com.google.dagger:dagger-compiler:$import_version.dagger_compiler"
 
     androidTestImplementation "androidx.test.ext:junit:$import_version.androidx_junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$import_version.espresso_core"

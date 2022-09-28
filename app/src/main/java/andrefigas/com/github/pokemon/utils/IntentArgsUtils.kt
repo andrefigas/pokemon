@@ -1,6 +1,6 @@
 package andrefigas.com.github.pokemon.utils
 
-import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import android.content.Intent
 
 object IntentArgsUtils {
@@ -9,5 +9,5 @@ object IntentArgsUtils {
 
     fun putPokemonInArgs(intent: Intent, pokemon: Pokemon?) = intent.putExtra(IK_POKEMON, pokemon)
 
-    fun getPokemonByArgs(intent: Intent) = intent.getParcelableExtra<Pokemon>(IK_POKEMON)
+    fun getPokemonByArgs(intent: Intent) = intent.getParcelableExtra<Pokemon>(IK_POKEMON) as Pokemon
 }

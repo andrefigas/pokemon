@@ -1,6 +1,6 @@
 package andrefigas.com.github.pokemon.view.main
 
-import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import android.view.View
 
 interface MainActivityContract {

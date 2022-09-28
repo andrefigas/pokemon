@@ -1,7 +1,7 @@
 package andrefigas.com.github.pokemon.utils
 
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import android.content.Context
 import coil.ImageLoader
 import coil.decode.SvgDecoder

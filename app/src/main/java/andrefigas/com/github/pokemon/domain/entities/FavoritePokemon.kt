@@ -1,4 +1,4 @@
-package andrefigas.com.github.pokemon.model.entities
+package andrefigas.com.github.pokemon.domain.entities
 
 import com.google.gson.annotations.SerializedName
 

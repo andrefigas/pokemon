@@ -1,4 +1,4 @@
-package andrefigas.com.github.pokemon.model.entities
+package andrefigas.com.github.pokemon.domain.entities
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -31,13 +31,19 @@ open class BaseEntity(var name: String, var url: String) : Parcelable {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<BaseEntity> {
-        override fun createFromParcel(parcel: Parcel): BaseEntity {
-            return BaseEntity(parcel)
-        }
+    companion object{
 
-        override fun newArray(size: Int): Array<BaseEntity?> {
-            return arrayOfNulls(size)
+        val ERROR = BaseEntity("","")
+
+        @JvmField
+        val CREATOR  = object : Parcelable.Creator<BaseEntity> {
+            override fun createFromParcel(parcel: Parcel): BaseEntity {
+                return BaseEntity(parcel)
+            }
+
+            override fun newArray(size: Int): Array<BaseEntity?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 

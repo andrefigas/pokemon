@@ -1,7 +1,7 @@
-package repository.entities
+package andrefigas.com.github.pokemon.data.entities
 
 import andrefigas.com.github.pokemon.Page
-import andrefigas.com.github.pokemon.model.entities.BaseEntity
+import andrefigas.com.github.pokemon.domain.entities.BaseEntity
 import com.google.gson.annotations.SerializedName
 
 open class ResultPage<T : BaseEntity>(

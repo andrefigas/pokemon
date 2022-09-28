@@ -1,6 +1,7 @@
-package andrefigas.com.github.pokemon.model.entities
+package andrefigas.com.github.pokemon.data.entities
 
-import repository.entities.ResultPage
+import andrefigas.com.github.pokemon.domain.entities.BaseEntity
+import andrefigas.com.github.pokemon.domain.entities.Pokemon
 
 class PokemonListDataModel() {
 

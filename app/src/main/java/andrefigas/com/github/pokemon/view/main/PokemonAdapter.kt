@@ -1,7 +1,7 @@
 package andrefigas.com.github.pokemon.view.main
 
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.utils.ImageUtils
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
@@ -49,13 +49,13 @@ class PokemonAdapter(val mainActivityContract: MainActivityContract) :
     }
 
     fun addPokemons(pokemons: List<Pokemon>) {
-        if (pokemons.size == pokemonList.size) {
+        if (pokemons.isEmpty()) {
             return
         }
 
         val startIndex = itemCount
         val count = pokemons.size
-        pokemonList.addAll(pokemons.subList(startIndex, count - 1))
+        pokemonList.addAll(pokemons)
         notifyItemRangeInserted(startIndex, count)
     }
 

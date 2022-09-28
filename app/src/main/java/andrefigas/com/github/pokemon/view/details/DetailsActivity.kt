@@ -1,42 +1,125 @@
 package andrefigas.com.github.pokemon.view.details
 
-import andrefigas.com.github.pokemon.AndroidApplication
 import andrefigas.com.github.pokemon.R
+import andrefigas.com.github.pokemon.view.entities.PokemonDetailsData
+import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.utils.toString
+import andrefigas.com.github.pokemon.view.entities.PokemonUI
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import coil.request.ImageRequest
 import kotlinx.android.synthetic.main.activity_details.*
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
-class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
+class DetailsActivity : AppCompatActivity(){
 
-    @Inject
-    lateinit var pokemonDetailsViewModel: PokemonDetailsViewModel
-    lateinit var menu: Menu
+    private val pokemonDetailsViewModel by viewModel<PokemonDetailsViewModel> {
+        parametersOf(
+            IntentArgsUtils.getPokemonByArgs(intent),
+            ImageRequest.Builder(DetailsActivity@this)
+                .crossfade(true)
+                .crossfade(500)
+                .placeholder(R.drawable.ic_pokeball_pb)
+                .error(R.drawable.ic_pokeball)
+        )
+    }
+
+    private lateinit var menu: Menu
+
+    private fun getPokemonAttachedInIntent() = pokemonDetailsViewModel.mapperContract.fromDataToUI(IntentArgsUtils.getPokemonByArgs(intent))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
 
-        (applicationContext as AndroidApplication).appComponent.inject(this)
-
         enableGoBack()
 
+        observeChanges()
+        showStartingDataProgress()
+
+        pokemonDetailsViewModel.fetchData()
+        pokemonDetailsViewModel.fetchImage(this)
+
+        showPreloadedInfo(getPokemonAttachedInIntent())
+    }
+
+    private fun observeChanges(){
+        observeDetailsSuccess()
+        observeDetailsError()
+        observeImage()
+        observeUpdateFavorite()
+        observeUpdateFavoriteError()
+    }
+
+    private fun observeDetailsSuccess(){
+        pokemonDetailsViewModel.details.observe(this,  Observer<PokemonDetailsData.DetailsSuccess> { success ->
+            hideStartingDataProgress()
+
+            val data = success.data
+
+            showPokemonDescription(data.description)
+            showHabitat(data.habitat)
+            showAllFields()
+
+            if (data.favorite) {
+                showFavoriteChecked()
+            } else {
+                showFavoriteUnchecked()
+            }
+        })
+    }
+
+    private fun observeDetailsError(){
+        pokemonDetailsViewModel.detailsError.observe(this, Observer<PokemonDetailsData.DetailsError>{ error ->
+            showPreloadedFields()
+        })
+    }
+
+    private fun observeImage(){
+        pokemonDetailsViewModel.image.observe(this, Observer<PokemonDetailsData.ImageLoadSuccess> { success ->
+            showPokemonImage(success.data)
+        })
+    }
+
+    private fun observeUpdateFavorite(){
+        pokemonDetailsViewModel.updateFavorite.observe(this, Observer<PokemonDetailsData.UpdateSuccess> { success ->
+            showFavoriteStatus(success.checked)
+        })
+    }
+
+    private fun observeUpdateFavoriteError(){
+        pokemonDetailsViewModel.updateFavoriteError.observe(this, Observer<PokemonDetailsData.UpdateError> { checkError ->
+            showFavoriteUpdateError(checkError.checked)
+        })
+    }
+
+
+    private fun showPreloadedInfo(pokemon : PokemonUI) {
+        with(pokemon){
+            showTypes(types)
+
+            showPokemonName(name)
+
+            showPokemonWeight(weight)
+
+            showPokemonHeight(height)
+
+            showPokemonMoves(moves)
+        }
+
+
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        pokemonDetailsViewModel.fetchData(this, intent, this)
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
@@ -53,94 +136,78 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         supportActionBar?.setDisplayShowHomeEnabled(true)
     }
 
-    override fun showPokemonImage(drawable: Drawable) {
+    private fun showPokemonImage(drawable: Drawable) {
         details_image.setImageDrawable(drawable)
     }
 
-    override fun showPokemonErrorImage(drawable: Drawable) {
-        details_image.setImageDrawable(drawable)
-    }
-
-    override fun showPokemonName(name: String) {
+    private fun showPokemonName(name: String) {
         supportActionBar?.let {
             title = name
         }
     }
 
-    override fun showPokemonDescription(description: String) {
+    private fun showPokemonDescription(description: String) {
         details_description.text = description
     }
 
-    override fun showStartingDataProgress() {
+    private fun showStartingDataProgress() {
         details_progress.visibility = View.VISIBLE
     }
 
-    override fun hideStartingDataProgress() {
+    private fun hideStartingDataProgress() {
         details_progress.visibility = View.GONE
     }
 
-    override fun hideAllFields() {
-        //labels
-        details_types_label.visibility = View.GONE
-        details_habitat_label.visibility = View.GONE
-        details_weight_label.visibility = View.GONE
-        details_height_label.visibility = View.GONE
-        details_moves_label.visibility = View.GONE
-        //values
-        details_types_values.visibility = View.GONE
-        details_habitat_value.visibility = View.GONE
-        details_weight_value.visibility = View.GONE
-        details_height_value.visibility = View.GONE
-        details_moves_value.visibility = View.GONE
-        details_description.visibility = View.GONE
+    private fun showAllFields() {
+        showPreloadedFields()
+
+        listOf(
+            //labels
+            details_habitat_label,
+
+                    //values
+                    details_habitat_value,
+                    details_description
+        ).forEach {
+            it.visibility = View.VISIBLE
+        }
+
     }
 
-    override fun showAllFields() {
-        //labels
-        details_types_label.visibility = View.VISIBLE
-        details_habitat_label.visibility = View.VISIBLE
-        details_weight_label.visibility = View.VISIBLE
-        details_height_label.visibility = View.VISIBLE
-        details_moves_label.visibility = View.VISIBLE
-        //values
-        details_types_values.visibility = View.VISIBLE
-        details_habitat_value.visibility = View.VISIBLE
-        details_weight_value.visibility = View.VISIBLE
-        details_height_value.visibility = View.VISIBLE
-        details_moves_value.visibility = View.VISIBLE
-        details_description.visibility = View.VISIBLE
+    private fun showPreloadedFields() {
+        listOf(
+            //labels
+                    details_types_label,
+                    details_weight_label,
+                    details_height_label,
+                    details_moves_label,
+                    //values
+                    details_types_values,
+                    details_weight_value,
+                    details_height_value,
+                    details_moves_value
+        ).forEach {
+            it.visibility = View.VISIBLE
+        }
     }
 
-    override fun showPreloadedFields() {
-        //labels
-        details_types_label.visibility = View.VISIBLE
-        details_weight_label.visibility = View.VISIBLE
-        details_height_label.visibility = View.VISIBLE
-        details_moves_label.visibility = View.VISIBLE
-        //values
-        details_types_values.visibility = View.VISIBLE
-        details_weight_value.visibility = View.VISIBLE
-        details_height_value.visibility = View.VISIBLE
-        details_moves_value.visibility = View.VISIBLE
-    }
-
-    override fun showTypes(types: List<String>) {
+    private fun showTypes(types: List<String>) {
         details_types_values.text = types.toString(getString(R.string.types_separator))
     }
 
-    override fun showHabitat(habitat: String) {
+    private fun showHabitat(habitat: String) {
         details_habitat_value.text = habitat
     }
 
-    override fun showPokemonWeight(weight: Int) {
+    private fun showPokemonWeight(weight: Int) {
         details_weight_value.text = weight.toString()
     }
 
-    override fun showPokemonHeight(height: Int) {
+    private fun showPokemonHeight(height: Int) {
         details_height_value.text = height.toString()
     }
 
-    override fun showPokemonMoves(moves: List<String>) {
+    private fun showPokemonMoves(moves: List<String>) {
         details_moves_value.text = moves.toString(getString(R.string.types_separator))
         details_moves_value.setOnClickListener {
             //expand shorted text
@@ -150,26 +217,16 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
     }
 
     private fun addToFavorite(item: MenuItem): Boolean {
-        //retains interactions while progress
-        if (pokemonDetailsViewModel.isUpdateProgressing()) {
-            return false
-        }
-
         item.isVisible = false
         menu.findItem(R.id.action_favorite_check).isVisible = true
-        pokemonDetailsViewModel.updateFavorite(this, false)
+        pokemonDetailsViewModel.updateFavourite(false)
         return true
     }
 
     private fun removeFromFavorite(item: MenuItem): Boolean {
-        //retains interactions while progress
-        if (pokemonDetailsViewModel.isUpdateProgressing()) {
-            return false
-        }
-
         item.isVisible = false
         menu.findItem(R.id.action_favorite_uncheck).isVisible = true
-        pokemonDetailsViewModel.updateFavorite(this, true)
+        pokemonDetailsViewModel.updateFavourite(true)
         return true
     }
 
@@ -187,34 +244,51 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
 
     }
 
-    override fun showFavoriteChecked() {
+    private fun showFavoriteStatus(checked : Boolean){
+        if(checked){
+            showFavoriteChecked()
+        }else{
+            showFavoriteUnchecked()
+        }
+    }
+
+    private fun showFavoriteUpdateError(checked : Boolean){
+        val pokemonName = IntentArgsUtils.getPokemonByArgs(intent).name
+        if(checked){
+            showErrorOnAddFavorite(pokemonName)
+        }else{
+            showRemoveFavoriteUpdateSuccess(pokemonName)
+        }
+    }
+
+    private fun showFavoriteChecked() {
         menu.findItem(R.id.action_favorite_uncheck).isVisible = true
         menu.findItem(R.id.action_favorite_check).isVisible = false
     }
 
-    override fun showFavoriteUnchecked() {
+    private fun showFavoriteUnchecked() {
         menu.findItem(R.id.action_favorite_uncheck).isVisible = false
         menu.findItem(R.id.action_favorite_check).isVisible = true
     }
 
-    override fun showAddFavoriteUpdateSuccess(name: String) {
+    private fun showAddFavoriteUpdateSuccess(name: String) {
         Toast.makeText(this, getString(R.string.add_favorite_message, name), Toast.LENGTH_LONG)
             .show()
     }
 
-    override fun showRemoveFavoriteUpdateSuccess(name: String) {
+    private fun showRemoveFavoriteUpdateSuccess(name: String) {
         Toast.makeText(this, getString(R.string.remove_favorite_message, name), Toast.LENGTH_LONG)
             .show()
     }
 
-    override fun toggleFavoriteCheck() {
+    private fun toggleFavoriteCheck() {
         menu.findItem(R.id.action_favorite_check).isVisible =
             !menu.findItem(R.id.action_favorite_check).isVisible
         menu.findItem(R.id.action_favorite_uncheck).isVisible =
             !menu.findItem(R.id.action_favorite_uncheck).isVisible
     }
 
-    override fun showErrorOnAddFavorite(name: String) {
+    private fun showErrorOnAddFavorite(name: String) {
         Toast.makeText(
             this,
             getString(R.string.pokemon_add_to_favorite_error, name),
@@ -222,7 +296,7 @@ class DetailsActivity : AppCompatActivity(), DetailsActivityContract {
         ).show()
     }
 
-    override fun showErrorOnRemoveFavorite(name: String) {
+    private fun showErrorOnRemoveFavorite(name: String) {
         Toast.makeText(
             this,
             getString(R.string.pokemon_remove_from_favorite_error, name),

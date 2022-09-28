@@ -1,4 +1,4 @@
-package andrefigas.com.github.pokemon.model.entities
+package andrefigas.com.github.pokemon.domain.entities
 
 import android.os.Parcel
 import android.os.Parcelable
