@@ -93,13 +93,11 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
             }
 
             override fun onStart(placeholder: Drawable?) {
-                if(placeholder != null){
-                    _imageState.value = ImagePageState.OnStart(placeholder)
-                }
+                //do nothing
             }
         }
 
-        imageDisposable = getPokemonImageUseCase.loadPokemonImage(target).let { imageLoader.enqueue(it) }
+        imageDisposable =  imageLoader.enqueue(getPokemonImageUseCase.loadPokemonImage(target))
     }
 
     private fun updateFavourite(isChecked : Boolean){
