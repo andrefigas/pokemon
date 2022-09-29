@@ -3,21 +3,12 @@ package andrefigas.com.github.pokemon.utils
 import android.app.Activity
 import android.graphics.Insets
 import android.os.Build
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.DisplayMetrics
 import android.view.WindowInsets
 import android.view.WindowMetrics
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-/**
- *EXTENSION FUNCTIONS
- */
-
-/**
- * infinity scroll
- */
 fun RecyclerView.doOnScrollEnding(
     offset: Int,
     onScrollEnding: () -> Unit,
@@ -67,37 +58,4 @@ fun Activity.getDisplayWidth(): Int {
         displayMetrics.widthPixels
     }
 }
-
-/**
- * build a string with data list and a string separator
- * @param separator splitter
- */
-fun List<String>.toString(separator: String): String {
-    if (size == 0) {
-        return ""
-    }
-
-    val sb = StringBuilder()
-
-    forEach {
-        sb.append(it)
-        sb.append(separator)
-    }
-
-    sb.delete(sb.length - separator.length, sb.length)
-    return sb.toString()
-}
-
-fun  <T : Parcelable?> Parcel.readParcelable(loader : Class<T>): T {
-    return readParcelable<T>(loader.classLoader) ?: throw IllegalArgumentException()
-}
-
-inline fun  <reified T : Parcelable?> Parcel.readParcelableArray(loader : Class<T>): Array<T> {
-    return readParcelableArray(loader.classLoader)?.map { it as T }?.toTypedArray()?: throw IllegalArgumentException()
-}
-
-fun Parcel.readStringOrEmpty(): String{
-    return readString()?:""
-}
-
 
