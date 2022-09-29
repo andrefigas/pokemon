@@ -34,18 +34,6 @@ open class BaseEntity(var name: String) : Parcelable {
 
     companion object{
 
-        val ERROR = BaseEntity("")
-
-        @JvmField
-        val CREATOR  = object : Parcelable.Creator<BaseEntity> {
-            override fun createFromParcel(parcel: Parcel): BaseEntity {
-                return BaseEntity(parcel)
-            }
-
-            override fun newArray(size: Int): Array<BaseEntity?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 
 }

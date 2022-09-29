@@ -20,7 +20,7 @@ data class Specie(
 
     override fun hashCode(): Int {
         var result = labels.contentHashCode()
-        result = 31 * result + (habitat.hashCode() ?: 0)
+        result = 31 * result + habitat.hashCode()
         return result
     }
 }

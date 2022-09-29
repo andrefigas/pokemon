@@ -3,6 +3,8 @@ package andrefigas.com.github.pokemon.view.main
 import andrefigas.com.github.pokemon.R
 import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
+import andrefigas.com.github.pokemon.intent.ImagePageState
+import andrefigas.com.github.pokemon.intent.list.PokemonListPageEvent
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.view.details.DetailsActivity
 import andrefigas.com.github.pokemon.view.entities.PokemonListData
@@ -104,8 +106,8 @@ class PokemonAdapter(
         super.onViewAttachedToWindow(holder)
         if (holder is ItemViewHolder) {
             holder.drawView(viewModel.mapperContract)
-            viewModel.image.observeForever(holder)
-            viewModel.fetchImage(holder.itemView.context, holder.pokemon)
+            viewModel.imageState.observeForever(holder)
+            viewModel.processEvent(PokemonListPageEvent.OnLoadCard(holder.itemView.context, holder.pokemon))
 
         }
     }
@@ -113,13 +115,13 @@ class PokemonAdapter(
     override fun onViewDetachedFromWindow(holder: ViewHolder) {
         super.onViewDetachedFromWindow(holder)
         if (holder is ItemViewHolder) {
-            viewModel.image.removeObserver(holder)
+            viewModel.imageState.removeObserver(holder)
         }
     }
 
     class ItemViewHolder(
         itemView: View) :
-        ViewHolder(itemView) , Observer<PokemonListData.LoadImage>{
+        ViewHolder(itemView) , Observer<ImagePageState>{
         lateinit var pokemon: Pokemon
 
         fun drawView(mapperContract: MapperContract) {
@@ -127,9 +129,9 @@ class PokemonAdapter(
             tvName.text = mapperContract.fromDataToUI(pokemon).name
         }
 
-        override fun onChanged(result: PokemonListData.LoadImage) {
-            if(pokemon == result.pokemon){
-                itemView.pokemon_item_image.setImageDrawable(result.data)
+        override fun onChanged(state: ImagePageState) {
+            if(pokemon.url == state.url){
+                itemView.pokemon_item_image.setImageDrawable(state.drawable)
             }
 
         }

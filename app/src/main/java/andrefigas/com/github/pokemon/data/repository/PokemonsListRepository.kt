@@ -1,11 +1,10 @@
 package andrefigas.com.github.pokemon.data.repository
 
 import andrefigas.com.github.pokemon.BuildConfig
+import andrefigas.com.github.pokemon.data.entities.PokemonListDataModel
 import andrefigas.com.github.pokemon.data.entities.ResultPage
 import andrefigas.com.github.pokemon.domain.entities.BaseEntity
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
-import andrefigas.com.github.pokemon.data.entities.PokemonListDataModel
-import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 import android.content.Context
 import coil.request.ImageRequest

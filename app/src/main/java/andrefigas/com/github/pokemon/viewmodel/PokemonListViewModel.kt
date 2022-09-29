@@ -2,22 +2,22 @@ package andrefigas.com.github.pokemon.viewmodel
 
 import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
-import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonsUseCase
-import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEffect
+import andrefigas.com.github.pokemon.intent.ImagePageState
 import andrefigas.com.github.pokemon.intent.list.PokemonListPageEvent
 import andrefigas.com.github.pokemon.intent.list.PokemonListPageState
+import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.target.Target
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.rxjava3.subjects.PublishSubject
 import io.reactivex.schedulers.Schedulers
-
 
 
 open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseCase,
@@ -26,11 +26,11 @@ open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseC
 
     private var disposable: Disposable? = null
 
-    private val _image = MutableLiveData<PokemonListData.LoadImage>()
-    val image : LiveData<PokemonListData.LoadImage> = _image
-
     private val _pageState = MutableLiveData<PokemonListPageState>()
     val pageState : LiveData<PokemonListPageState> = _pageState
+
+    private val _imageState = MutableLiveData<ImagePageState>()
+    val imageState : LiveData<ImagePageState> = _imageState
 
     fun processEvent(event : PokemonListPageEvent){
         when(event){
@@ -45,6 +45,7 @@ open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseC
                 fetchData()
             }
 
+            is PokemonListPageEvent.OnLoadCard -> fetchImage(event)
         }
     }
 
@@ -80,7 +81,10 @@ open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseC
             })
     }
 
-    fun fetchImage(context : Context, pokemon: Pokemon){
+    private fun fetchImage(event: PokemonListPageEvent.OnLoadCard){
+
+        val context : Context = event.context
+        val pokemon: Pokemon = event.pokemon
 
         val imageLoader = ImageLoader.Builder(context)
             .componentRegistry { add(SvgDecoder(context)) }
@@ -88,19 +92,19 @@ open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseC
 
         val target = object : Target {
             override fun onSuccess(result: Drawable) {
-                _image.value = PokemonListData.LoadImage(result, pokemon)
+                _imageState.value = ImagePageState.OnSuccess(result, pokemon.url)
             }
 
             override fun onError(error: Drawable?) {
                 if(error != null){
-                    _image.value = PokemonListData.LoadImage(error, pokemon)
+                    _imageState.value = ImagePageState.OnFail(error, pokemon.url)
                 }
 
             }
 
             override fun onStart(placeholder: Drawable?) {
                 if(placeholder != null){
-                    _image.value = PokemonListData.LoadImage(placeholder, pokemon)
+                    _imageState.value = ImagePageState.OnStart(placeholder, pokemon.url)
                 }
             }
         }

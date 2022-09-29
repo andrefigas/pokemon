@@ -4,7 +4,7 @@ import android.content.Context
 
 sealed class PokemonDetailsPageEvent {
 
-    class OnCreate() : PokemonDetailsPageEvent()
+    object OnCreate : PokemonDetailsPageEvent()
 
     class OnRequestImage(val context: Context) : PokemonDetailsPageEvent()
 

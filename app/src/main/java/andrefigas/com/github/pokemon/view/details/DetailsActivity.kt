@@ -6,7 +6,6 @@ import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEffect
 import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEvent
 import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageState
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
-import andrefigas.com.github.pokemon.utils.toString
 import andrefigas.com.github.pokemon.view.entities.PokemonUI
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
 import android.os.Bundle
@@ -52,7 +51,7 @@ class DetailsActivity : AppCompatActivity() {
         showStartingDataProgress()
         observeChanges()
 
-        pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnCreate())
+        pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnCreate)
         pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnRequestImage(this))
     }
 
@@ -270,14 +269,6 @@ class DetailsActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
 
-    }
-
-    private fun showFavoriteStatus(checked: Boolean) {
-        if (checked) {
-            showFavoriteChecked()
-        } else {
-            showFavoriteUnchecked()
-        }
     }
 
     private fun showFavoriteChecked() {

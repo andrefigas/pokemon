@@ -32,25 +32,25 @@ val modules = module {
         AndroidMockPokemonDetailsRepository(params.get(), get(), params.get())
     }
 
-    factory<GetPokemonImageUseCase> { params ->
+    factory { params ->
         GetPokemonImageUseCase(get {
             params
         })
     }
 
-    factory<UpdatePokemonFavoriteUseCase> { params ->
+    factory { params ->
         UpdatePokemonFavoriteUseCase(get {
             params
         })
     }
 
-    factory<GetPokemonDetailsUseCase> { params ->
+    factory { params ->
         GetPokemonDetailsUseCase(get {
             params
         })
     }
 
-    factory<GetPokemonsUseCase> { params ->
+    factory { params ->
         GetPokemonsUseCase(get {
             params
         })

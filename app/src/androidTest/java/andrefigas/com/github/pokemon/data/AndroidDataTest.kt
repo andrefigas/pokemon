@@ -1,7 +1,5 @@
 package andrefigas.com.github.pokemon.data
 
-import andrefigas.com.github.pokemon.model.repository.api.ApiClient
-
 object AndroidDataTest{
 
     const val BULBASAUR_NAME = "Bulbasaur"

@@ -29,7 +29,7 @@ class PokemonDetailsTest : BaseUnitTests() {
                 (data as PokemonDetailsPageState.DetailsSuccess).data == DataTest.BULBASAUR_DETAILS
             },
             trigger = {
-                pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnCreate())
+                pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnCreate)
             }
         )
 

@@ -1,18 +1,15 @@
 package andrefigas.com.github.pokemon.utils
 
-import andrefigas.com.github.pokemon.domain.entities.BaseEntity
 import android.app.Activity
 import android.graphics.Insets
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.DisplayMetrics
-
 import android.view.WindowInsets
 import android.view.WindowMetrics
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.lang.IllegalArgumentException
 
 /**
  *EXTENSION FUNCTIONS

@@ -19,10 +19,9 @@ class Mapper(val context: Context) : MapperContract {
         val favoriteResponse : FavoriteResponse = data.favoriteResponse
 
         val name = pokemon.name.capitalize()
-        val description = specie.labels.firstOrNull { it.language?.name == "en" }?.label?:"".replace("\n", " ", false)
+        val description = specie.labels.firstOrNull { it.language.name == "en" }?.label?:"".replace("\n", " ", false)
         val height = pokemon.height
         val weight = pokemon.weight
-        val photo = pokemon.spritesCollection.getBetterImage()
         val habitat = specie.habitat.name
         val types = pokemon.types.map {
             it.content.name

@@ -22,7 +22,7 @@ var language: BaseEntity) {
 
     override fun hashCode(): Int {
         var result = label.hashCode()
-        result = 31 * result + language?.hashCode()
+        result = 31 * result + language.hashCode()
         return result
     }
 

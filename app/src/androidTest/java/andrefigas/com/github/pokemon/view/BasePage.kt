@@ -10,11 +10,11 @@ import org.hamcrest.CoreMatchers.containsString
 
 open class BasePage{
 
-    fun checkText(@IdRes idRes: Int, text : String) = onView(allOf(withId(idRes), withText(text)))
+    fun checkText(@IdRes idRes: Int, text : String): ViewInteraction = onView(allOf(withId(idRes), withText(text)))
 
-    fun checkContainsText(@IdRes idRes: Int, text : String) = onView(allOf(withId(idRes), withText(containsString(text))))
+    fun checkContainsText(@IdRes idRes: Int, text : String): ViewInteraction = onView(allOf(withId(idRes), withText(containsString(text))))
 
-    fun checkIsDisplayed(@IdRes idRes: Int) = finViewById(idRes).check(matches(isDisplayed()))
+    fun checkIsDisplayed(@IdRes idRes: Int): ViewInteraction = finViewById(idRes).check(matches(isDisplayed()))
 
     fun finViewById(@IdRes idRes: Int): ViewInteraction = onView(
         withId(

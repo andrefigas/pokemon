@@ -1,8 +1,6 @@
 package andrefigas.com.github.pokemon.viewmodel
 
-import andrefigas.com.github.pokemon.data.entities.FavoriteResponse
 import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
-import andrefigas.com.github.pokemon.view.entities.PokemonDetailsData
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonDetailsUseCase
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonImageUseCase
 import andrefigas.com.github.pokemon.domain.usecases.UpdatePokemonFavoriteUseCase
@@ -35,7 +33,7 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
     private val _imageState = MutableLiveData<ImagePageState>()
     val imageState : LiveData<ImagePageState> = _imageState
 
-    val effects = PublishSubject.create<PokemonDetailsPageEffect>()
+    val effects: PublishSubject<PokemonDetailsPageEffect> = PublishSubject.create<PokemonDetailsPageEffect>()
 
     private var fetchDisposable: Disposable? = null
     private var updateDisposable: Disposable? = null
