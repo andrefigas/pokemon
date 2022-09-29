@@ -10,6 +10,7 @@ import android.view.WindowMetrics
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Single
+import kotlin.reflect.KProperty0
 
 /**
  *EXTENSION FUNCTIONS
@@ -87,17 +88,3 @@ fun List<String>.toString(separator: String): String {
     sb.delete(sb.length - separator.length, sb.length)
     return sb.toString()
 }
-
-/**
- * getting a request and make a pair with a response from another request
- */
-fun <I, O> Single<I>.pair(
-    b: Single<O>
-): Single<Pair<I, O>> {
-    return flatMap { i ->
-        b.map { o ->
-            Pair(i, o)
-        }
-    }
-}
-

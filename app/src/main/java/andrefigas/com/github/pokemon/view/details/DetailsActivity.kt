@@ -43,12 +43,14 @@ class DetailsActivity : AppCompatActivity(){
 
         enableGoBack()
 
-        observeChanges()
-        showStartingDataProgress()
-
-        pokemonDetailsViewModel.fetchImage(this)
-
         showPreloadedInfo(getPokemonAttachedInIntent())
+    }
+
+    private fun onViewCreated(){
+        showStartingDataProgress()
+        observeChanges()
+        pokemonDetailsViewModel.fetchData()
+        pokemonDetailsViewModel.fetchImage(this)
     }
 
     private fun observeChanges(){
@@ -122,13 +124,12 @@ class DetailsActivity : AppCompatActivity(){
         this.menu = menu
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_details, menu)
-        pokemonDetailsViewModel.fetchData()
+
+        onViewCreated()
+
         return super.onCreateOptionsMenu(menu)
     }
 
-    /**
-     * enable actionbar's arrow back
-     */
     private fun enableGoBack() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -190,7 +191,7 @@ class DetailsActivity : AppCompatActivity(){
     }
 
     private fun showTypes(types: List<String>) {
-        details_types_values.text = types.toString(getString(R.string.types_separator))
+        details_types_values.text = types.toString(getString(R.string.types_separator))//todo fix
     }
 
     private fun showHabitat(habitat: String) {

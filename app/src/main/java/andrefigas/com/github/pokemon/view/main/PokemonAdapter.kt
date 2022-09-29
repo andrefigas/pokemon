@@ -3,12 +3,14 @@ package andrefigas.com.github.pokemon.view.main
 import andrefigas.com.github.pokemon.R
 import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
+import andrefigas.com.github.pokemon.utils.ImageUtils
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.view.details.DetailsActivity
 import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import coil.target.Target
 import kotlinx.android.synthetic.main.pokemon_item.view.*
 import java.util.*
 
@@ -107,6 +110,7 @@ class PokemonAdapter(
             holder.drawView(viewModel.mapperContract)
             viewModel.image.observeForever(holder)
             viewModel.fetchImage(holder.itemView.context, holder.pokemon)
+
         }
     }
 
@@ -121,7 +125,6 @@ class PokemonAdapter(
         itemView: View) :
         ViewHolder(itemView) , Observer<PokemonListData.LoadImage>{
         lateinit var pokemon: Pokemon
-
 
         fun drawView(mapperContract: MapperContract) {
             val tvName = itemView.pokemon_item_name

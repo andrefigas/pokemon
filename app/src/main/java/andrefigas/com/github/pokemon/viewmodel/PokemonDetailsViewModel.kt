@@ -39,11 +39,16 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
     private val _updateFavoriteError = MutableLiveData<PokemonDetailsData.UpdateError>()
     val updateFavoriteError : LiveData<PokemonDetailsData.UpdateError> = _updateFavoriteError
 
-    var fetchDisposable: Disposable? = null
-    var updateDisposable: Disposable? = null
-    var imageDisposable: coil.request.Disposable? = null
+    private var fetchDisposable: Disposable? = null
+    private var updateDisposable: Disposable? = null
+    private var imageDisposable: coil.request.Disposable? = null
 
     fun fetchData(){
+
+        if(details.value != null){
+            return
+        }
+
         fetchDisposable = getPokemonDetailsUseCase.provideDetails()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -59,6 +64,10 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
     }
 
     fun fetchImage(context : Context){
+
+        if(_image.value != null){
+            return
+        }
 
         val imageLoader = ImageLoader.Builder(context)
             .componentRegistry { add(SvgDecoder(context)) }
@@ -110,7 +119,7 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
         updateDisposable?.dispose()
     }
 
-    fun isUpdateProgressing(): Boolean {
+    private fun isUpdateProgressing(): Boolean {
         return !(updateDisposable?.isDisposed ?: true)
     }
 

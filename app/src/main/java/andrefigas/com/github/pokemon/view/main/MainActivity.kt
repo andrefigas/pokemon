@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(),
 
     private val pokemonListViewModel: PokemonListViewModel by viewModel {
         parametersOf(
-            ImageRequest.Builder(MainActivity@this)
+            ImageRequest.Builder(applicationContext)
                 .crossfade(true)
                 .crossfade(500)
                 .placeholder(R.drawable.ic_pokeball_pb)
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(),
 
         observeChanges()
 
-        pokemonListViewModel.fetchData()
+        pokemonListViewModel.initialLoad()
     }
 
     private fun observeChanges(){

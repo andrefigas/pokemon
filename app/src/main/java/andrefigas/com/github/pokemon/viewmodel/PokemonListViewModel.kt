@@ -37,6 +37,12 @@ open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseC
     private val _image = MutableLiveData<PokemonListData.LoadImage>()
     val image : LiveData<PokemonListData.LoadImage> = _image
 
+    fun initialLoad(){
+        if(initialLoad.value == null){
+            fetchData()
+        }
+    }
+
     fun fetchData(){
 
         disposable = getPokemonsUseCase.providePokemons()
