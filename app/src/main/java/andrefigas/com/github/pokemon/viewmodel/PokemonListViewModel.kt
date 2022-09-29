@@ -1,6 +1,6 @@
 package andrefigas.com.github.pokemon.viewmodel
 
-import andrefigas.com.github.pokemon.data.mappers.MapperContract
+import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonsUseCase

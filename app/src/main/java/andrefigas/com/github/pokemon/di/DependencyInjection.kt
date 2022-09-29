@@ -1,8 +1,8 @@
 package andrefigas.com.github.pokemon.di
 
 
-import andrefigas.com.github.pokemon.data.mappers.Mapper
-import andrefigas.com.github.pokemon.data.mappers.MapperContract
+import andrefigas.com.github.pokemon.data.repository.mappers.Mapper
+import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.data.repository.PokemonDetailsRepository
 import andrefigas.com.github.pokemon.data.repository.PokemonDetailsRepositoryContract
 import andrefigas.com.github.pokemon.data.repository.PokemonRepository

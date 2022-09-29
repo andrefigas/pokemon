@@ -1,11 +1,10 @@
 package andrefigas.com.github.pokemon.viewmodel
 
-import andrefigas.com.github.pokemon.data.mappers.MapperContract
+import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.view.entities.PokemonDetailsData
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonDetailsUseCase
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonImageUseCase
 import andrefigas.com.github.pokemon.domain.usecases.UpdatePokemonFavoriteUseCase
-import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData

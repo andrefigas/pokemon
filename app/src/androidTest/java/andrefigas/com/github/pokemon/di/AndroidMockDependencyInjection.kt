@@ -1,11 +1,10 @@
 package andrefigas.com.github.pokemon.di
 
 
-import andrefigas.com.github.pokemon.data.MockPokemonDetailsRepository
-import andrefigas.com.github.pokemon.data.MockPokemonsListRepository
-import andrefigas.com.github.pokemon.data.mappers.Mapper
-import andrefigas.com.github.pokemon.data.mappers.MapperContract
-import andrefigas.com.github.pokemon.data.mappers.MockMapper
+import andrefigas.com.github.pokemon.data.repository.AndroidMockPokemonDetailsRepository
+import andrefigas.com.github.pokemon.data.repository.AndroidMockPokemonsListRepository
+import andrefigas.com.github.pokemon.data.repository.mappers.Mapper
+import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.data.repository.PokemonDetailsRepositoryContract
 import andrefigas.com.github.pokemon.data.repository.PokemonRepositoryContract
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonDetailsUseCase
@@ -26,11 +25,11 @@ val modules = module {
     }
 
     factory<PokemonRepositoryContract> { params ->
-        MockPokemonsListRepository(params.get())
+        AndroidMockPokemonsListRepository(params.get())
     }
 
     factory<PokemonDetailsRepositoryContract> { params ->
-        MockPokemonDetailsRepository(params.get(), get(), params.get())
+        AndroidMockPokemonDetailsRepository(params.get(), get(), params.get())
     }
 
     factory<GetPokemonImageUseCase> { params ->

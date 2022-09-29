@@ -1,7 +1,7 @@
 package andrefigas.com.github.pokemon.view.main
 
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.data.mappers.MapperContract
+import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.view.details.DetailsActivity

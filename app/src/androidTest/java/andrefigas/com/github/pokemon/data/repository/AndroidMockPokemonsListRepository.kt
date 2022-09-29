@@ -1,18 +1,24 @@
-package andrefigas.com.github.pokemon.data
+package andrefigas.com.github.pokemon.data.repository
 
 import andrefigas.com.github.pokemon.BuildConfig
 import andrefigas.com.github.pokemon.data.entities.ResultPage
 import andrefigas.com.github.pokemon.domain.entities.BaseEntity
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.data.entities.PokemonListDataModel
-import andrefigas.com.github.pokemon.data.repository.PokemonRepositoryContract
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 import coil.request.ImageRequest
 import coil.target.Target
 import io.reactivex.Single
+import andrefigas.com.github.pokemon.R
 
-class MockPokemonsListRepository() :
-    MockRepository(mapOf(ApiClient.PokemonClient::class.java to listOf("pokemon_list.json", "bulbasaur.json"))),
+class AndroidMockPokemonsListRepository(private val imageRequestBuilder : ImageRequest.Builder) :
+    MockRepository(listOf(ApiClient.PokemonClient::class.java),
+        mapOf(
+            "${DEFAULT_URL}api/v2/pokemon?limit=10&offset=0" to "pokemon_list.json",
+            "${BuildConfig.API_URL}api/v2/pokemon/1/" to "bulbasaur.json"
+        )
+
+    ),
     PokemonRepositoryContract {
 
     private lateinit var serviceClient: ApiClient.PokemonClient
@@ -36,7 +42,7 @@ class MockPokemonsListRepository() :
     }
 
     override fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest {
-        throw NotImplementedError()
+        return imageRequestBuilder.data(R.drawable.ic_pokeball).target(target).build()
     }
 
     private fun providePokemonList(): Single<ResultPage<BaseEntity>> {

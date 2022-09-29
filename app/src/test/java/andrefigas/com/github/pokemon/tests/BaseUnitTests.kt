@@ -1,7 +1,5 @@
 package andrefigas.com.github.pokemon.tests
 
-import andrefigas.com.github.pokemon.MockApiClient
-import andrefigas.com.github.pokemon.data.DataTest
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.arch.core.executor.TaskExecutor
 import androidx.lifecycle.LiveData

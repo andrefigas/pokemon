@@ -1,6 +1,6 @@
 package andrefigas.com.github.pokemon.tests
 
-import andrefigas.com.github.pokemon.data.DataTest
+import andrefigas.com.github.pokemon.data.AndroidDataTest
 import andrefigas.com.github.pokemon.view.DetailsPage
 import andrefigas.com.github.pokemon.view.MainActivityPage
 import androidx.recyclerview.widget.RecyclerView
@@ -25,18 +25,19 @@ class DetailsActivityTest : BaseTests() {
 
     @Test
     fun initialLoadTest() {
-        DetailsPage.checkDescription(DataTest.BULBASAUR_DESCRIPTION)
-        DetailsPage.checkType(DataTest.BULBASAUR_TYPE)
-        DetailsPage.checkHabitat(DataTest.BULBASAUR_HABITAT)
-        DetailsPage.checkWeight(DataTest.BULBASAUR_WEIGHT)
-        DetailsPage.checkHeight(DataTest.BULBASAUR_HEIGHT)
-        DetailsPage.checkContainsMove(DataTest.BULBASAUR_MOVE)
-        DetailsPage.checkIsFavorite(DataTest.BULBASAUR_FAVORITE)
+        DetailsPage.checkDescription(AndroidDataTest.BULBASAUR_DESCRIPTION)
+        DetailsPage.checkType(AndroidDataTest.BULBASAUR_TYPE)
+        DetailsPage.checkHabitat(AndroidDataTest.BULBASAUR_HABITAT)
+        DetailsPage.checkWeight(AndroidDataTest.BULBASAUR_WEIGHT)
+        DetailsPage.checkHeight(AndroidDataTest.BULBASAUR_HEIGHT)
+        DetailsPage.checkContainsMove(AndroidDataTest.BULBASAUR_MOVE)
+        DetailsPage.checkIsFavorite(AndroidDataTest.BULBASAUR_FAVORITE)
     }
 
     @Test
     fun favoriteTest() {
         DetailsPage.markAsFavorite()
+        Thread.sleep(DEFAULT_REQUEST_WAIT)
         DetailsPage.checkFavoriteChecked()
     }
 

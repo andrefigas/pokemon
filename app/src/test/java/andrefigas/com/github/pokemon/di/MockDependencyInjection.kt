@@ -1,10 +1,10 @@
 package andrefigas.com.github.pokemon.di
 
 
-import andrefigas.com.github.pokemon.data.MockPokemonDetailsRepository
-import andrefigas.com.github.pokemon.data.MockPokemonsListRepository
-import andrefigas.com.github.pokemon.data.mappers.MapperContract
-import andrefigas.com.github.pokemon.data.mappers.MockMapper
+import andrefigas.com.github.pokemon.data.repository.MockPokemonDetailsRepository
+import andrefigas.com.github.pokemon.data.repository.MockPokemonsListRepository
+import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
+import andrefigas.com.github.pokemon.data.repository.mappers.MockMapper
 import andrefigas.com.github.pokemon.data.repository.PokemonDetailsRepositoryContract
 import andrefigas.com.github.pokemon.data.repository.PokemonRepositoryContract
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonDetailsUseCase

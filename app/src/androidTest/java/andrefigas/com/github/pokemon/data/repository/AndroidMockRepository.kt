@@ -1,47 +1,42 @@
-package andrefigas.com.github.pokemon.data
+package andrefigas.com.github.pokemon.data.repository
 
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
+import java.lang.IllegalArgumentException
 
-abstract class MockRepository(map: Map<Class<out ApiClient>, List<String>>) {
 
-    companion object {
-        const val ASSET_BASE_PATH = "../app/src/test/assets/"
+abstract class MockRepository(apis: List<Class<out ApiClient>>, val mapping: Map<String, String>) {
+
+    companion object{
+        const val DEFAULT_URL = "http://127.0.0.1/"
     }
-
-    //abstract val interfaceClass: Class<T ou>
-    //protected val serviceClient: T
 
     abstract fun processClient(api: ApiClient)
 
     init {
-        //serviceClient = initializeClient(url, interfaceClass)
 
-        map.forEach {
-            processClient(initializeClient(it.key, it.value))
+        apis.forEach {
+            processClient(initializeClient(it, mapping))
         }
     }
 
-    private fun initializeClient(interfaceClass : Class<out ApiClient>, fileNames : List<String>) = createApiClient(
+    private fun initializeClient(interfaceClass: Class<out ApiClient>, mapping: Map<String, String>) = createApiClient(
         interfaceClass,
-        createHttpClient(fileNames)
+        createHttpClient(mapping)
     )
 
-    private fun createHttpClient(fileNames : List<String>) = OkHttpClient.Builder()
-        .addInterceptor(MockInterceptor(fileNames)).build()
+    private fun createHttpClient(mapping: Map<String, String>) = OkHttpClient.Builder()
+        .addInterceptor(MockInterceptor(mapping)).build()
 
     private fun createApiClient(interfaceClass : Class<out ApiClient>, httpClient: OkHttpClient): ApiClient {
 
         return Retrofit.Builder()
-            .baseUrl("http://127.0.0.1/")
+            .baseUrl(DEFAULT_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient)
@@ -50,13 +45,16 @@ abstract class MockRepository(map: Map<Class<out ApiClient>, List<String>>) {
 
 }
 
-class MockInterceptor(private val fileNames: List<String>) : Interceptor{
+class MockInterceptor(val mapping: Map<String, String>) : Interceptor{
 
-    private var iterable = -1
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        iterable++
-        val responseString = readJsonFile(fileNames[iterable])
+        val original = chain.request()
+
+        val url = original.url.toString()
+        val filename = mapping[url] ?: throw IllegalArgumentException("$url not mapped")
+
+        val responseString = readJsonFile(filename)
 
         return Response.Builder()
             .code(200)

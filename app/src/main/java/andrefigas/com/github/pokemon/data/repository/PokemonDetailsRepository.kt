@@ -3,10 +3,9 @@ package andrefigas.com.github.pokemon.data.repository
 import andrefigas.com.github.pokemon.BuildConfig
 import andrefigas.com.github.pokemon.data.entities.FavoriteResponse
 import andrefigas.com.github.pokemon.data.entities.UpdateFavoriteResponse
-import andrefigas.com.github.pokemon.domain.entities.FavoritePokemon
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.data.entities.PokemonDetailsDataModel
-import andrefigas.com.github.pokemon.data.mappers.MapperContract
+import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.domain.entities.Specie
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 import android.content.Context

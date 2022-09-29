@@ -10,7 +10,7 @@ object MainActivityPage : BasePage() {
 
     fun providePokemonList() =  finViewById(R.id.rv_pokemons)
 
-    fun checkPokemonNameByPosition(position : Int, text : String) = MainActivityPage.providePokemonList()
+    fun checkPokemonNameByPosition(position : Int, text : String) = providePokemonList()
         .check(
             ViewAssertions.matches(
                 BaseTests.atPositionOnView(
@@ -21,17 +21,4 @@ object MainActivityPage : BasePage() {
             )
         )
 
-    fun swipeDownPokemonList() = providePokemonList().perform(BaseTests.swipeFromTopToBottom())
-
-    private fun checkIsVisibleItemByPosition(position : Int, @IdRes idRes : Int) = providePokemonList().check(
-        ViewAssertions.matches(
-            BaseTests.atPositionOnView(
-                position,
-                ViewMatchers.isDisplayed(),
-                idRes
-            )
-        )
-    )
-
-    public fun checkIsIncreaseProgressisDisplayed(position : Int) = checkIsVisibleItemByPosition(position, R.id.list_item_progress)
 }

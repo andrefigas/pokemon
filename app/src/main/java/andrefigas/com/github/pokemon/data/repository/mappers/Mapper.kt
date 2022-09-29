@@ -1,4 +1,4 @@
-package andrefigas.com.github.pokemon.data.mappers
+package andrefigas.com.github.pokemon.data.repository.mappers
 
 import andrefigas.com.github.pokemon.R
 import andrefigas.com.github.pokemon.data.entities.FavoriteResponse

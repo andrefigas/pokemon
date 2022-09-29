@@ -46,7 +46,6 @@ class DetailsActivity : AppCompatActivity(){
         observeChanges()
         showStartingDataProgress()
 
-        pokemonDetailsViewModel.fetchData()
         pokemonDetailsViewModel.fetchImage(this)
 
         showPreloadedInfo(getPokemonAttachedInIntent())
@@ -116,8 +115,6 @@ class DetailsActivity : AppCompatActivity(){
             showPokemonMoves(moves)
         }
 
-
-
     }
 
 
@@ -125,6 +122,7 @@ class DetailsActivity : AppCompatActivity(){
         this.menu = menu
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_details, menu)
+        pokemonDetailsViewModel.fetchData()
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -237,8 +235,8 @@ class DetailsActivity : AppCompatActivity(){
                 return true
             }
 
-            R.id.action_favorite_uncheck -> addToFavorite(item)
-            R.id.action_favorite_check -> removeFromFavorite(item)
+            R.id.action_favorite_uncheck -> removeFromFavorite(item)
+            R.id.action_favorite_check -> addToFavorite(item)
             else -> super.onOptionsItemSelected(item)
         }
 

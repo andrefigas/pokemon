@@ -1,33 +1,27 @@
-package andrefigas.com.github.pokemon.data
+package andrefigas.com.github.pokemon.data.repository
 
 import andrefigas.com.github.pokemon.BuildConfig
-import andrefigas.com.github.pokemon.R
 import andrefigas.com.github.pokemon.data.entities.FavoriteResponse
-import andrefigas.com.github.pokemon.data.entities.UpdateFavoriteResponse
-import andrefigas.com.github.pokemon.domain.entities.FavoritePokemon
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.data.entities.PokemonDetailsDataModel
-import andrefigas.com.github.pokemon.data.mappers.MapperContract
-import andrefigas.com.github.pokemon.data.repository.PokemonDetailsRepositoryContract
+import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.domain.entities.Specie
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
-import android.content.Context
 import coil.request.ImageRequest
 import coil.target.Target
 import io.reactivex.Single
 import io.reactivex.functions.Function
 
 
-class MockPokemonDetailsRepository(val pokemon: Pokemon,
-                                   val mapperContract: MapperContract,
-                                   private val imageRequestBuilder : ImageRequest.Builder) :
+class MockPokemonDetailsRepository(val pokemon: Pokemon, val mapperContract: MapperContract) :
     MockRepository(
+        listOf(ApiClient.PokemonClient::class.java,  ApiClient.WebHookClient::class.java),
         mapOf(
-            ApiClient.PokemonClient::class.java to listOf("specie.json"),
-            ApiClient.WebHookClient::class.java to listOf("favorite.json")
+            "${BuildConfig.API_URL}api/v2/pokemon-species/1/" to "specie.json",
+            "${DEFAULT_URL}v3/a7aae05b-5201-4b0b-b8ea-4da512b70e02?id=1" to "favorite.json",
+            "${DEFAULT_URL}v3/fab69dd4-bcf8-4d3b-9ed6-70d4a7e66b7d" to "update_favorite.json"
         )
-    )
-    ,
+    ),
     PokemonDetailsRepositoryContract {
 
     private lateinit var serviceClient: ApiClient.PokemonClient
@@ -79,7 +73,7 @@ class MockPokemonDetailsRepository(val pokemon: Pokemon,
     }
 
     override fun loadPokemonImage(target: Target): ImageRequest{
-        return imageRequestBuilder.data(R.drawable.ic_pokeball).target(target).build()
+       throw NotImplementedError()
     }
 
     override fun updateFavourite(favourite : Boolean) = webHookClient.updateFavoritePokemon(mapperContract.fromUIToData(pokemon.id, favourite))

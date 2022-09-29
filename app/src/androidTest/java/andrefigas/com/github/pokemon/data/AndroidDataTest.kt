@@ -2,7 +2,7 @@ package andrefigas.com.github.pokemon.data
 
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 
-object DataTest{
+object AndroidDataTest{
 
     val BULBASAUR_NAME = "Bulbasaur"
     val BULBASAUR_TYPE = "grass , poison"
@@ -16,5 +16,6 @@ object DataTest{
     val CATERPIE_NAME = "Caterpie"
 
     val FIRST_LOAD_LAST_POSITION = ApiClient.PokemonClient.LIMIT - 1
+
 
 }
