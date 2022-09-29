@@ -160,8 +160,8 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
-    override fun increasePokemonList(pokemons: List<Pokemon>) {
-        adapter.addPokemons(pokemons)
+    override fun increasePokemonList(pokemons: Array<Pokemon>) {
+        adapter.addPokemons(pokemons.toList())
     }
 
     override fun showIncreasingDataProgress() {

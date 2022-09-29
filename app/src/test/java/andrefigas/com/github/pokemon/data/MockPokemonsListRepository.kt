@@ -1,21 +1,18 @@
-package andrefigas.com.github.pokemon.data.repository
+package andrefigas.com.github.pokemon.data
 
 import andrefigas.com.github.pokemon.BuildConfig
 import andrefigas.com.github.pokemon.data.entities.ResultPage
 import andrefigas.com.github.pokemon.domain.entities.BaseEntity
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.data.entities.PokemonListDataModel
-import andrefigas.com.github.pokemon.data.mappers.MapperContract
+import andrefigas.com.github.pokemon.data.repository.PokemonRepositoryContract
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
-import android.content.Context
 import coil.request.ImageRequest
 import coil.target.Target
 import io.reactivex.Single
 
-class PokemonRepository(context: Context, private val imageRequestBuilder : ImageRequest.Builder,
-                        private val mapperContract: MapperContract
-) :
-    Repository(context, mapOf(BuildConfig.API_URL to ApiClient.PokemonClient::class.java)),
+class MockPokemonsListRepository() :
+    MockRepository(mapOf(ApiClient.PokemonClient::class.java to listOf("pokemon_list.json", "bulbasaur.json"))),
     PokemonRepositoryContract {
 
     private lateinit var serviceClient: ApiClient.PokemonClient
@@ -39,19 +36,7 @@ class PokemonRepository(context: Context, private val imageRequestBuilder : Imag
     }
 
     override fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest {
-        val sprites = pokemon.spritesCollection
-        if (sprites != null) {
-            val imageUrl = sprites.getBetterImage()
-            if (imageUrl != null) {
-                return imageRequestBuilder
-                    .data(imageUrl)
-                    .target(target)
-                    .build()
-            }
-
-        }
-
-        return imageRequestBuilder.target(target).build()
+        throw NotImplementedError()
     }
 
     private fun providePokemonList(): Single<ResultPage<BaseEntity>> {
@@ -94,14 +79,5 @@ class PokemonRepository(context: Context, private val imageRequestBuilder : Imag
     private fun initialRequest() = serviceClient.fetchPokemons()
 
     private fun nextRequest() = serviceClient.fetchPokemons(url)
-
-}
-
-interface PokemonRepositoryContract {
-
-    fun providePokemons(): Single<PokemonListDataModel>
-    fun isInitialRequest(): Boolean
-    fun injectUrl(url: String)
-    fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest
 
 }

@@ -5,11 +5,11 @@ import android.graphics.drawable.Drawable
 
 sealed class PokemonListData {
 
-    open class Success(val pokemons : List<Pokemon>) : PokemonListData()
+    open class Success(val pokemons : Array<Pokemon>) : PokemonListData()
 
-    class IncreaseSuccess(pokemons : List<Pokemon>) : Success(pokemons)
+    class IncreaseSuccess(pokemons : Array<Pokemon>) : Success(pokemons)
 
-    class InitialSuccess(pokemons : List<Pokemon>) : Success(pokemons)
+    class InitialSuccess(pokemons : Array<Pokemon>) : Success(pokemons)
 
     object InitialError : PokemonListData()
 

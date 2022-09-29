@@ -1,6 +1,6 @@
 package andrefigas.com.github.pokemon.tests
 
-import andrefigas.com.github.pokemon.model.DataTest
+import andrefigas.com.github.pokemon.data.DataTest
 import andrefigas.com.github.pokemon.view.MainActivityPage
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test

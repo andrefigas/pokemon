@@ -1,24 +1,69 @@
 package andrefigas.com.github.pokemon.tests
 
 import andrefigas.com.github.pokemon.MockApiClient
-import androidx.annotation.CallSuper
-import org.junit.After
+import andrefigas.com.github.pokemon.data.DataTest
+import androidx.arch.core.executor.ArchTaskExecutor
+import androidx.arch.core.executor.TaskExecutor
+import androidx.lifecycle.LiveData
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.plugins.RxJavaPlugins
+import io.reactivex.schedulers.Schedulers
 import org.junit.Before
-import org.mockito.MockitoAnnotations
+import org.koin.core.context.GlobalContext
+
 
 open class BaseUnitTests {
 
-    lateinit var networkModule: MockApiClient
-
-    @After
-    fun tearDown() {
-        networkModule.webServer.close()
-    }
-
-    @CallSuper
     @Before
-    open fun setUp() {
-        MockitoAnnotations.initMocks(this)
+    fun setup(){
+        setupDependencies()
+        setupRx()
+        setupThread()
     }
+
+    private fun setupDependencies(){
+        GlobalContext.startKoin {
+            modules(listOf(andrefigas.com.github.pokemon.di.modules))
+        }
+    }
+
+    private fun setupThread(){
+        ArchTaskExecutor.getInstance().setDelegate(object : TaskExecutor() {
+            override fun executeOnDiskIO(runnable: Runnable) {
+                runnable.run()
+            }
+
+            override fun postToMainThread(runnable: Runnable) {
+                runnable.run()
+            }
+
+            override fun isMainThread(): Boolean {
+                return true
+            }
+        })
+    }
+
+    private fun setupRx(){
+        RxJavaPlugins.setIoSchedulerHandler { Schedulers.trampoline() }
+        RxJavaPlugins.setComputationSchedulerHandler { Schedulers.trampoline() }
+        RxJavaPlugins.setNewThreadSchedulerHandler { Schedulers.trampoline() }
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+    }
+
+    protected fun <T> LiveData<T>.assert(assertion : (T)->Boolean, trigger : ()-> Unit) {
+        var assertion = false
+
+        ArchTaskExecutor.getMainThreadExecutor().execute {
+
+            observeForever { data ->
+                assertion = assertion(data)
+            }
+
+            trigger()
+        }
+
+        assert(assertion)
+    }
+
 
 }

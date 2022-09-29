@@ -31,6 +31,12 @@ open class BaseEntity(var name: String, var url: String) : Parcelable {
         return 0
     }
 
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + url.hashCode()
+        return result
+    }
+
     companion object{
 
         val ERROR = BaseEntity("","")
@@ -46,5 +52,7 @@ open class BaseEntity(var name: String, var url: String) : Parcelable {
             }
         }
     }
+
+
 
 }

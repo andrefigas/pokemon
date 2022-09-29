@@ -1,6 +1,6 @@
 package andrefigas.com.github.pokemon.tests
 
-import andrefigas.com.github.pokemon.model.DataTest
+import andrefigas.com.github.pokemon.data.DataTest
 import andrefigas.com.github.pokemon.view.DetailsPage
 import andrefigas.com.github.pokemon.view.MainActivityPage
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +17,7 @@ class DetailsActivityTest : BaseTests() {
     @Before
     override fun setUp() {
         super.setUp()
+        Thread.sleep(DEFAULT_REQUEST_WAIT)
         MainActivityPage.providePokemonList()
             .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
         Thread.sleep(DEFAULT_REQUEST_WAIT)

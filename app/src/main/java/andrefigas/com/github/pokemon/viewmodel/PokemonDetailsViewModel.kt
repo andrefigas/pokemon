@@ -50,7 +50,7 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { details ->
-                    _details.value = PokemonDetailsData.DetailsSuccess(mapperContract.fromDataToUI(details)) //todo fix
+                    _details.value = PokemonDetailsData.DetailsSuccess(details)
                 },
                 {
                     _detailsError.value = PokemonDetailsData.DetailsError

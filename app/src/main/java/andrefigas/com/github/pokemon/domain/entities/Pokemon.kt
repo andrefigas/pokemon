@@ -52,6 +52,51 @@ class Pokemon(name: String, url: String) : BaseEntity(name, url), Parcelable {
         return 0
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as Pokemon
+
+        if (id != other.id) return false
+        if (weight != other.weight) return false
+        if (height != other.height) return false
+        if (spritesCollection != other.spritesCollection) return false
+        if (species != other.species) return false
+
+        val finalTypes = types
+        val finalOtherTypes = other.types
+
+        if (finalTypes != null) {
+            if (finalOtherTypes == null) return false
+            if (!finalTypes.contentEquals(finalOtherTypes)) return false
+        } else if (finalOtherTypes!= null) {
+            return false
+        }
+
+        val finalMoves = moves
+        val finalOtherMoves = other.moves
+
+        if (finalMoves != null) {
+            if (finalOtherMoves == null) return false
+            if (!finalMoves.contentEquals(finalOtherMoves)) return false
+        } else if (finalOtherMoves!= null) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + weight
+        result = 31 * result + height
+        result = 31 * result + (spritesCollection?.hashCode() ?: 0)
+        result = 31 * result + (species?.hashCode() ?: 0)
+        result = 31 * result + (types?.contentHashCode() ?: 0)
+        result = 31 * result + (moves?.contentHashCode() ?: 0)
+        return result
+    }
+
     companion object CREATOR : Parcelable.Creator<Pokemon> {
         override fun createFromParcel(parcel: Parcel): Pokemon {
             return Pokemon(parcel)
@@ -61,5 +106,7 @@ class Pokemon(name: String, url: String) : BaseEntity(name, url), Parcelable {
             return arrayOfNulls(size)
         }
     }
+
+
 
 }

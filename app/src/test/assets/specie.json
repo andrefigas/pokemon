@@ -1,0 +1,115 @@
+{
+  "base_happiness": 50,
+  "capture_rate": 45,
+  "color": {
+    "name": "green",
+    "url": "https://pokeapi.co/api/v2/pokemon-color/5/"
+  },
+  "egg_groups": [
+    {
+      "name": "monster",
+      "url": "https://pokeapi.co/api/v2/egg-group/1/"
+    },
+    {
+      "name": "plant",
+      "url": "https://pokeapi.co/api/v2/egg-group/7/"
+    }
+  ],
+  "evolution_chain": {
+    "url": "https://pokeapi.co/api/v2/evolution-chain/1/"
+  },
+  "evolves_from_species": null,
+  "flavor_text_entries": [
+
+    {
+      "flavor_text": "Bulbasaur can be seen napping in bright sunlight.\nThere is a seed on its back. By soaking up the sun’s rays,\nthe seed grows progressively larger.",
+      "language": {
+        "name": "en",
+        "url": "https://pokeapi.co/api/v2/language/9/"
+      },
+      "version": {
+        "name": "alpha-sapphire",
+        "url": "https://pokeapi.co/api/v2/version/26/"
+      }
+    }
+  ],
+  "order": 1,
+  "pal_park_encounters": [
+    {
+      "area": {
+        "name": "field",
+        "url": "https://pokeapi.co/api/v2/pal-park-area/2/"
+      },
+      "base_score": 50,
+      "rate": 30
+    }
+  ],
+  "pokedex_numbers": [
+    {
+      "entry_number": 1,
+      "pokedex": {
+        "name": "national",
+        "url": "https://pokeapi.co/api/v2/pokedex/1/"
+      }
+    },
+    {
+      "entry_number": 1,
+      "pokedex": {
+        "name": "kanto",
+        "url": "https://pokeapi.co/api/v2/pokedex/2/"
+      }
+    },
+    {
+      "entry_number": 226,
+      "pokedex": {
+        "name": "original-johto",
+        "url": "https://pokeapi.co/api/v2/pokedex/3/"
+      }
+    },
+    {
+      "entry_number": 231,
+      "pokedex": {
+        "name": "updated-johto",
+        "url": "https://pokeapi.co/api/v2/pokedex/7/"
+      }
+    },
+    {
+      "entry_number": 80,
+      "pokedex": {
+        "name": "kalos-central",
+        "url": "https://pokeapi.co/api/v2/pokedex/12/"
+      }
+    },
+    {
+      "entry_number": 1,
+      "pokedex": {
+        "name": "letsgo-kanto",
+        "url": "https://pokeapi.co/api/v2/pokedex/26/"
+      }
+    },
+    {
+      "entry_number": 68,
+      "pokedex": {
+        "name": "isle-of-armor",
+        "url": "https://pokeapi.co/api/v2/pokedex/28/"
+      }
+    }
+  ],
+  "shape": {
+    "name": "quadruped",
+    "url": "https://pokeapi.co/api/v2/pokemon-shape/8/"
+  },
+  "habitat": {
+    "name": "grassland",
+    "url": "https://pokeapi.co/api/v2/pokemon-habitat/3/"
+  },
+  "varieties": [
+    {
+      "is_default": true,
+      "pokemon": {
+        "name": "bulbasaur",
+        "url": "https://pokeapi.co/api/v2/pokemon/1/"
+      }
+    }
+  ]
+}

@@ -8,5 +8,5 @@ open class ResultPage<T : BaseEntity>(
     count: Int,
     next: String,
     previous: String,
-    @SerializedName("results") val results: List<T>
+    @SerializedName("results") val results: Array<T>
 ) : Page(count, next, previous)

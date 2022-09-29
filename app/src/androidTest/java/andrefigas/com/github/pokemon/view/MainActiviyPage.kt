@@ -1,8 +1,6 @@
 package andrefigas.com.github.pokemon.view
 
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.model.DataTest
-import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 import andrefigas.com.github.pokemon.tests.BaseTests
 import androidx.annotation.IdRes
 import androidx.test.espresso.assertion.ViewAssertions

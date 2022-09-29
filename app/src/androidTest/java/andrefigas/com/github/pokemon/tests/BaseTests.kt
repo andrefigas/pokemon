@@ -1,6 +1,5 @@
 package andrefigas.com.github.pokemon.tests
 
-import andrefigas.com.github.pokemon.injection.modules.NetworkModule
 import andrefigas.com.github.pokemon.view.main.MainActivity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +9,6 @@ import androidx.test.espresso.action.GeneralSwipeAction
 import androidx.test.espresso.action.Press
 import androidx.test.espresso.action.Swipe
 import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -60,11 +58,6 @@ abstract class BaseTests {
 
     @Before
     open fun setUp() {
-        NetworkModule.provideCacheFile(InstrumentationRegistry.getInstrumentation().targetContext)
-            .listFiles().forEach {
-                it.delete()
-            }
-
         activityRule.launchActivity(null)
         Thread.sleep(DEFAULT_REQUEST_WAIT)
     }

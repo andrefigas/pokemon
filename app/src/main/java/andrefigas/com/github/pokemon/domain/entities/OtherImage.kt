@@ -23,6 +23,24 @@ data class OtherImage(
         return 0
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as OtherImage
+
+        if (dreamWorld != other.dreamWorld) return false
+        if (officialArtwork != other.officialArtwork) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = dreamWorld?.hashCode() ?: 0
+        result = 31 * result + (officialArtwork?.hashCode() ?: 0)
+        return result
+    }
+
     companion object CREATOR : Parcelable.Creator<OtherImage> {
         override fun createFromParcel(parcel: Parcel): OtherImage {
             return OtherImage(parcel)
@@ -32,4 +50,7 @@ data class OtherImage(
             return arrayOfNulls(size)
         }
     }
+
+
+
 }

@@ -1,6 +1,5 @@
-package andrefigas.com.github.pokemon.model
+package andrefigas.com.github.pokemon.data
 
-import andrefigas.com.github.pokemon.model.entities.*
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 
 object DataTest{
@@ -16,6 +15,6 @@ object DataTest{
 
     val CATERPIE_NAME = "Caterpie"
 
-    val FIRST_LOAD_LAST_POSITION = ApiClient.LIMIT - 1
+    val FIRST_LOAD_LAST_POSITION = ApiClient.PokemonClient.LIMIT - 1
 
 }

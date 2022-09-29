@@ -24,7 +24,8 @@ android {
 
         buildConfigField "String", "API_URL", "$project_settings.apiUrl"
         buildConfigField "String", "WEBHOOK_URL", "$project_settings.webHookUrl"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        testInstrumentationRunner "andrefigas.com.github.pokemon.CustomTestRunner"
     }
 
     compileOptions {
@@ -50,6 +51,22 @@ android {
         }
     }
 
+    sourceSets {
+
+        test {
+            resources {
+                srcDirs 'src\\test\\assets'
+            }
+        }
+
+        androidTest {
+            resources {
+                srcDirs 'src\\test\\assets'
+            }
+        }
+
+    }
+
 }
 
 dependencies {
@@ -72,6 +89,8 @@ dependencies {
 
     implementation "io.insert-koin:koin-core:3.0.1"
     implementation "io.insert-koin:koin-android:3.0.1"
+    testImplementation project(path: ':app')
+    androidTestImplementation project(path: ':app')
 
     compileOnly "javax.annotation:jsr250-api:$import_version.jsr250_api"
 
@@ -100,5 +119,7 @@ dependencies {
     
     androidTestImplementation "com.android.support.test:rules:$import_version.rules"
     androidTestImplementation "com.android.support.test:runner:$import_version.runner"
+
+    testImplementation "android.arch.core:core-testing:1.1.1"
 
 }

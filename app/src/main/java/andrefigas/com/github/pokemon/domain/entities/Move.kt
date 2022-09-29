@@ -17,6 +17,21 @@ data class Move(@SerializedName("move") val content: BaseEntity?) : Parcelable {
         return 0
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Move
+
+        if (content != other.content) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return content?.hashCode() ?: 0
+    }
+
     companion object CREATOR : Parcelable.Creator<Move> {
         override fun createFromParcel(parcel: Parcel): Move {
             return Move(parcel)
@@ -26,5 +41,7 @@ data class Move(@SerializedName("move") val content: BaseEntity?) : Parcelable {
             return arrayOfNulls(size)
         }
     }
+
+
 
 }

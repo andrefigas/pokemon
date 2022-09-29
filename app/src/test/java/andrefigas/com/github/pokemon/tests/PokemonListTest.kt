@@ -1,57 +1,41 @@
 package andrefigas.com.github.pokemon.tests
 
-import andrefigas.com.github.pokemon.MockApiClient
+
 import andrefigas.com.github.pokemon.data.DataTest
-import andrefigas.com.github.pokemon.model.entities.BaseEntity
-import andrefigas.com.github.pokemon.model.entities.Pokemon
+import andrefigas.com.github.pokemon.data.MockPokemonsListRepository
+import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
-import org.junit.After
+import android.os.Looper
+import androidx.arch.core.executor.ArchTaskExecutor
+import androidx.arch.core.executor.TaskExecutor
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.observers.TestObserver
+import io.reactivex.plugins.RxJavaPlugins
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.schedulers.Schedulers
 import org.junit.Before
 import org.junit.Test
-import org.mockito.MockitoAnnotations
+import org.koin.core.context.GlobalContext
+import org.koin.java.KoinJavaComponent.inject
 
 class PokemonListTest : BaseUnitTests() {
 
-    lateinit var pokeViewModel: PokemonListViewModel
+    private val pokemonListViewModel: PokemonListViewModel by inject (PokemonListViewModel::class.java)
 
     @Test
     fun initialLoadData() {
-        pokeViewModel.fetchResultPage(null, null, null).test().assertValue { pokeViewModel ->
-            val pokemon: Pokemon = pokeViewModel.pokemons[0]
-            return@assertValue pokemon.height == DataTest.BULBASAUR.height && pokemon.weight == DataTest.BULBASAUR.weight
-                    && pokemon.id == pokemon.id && pokemon.name == DataTest.BULBASAUR.name
-        }
 
-    }
-
-    @Test
-    fun increaseLoadData() {
-        pokeViewModel.fetchResultPage(null, null, null).flatMap {
-            pokeViewModel.fetchResultPage(null, null, null)
-        }.test().assertValue {pokeViewModel ->
-            val pokemon: Pokemon = pokeViewModel.pokemons[0]
-            return@assertValue pokemon.height == DataTest.IVYSAUR.height && pokemon.weight == DataTest.IVYSAUR.weight
-                    && pokemon.id == pokemon.id && pokemon.name == DataTest.IVYSAUR.name
-        }
-
-    }
-
-    @Before
-    override fun setUp() {
-        super.setUp()
-        networkModule = MockApiClient(
-            listOf(
-                DataTest.providePage(offset = 0, limit = 1, results = listOf(DataTest.BULBASAUR_ENTITY)),
-                DataTest.providePokemon(DataTest.BULBASAUR),
-                DataTest.providePage(offset = 1, limit = 1, results = listOf(DataTest.IVYSAUR_ENTITY)),
-                DataTest.providePokemon(DataTest.IVYSAUR)
-            )
-        )
-        pokeViewModel = object : PokemonListViewModel(networkModule) {
-            override fun provideUrl(baseEntity: BaseEntity): String {
-                return networkModule.webServer.url("/").host
+        pokemonListViewModel.initialLoad.assert(
+            { data ->
+                data.pokemons.contentEquals(arrayOf(DataTest.BULBASAUR))
+            },
+            {
+                pokemonListViewModel.fetchData()
             }
-        }
+        )
+
     }
+
 
 }

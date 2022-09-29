@@ -64,7 +64,7 @@ class DetailsActivity : AppCompatActivity(){
         pokemonDetailsViewModel.details.observe(this,  Observer<PokemonDetailsData.DetailsSuccess> { success ->
             hideStartingDataProgress()
 
-            val data = success.data
+            val data = pokemonDetailsViewModel.mapperContract.fromDataToUI(success.data)
 
             showPokemonDescription(data.description)
             showHabitat(data.habitat)
