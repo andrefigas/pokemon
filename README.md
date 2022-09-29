@@ -2,6 +2,13 @@
 
 This is a demo app that shows some pokemons provided by [pokeapi.co](https://pokeapi.co/)
 
+
+Portrait            |  Landscape
+:-------------------------:|:-------------------------:
+![portrait](portrait.jpeg) |  ![portrait](landscape.jpeg) 
+
+
+
 ## Features
 
 ### • Grid
