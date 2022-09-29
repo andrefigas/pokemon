@@ -1,14 +1,18 @@
 package andrefigas.com.github.pokemon.utils
 
+import andrefigas.com.github.pokemon.domain.entities.BaseEntity
 import android.app.Activity
 import android.graphics.Insets
 import android.os.Build
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.DisplayMetrics
 
 import android.view.WindowInsets
 import android.view.WindowMetrics
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.lang.IllegalArgumentException
 
 /**
  *EXTENSION FUNCTIONS
@@ -86,3 +90,17 @@ fun List<String>.toString(separator: String): String {
     sb.delete(sb.length - separator.length, sb.length)
     return sb.toString()
 }
+
+fun  <T : Parcelable?> Parcel.readParcelable(loader : Class<T>): T {
+    return readParcelable<T>(loader.classLoader) ?: throw IllegalArgumentException()
+}
+
+inline fun  <reified T : Parcelable?> Parcel.readParcelableArray(loader : Class<T>): Array<T> {
+    return readParcelableArray(loader.classLoader)?.map { it as T }?.toTypedArray()?: throw IllegalArgumentException()
+}
+
+fun Parcel.readStringOrEmpty(): String{
+    return readString()?:""
+}
+
+

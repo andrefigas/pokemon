@@ -12,7 +12,7 @@ class GetPokemonsUseCase(private val repo: PokemonRepositoryContract) {
 
     fun isInitialRequest() = repo.isInitialRequest()
 
-    fun injectUrl(url : String) = repo.injectUrl(url)
+    fun injectUrl(url : String?) = repo.injectUrl(url)
 
     fun loadPokemonImage(pokemon: Pokemon, target: Target) = repo.loadPokemonImage(pokemon, target)
 

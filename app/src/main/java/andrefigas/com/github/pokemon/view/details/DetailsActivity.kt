@@ -1,17 +1,20 @@
 package andrefigas.com.github.pokemon.view.details
 
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.view.entities.PokemonDetailsData
+import andrefigas.com.github.pokemon.intent.ImagePageState
+import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEffect
+import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEvent
+import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageState
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.utils.toString
 import andrefigas.com.github.pokemon.view.entities.PokemonUI
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import coil.request.ImageRequest
@@ -20,12 +23,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 
-class DetailsActivity : AppCompatActivity(){
+class DetailsActivity : AppCompatActivity() {
 
-    private val pokemonDetailsViewModel : PokemonDetailsViewModel by viewModel{
+    private val pokemonDetailsViewModel: PokemonDetailsViewModel by viewModel {
         parametersOf(
             IntentArgsUtils.getPokemonByArgs(intent),
-            ImageRequest.Builder(DetailsActivity@this)
+            ImageRequest.Builder(DetailsActivity@ this)
                 .crossfade(true)
                 .crossfade(500)
                 .placeholder(R.drawable.ic_pokeball_pb)
@@ -35,77 +38,104 @@ class DetailsActivity : AppCompatActivity(){
 
     private lateinit var menu: Menu
 
-    private fun getPokemonAttachedInIntent() = pokemonDetailsViewModel.mapperContract.fromDataToUI(IntentArgsUtils.getPokemonByArgs(intent))
+    private fun getPokemonAttachedInIntent() =
+        pokemonDetailsViewModel.mapperContract.fromDataToUI(IntentArgsUtils.getPokemonByArgs(intent))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
 
         enableGoBack()
+    }
 
+    private fun onViewCreated() {
+        showStartingDataProgress()
+        observeChanges()
+
+        pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnCreate())
+        pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnRequestImage(this))
+    }
+
+    private fun observeChanges() {
+
+        pokemonDetailsViewModel.pageState.observe(this, Observer<PokemonDetailsPageState> { state ->
+            renderState(state)
+        })
+
+        pokemonDetailsViewModel.imageState.observe(this, Observer<ImagePageState> { state ->
+            renderState(state)
+        })
+
+        pokemonDetailsViewModel.effects.subscribe {  effect ->
+            showEffet(effect)
+        }
+
+    }
+
+    private fun showEffet(effect: PokemonDetailsPageEffect) {
+        when(effect){
+            is PokemonDetailsPageEffect.OnAddToFavoriteFail -> showAddFavoriteUpdateFail(effect)
+            is PokemonDetailsPageEffect.OnAddToFavoriteSuccess -> showAddFavoriteUpdateSuccess(effect)
+            is PokemonDetailsPageEffect.OnRemoveFromFavoriteFail -> showRemoveFavoriteUpdateSuccess(effect)
+            is PokemonDetailsPageEffect.OnRemoveFromFavoriteSuccess -> showRemoveFavoriteUpdateFail(effect)
+        }
+    }
+
+
+    private fun renderState(state: ImagePageState) {
+        when (state) {
+            is ImagePageState.OnSuccess,
+            is ImagePageState.OnFail,
+            is ImagePageState.OnStart -> {
+                showPokemonImage(state)
+            }
+
+        }
+    }
+
+    private fun renderState(state: PokemonDetailsPageState) {
+        when (state) {
+            is PokemonDetailsPageState.Loading -> {
+                showStartingDataProgress()
+            }
+
+            is PokemonDetailsPageState.DetailsSuccess -> {
+                showDetails(state)
+            }
+
+            is PokemonDetailsPageState.DetailsFail -> {
+                showDetailsError()
+            }
+        }
+    }
+
+
+    private fun showDetails(state: PokemonDetailsPageState.DetailsSuccess) {
+        hideStartingDataProgress()
+        showPreloadedInfo(getPokemonAttachedInIntent())
+
+        showAllFields()
+
+        val data = pokemonDetailsViewModel.mapperContract.fromDataToUI(state.data)
+        showPokemonDescription(data.description)
+        showHabitat(data.habitat)
+        showAllFields()
+
+        if (data.favorite) {
+            showFavoriteChecked()
+        } else {
+            showFavoriteUnchecked()
+        }
+    }
+
+    private fun showDetailsError() {
+        hideStartingDataProgress()
+        showPreloadedFields()
         showPreloadedInfo(getPokemonAttachedInIntent())
     }
 
-    private fun onViewCreated(){
-        showStartingDataProgress()
-        observeChanges()
-        pokemonDetailsViewModel.fetchData()
-        pokemonDetailsViewModel.fetchImage(this)
-    }
-
-    private fun observeChanges(){
-        observeDetailsSuccess()
-        observeDetailsError()
-        observeImage()
-        observeUpdateFavorite()
-        observeUpdateFavoriteError()
-    }
-
-    private fun observeDetailsSuccess(){
-        pokemonDetailsViewModel.details.observe(this,  Observer<PokemonDetailsData.DetailsSuccess> { success ->
-            hideStartingDataProgress()
-
-            val data = pokemonDetailsViewModel.mapperContract.fromDataToUI(success.data)
-
-            showPokemonDescription(data.description)
-            showHabitat(data.habitat)
-            showAllFields()
-
-            if (data.favorite) {
-                showFavoriteChecked()
-            } else {
-                showFavoriteUnchecked()
-            }
-        })
-    }
-
-    private fun observeDetailsError(){
-        pokemonDetailsViewModel.detailsError.observe(this, Observer<PokemonDetailsData.DetailsError>{ error ->
-            showPreloadedFields()
-        })
-    }
-
-    private fun observeImage(){
-        pokemonDetailsViewModel.image.observe(this, Observer<PokemonDetailsData.LoadImage> { success ->
-            showPokemonImage(success.data)
-        })
-    }
-
-    private fun observeUpdateFavorite(){
-        pokemonDetailsViewModel.updateFavorite.observe(this, Observer<PokemonDetailsData.UpdateSuccess> { success ->
-            showFavoriteStatus(success.checked)
-        })
-    }
-
-    private fun observeUpdateFavoriteError(){
-        pokemonDetailsViewModel.updateFavoriteError.observe(this, Observer<PokemonDetailsData.UpdateError> { checkError ->
-            showFavoriteUpdateError(checkError.checked)
-        })
-    }
-
-
-    private fun showPreloadedInfo(pokemon : PokemonUI) {
-        with(pokemon){
+    private fun showPreloadedInfo(pokemon: PokemonUI) {
+        with(pokemon) {
             showTypes(types)
 
             showPokemonName(name)
@@ -118,7 +148,6 @@ class DetailsActivity : AppCompatActivity(){
         }
 
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
@@ -135,8 +164,8 @@ class DetailsActivity : AppCompatActivity(){
         supportActionBar?.setDisplayShowHomeEnabled(true)
     }
 
-    private fun showPokemonImage(drawable: Drawable) {
-        details_image.setImageDrawable(drawable)
+    private fun showPokemonImage(state: ImagePageState) {
+        details_image.setImageDrawable(state.drawable)
     }
 
     private fun showPokemonName(name: String) {
@@ -161,12 +190,12 @@ class DetailsActivity : AppCompatActivity(){
         showPreloadedFields()
 
         listOf(
-                    //labels
-                    details_habitat_label,
+            //labels
+            details_habitat_label,
 
-                    //values
-                    details_habitat_value,
-                    details_description
+            //values
+            details_habitat_value,
+            details_description
         ).forEach {
             it.visibility = View.VISIBLE
         }
@@ -175,23 +204,23 @@ class DetailsActivity : AppCompatActivity(){
 
     private fun showPreloadedFields() {
         listOf(
-                    //labels
-                    details_types_label,
-                    details_weight_label,
-                    details_height_label,
-                    details_moves_label,
-                    //values
-                    details_types_values,
-                    details_weight_value,
-                    details_height_value,
-                    details_moves_value
+            //labels
+            details_types_label,
+            details_weight_label,
+            details_height_label,
+            details_moves_label,
+            //values
+            details_types_values,
+            details_weight_value,
+            details_height_value,
+            details_moves_value
         ).forEach {
             it.visibility = View.VISIBLE
         }
     }
 
-    private fun showTypes(types: List<String>) {
-        details_types_values.text = types.toString(getString(R.string.types_separator))//todo fix
+    private fun showTypes(types: String) {
+        details_types_values.text = types
     }
 
     private fun showHabitat(habitat: String) {
@@ -218,14 +247,14 @@ class DetailsActivity : AppCompatActivity(){
     private fun addToFavorite(item: MenuItem): Boolean {
         item.isVisible = false
         menu.findItem(R.id.action_favorite_check).isVisible = true
-        pokemonDetailsViewModel.updateFavourite(false)
+        pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnAddToFavorites)
         return true
     }
 
     private fun removeFromFavorite(item: MenuItem): Boolean {
         item.isVisible = false
         menu.findItem(R.id.action_favorite_uncheck).isVisible = true
-        pokemonDetailsViewModel.updateFavourite(true)
+        pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnRemoveFromFavorites)
         return true
     }
 
@@ -243,20 +272,11 @@ class DetailsActivity : AppCompatActivity(){
 
     }
 
-    private fun showFavoriteStatus(checked : Boolean){
-        if(checked){
+    private fun showFavoriteStatus(checked: Boolean) {
+        if (checked) {
             showFavoriteChecked()
-        }else{
+        } else {
             showFavoriteUnchecked()
-        }
-    }
-
-    private fun showFavoriteUpdateError(checked : Boolean){
-        val pokemonName = IntentArgsUtils.getPokemonByArgs(intent).name
-        if(checked){
-            showErrorOnAddFavorite(pokemonName)
-        }else{
-            showRemoveFavoriteUpdateSuccess(pokemonName)
         }
     }
 
@@ -270,29 +290,25 @@ class DetailsActivity : AppCompatActivity(){
         menu.findItem(R.id.action_favorite_check).isVisible = true
     }
 
-    private fun showAddFavoriteUpdateSuccess(name: String) {
-        Toast.makeText(this, getString(R.string.add_favorite_message, name), Toast.LENGTH_LONG)
+    private fun showAddFavoriteUpdateSuccess(effect: PokemonDetailsPageEffect) {
+        showFavoriteFeedback(R.string.add_favorite_message, effect)
+    }
+
+    private fun showRemoveFavoriteUpdateSuccess(effect: PokemonDetailsPageEffect) {
+        showFavoriteFeedback(R.string.remove_favorite_message, effect)
+    }
+
+    private fun showAddFavoriteUpdateFail(effect: PokemonDetailsPageEffect) {
+        showFavoriteFeedback(R.string.add_favorite_error, effect)
+    }
+
+    private fun showRemoveFavoriteUpdateFail(effect: PokemonDetailsPageEffect) {
+        showFavoriteFeedback(R.string.remove_favorite_error, effect)
+    }
+
+    private fun showFavoriteFeedback(@StringRes strRes : Int, effect: PokemonDetailsPageEffect){
+        Toast.makeText(this, getString(strRes, effect.name).capitalize(), Toast.LENGTH_LONG)
             .show()
     }
 
-    private fun showRemoveFavoriteUpdateSuccess(name: String) {
-        Toast.makeText(this, getString(R.string.remove_favorite_message, name), Toast.LENGTH_LONG)
-            .show()
-    }
-
-    private fun showErrorOnAddFavorite(name: String) {
-        Toast.makeText(
-            this,
-            getString(R.string.pokemon_add_to_favorite_error, name),
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    private fun showErrorOnRemoveFavorite(name: String) {
-        Toast.makeText(
-            this,
-            getString(R.string.pokemon_remove_from_favorite_error, name),
-            Toast.LENGTH_LONG
-        ).show()
-    }
 }

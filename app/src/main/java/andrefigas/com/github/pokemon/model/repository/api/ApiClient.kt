@@ -4,10 +4,9 @@ import andrefigas.com.github.pokemon.data.entities.FavoriteResponse
 import andrefigas.com.github.pokemon.data.entities.ResultPage
 import andrefigas.com.github.pokemon.data.entities.UpdateFavoriteResponse
 import andrefigas.com.github.pokemon.domain.entities.BaseEntity
-import andrefigas.com.github.pokemon.domain.entities.FavoritePokemon
+import andrefigas.com.github.pokemon.data.entities.FavoritePokemon
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.domain.entities.Specie
-import com.squareup.okhttp.ResponseBody
 import io.reactivex.Single
 import retrofit2.http.*
 

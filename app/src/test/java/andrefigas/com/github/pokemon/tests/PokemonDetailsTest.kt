@@ -2,6 +2,8 @@ package andrefigas.com.github.pokemon.tests
 
 
 import andrefigas.com.github.pokemon.data.DataTest
+import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEvent
+import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageState
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
 import org.junit.Test
 import org.koin.core.parameter.parametersOf
@@ -19,12 +21,15 @@ class PokemonDetailsTest : BaseUnitTests() {
 
     @Test
     fun initialLoadData() {
-        pokemonDetailsViewModel.details.assert(
-            { detailsSuccess ->
-                detailsSuccess.data == DataTest.BULBASAUR_DETAILS
+        pokemonDetailsViewModel.pageState.assert(
+            waitFor = { data ->
+                data is PokemonDetailsPageState.DetailsSuccess
             },
-            {
-                pokemonDetailsViewModel.fetchData()
+            assertion = { data ->
+                (data as PokemonDetailsPageState.DetailsSuccess).data == DataTest.BULBASAUR_DETAILS
+            },
+            trigger = {
+                pokemonDetailsViewModel.processEvent(PokemonDetailsPageEvent.OnCreate())
             }
         )
 

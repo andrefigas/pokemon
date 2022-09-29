@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Specie(
     @SerializedName("flavor_text_entries") val labels: Array<FlavorText>,
-    @SerializedName("habitat") var habitat: BaseEntity? = null
+    @SerializedName("habitat") var habitat: BaseEntity
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -20,7 +20,7 @@ data class Specie(
 
     override fun hashCode(): Int {
         var result = labels.contentHashCode()
-        result = 31 * result + (habitat?.hashCode() ?: 0)
+        result = 31 * result + (habitat.hashCode() ?: 0)
         return result
     }
 }

@@ -2,11 +2,12 @@ package andrefigas.com.github.pokemon.view.main
 
 import andrefigas.com.github.pokemon.R
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
+import andrefigas.com.github.pokemon.intent.list.PokemonListPageEvent
+import andrefigas.com.github.pokemon.intent.list.PokemonListPageState
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.utils.doOnScrollEnding
 import andrefigas.com.github.pokemon.utils.getDisplayWidth
 import andrefigas.com.github.pokemon.view.details.DetailsActivity
-import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import android.content.Intent
 import android.os.Bundle
@@ -48,48 +49,60 @@ class MainActivity : AppCompatActivity(),
 
         observeChanges()
 
-        pokemonListViewModel.initialLoad()
+        pokemonListViewModel.processEvent(PokemonListPageEvent.OnCreate)
     }
 
     private fun observeChanges(){
-        observeInitialLoad()
-        observeIncreaseLoad()
-        observeInitialError()
-        observeIncreaseError()
+        pokemonListViewModel.pageState.observe(this, Observer<PokemonListPageState>{ intent ->
+            renderState(intent)
+        })
     }
 
-    private fun observeInitialLoad(){
-        pokemonListViewModel.initialLoad.observe(this,
-            Observer<PokemonListData.Success> { dataSuccess ->
-                createPokemonList()
-                hideStartingDataProgress()
-                increasePokemonList(dataSuccess.pokemons)
-                configureInfinityScroll()
-            })
+    private fun renderState(intent: PokemonListPageState) {
+        when(intent){
+
+            is PokemonListPageState.InitialLoading->{
+                showStartingDataProgress()
+            }
+
+            is PokemonListPageState.IncrementalLoading->{
+                showIncreasingDataProgress()
+            }
+
+            is PokemonListPageState.InitialSuccess -> {
+                initialLoadSuccess(intent)
+            }
+
+            is PokemonListPageState.IncrementalSuccess -> {
+                incrementalLoadSuccess(intent)
+            }
+
+            is PokemonListPageState.InitialFail -> {
+                initialLoadFail()
+            }
+
+            is PokemonListPageState.IncrementalFail -> {
+                initialLoadFail()
+            }
+        }
     }
 
-    private fun observeIncreaseLoad(){
-        pokemonListViewModel.increaseLoad.observe(this,
-            Observer<PokemonListData.Success> { dataSuccess ->
-                hideIncreasingDataProgress()
-                increasePokemonList(dataSuccess.pokemons)
-            })
+
+    private fun initialLoadSuccess(state: PokemonListPageState.InitialSuccess){
+        createPokemonList()
+        hideStartingDataProgress()
+        increasePokemonList(state.pokemons)
+        configureInfinityScroll()
     }
 
-    private fun observeInitialError(){
-        pokemonListViewModel.initialError.observe(this,
-            Observer<PokemonListData.InitialError> { dataError ->
-                hideStartingDataProgress()
-                disableInfinityScroll()
-            })
+    private fun incrementalLoadSuccess(state: PokemonListPageState.IncrementalSuccess){
+        hideIncreasingDataProgress()
+        increasePokemonList(state.pokemons)
     }
 
-    private fun observeIncreaseError(){
-        pokemonListViewModel.increaseError.observe(this,
-            Observer<PokemonListData.IncreaseError> { dataError ->
-                hideStartingDataProgress()
-                disableInfinityScroll()
-            })
+    private fun initialLoadFail(){
+        hideStartingDataProgress()
+        disableInfinityScroll()
     }
 
     override fun createPokemonList() {
@@ -130,8 +143,7 @@ class MainActivity : AppCompatActivity(),
         infinityScrollListener = rv_pokemons.doOnScrollEnding(
             offsetTriggerScroll,
             {
-                showIncreasingDataProgress()
-                pokemonListViewModel.fetchData()
+                pokemonListViewModel.processEvent(PokemonListPageEvent.OnScrollEnd)
             },
             {
                 pokemonListViewModel.isProgressing()
@@ -181,7 +193,7 @@ class MainActivity : AppCompatActivity(),
     override fun showInitialLoadDataError() {
         initial_load_error_message.visibility = View.VISIBLE
         initial_load_error_message.setOnClickListener {
-            pokemonListViewModel.fetchData()
+            pokemonListViewModel.processEvent(PokemonListPageEvent.OnRetry)
         }
     }
 

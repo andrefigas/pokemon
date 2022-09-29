@@ -48,13 +48,19 @@ open class BaseUnitTests {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
     }
 
-    protected fun <T> LiveData<T>.assert(assertion : (T)->Boolean, trigger : ()-> Unit) {
+    protected fun <T> LiveData<T>.assert(
+        waitFor : (T)->Boolean,
+        assertion : (T)->Boolean,
+        trigger : ()-> Unit) {
         var assertion = false
 
         ArchTaskExecutor.getMainThreadExecutor().execute {
 
             observeForever { data ->
-                assertion = assertion(data)
+                if (waitFor(data)){
+                    assertion = assertion(data)
+                }
+
             }
 
             trigger()

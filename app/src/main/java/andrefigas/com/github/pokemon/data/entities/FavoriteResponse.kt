@@ -2,7 +2,7 @@ package andrefigas.com.github.pokemon.data.entities
 
 import com.google.gson.annotations.SerializedName
 
-class FavoriteResponse(@SerializedName("favorite") val favorite: Boolean){
+class FavoriteResponse(@SerializedName("favorite") var favorite: Boolean){
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

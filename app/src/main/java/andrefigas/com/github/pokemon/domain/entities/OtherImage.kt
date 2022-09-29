@@ -3,14 +3,15 @@ package andrefigas.com.github.pokemon.domain.entities
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import andrefigas.com.github.pokemon.utils.readParcelable
 
 data class OtherImage(
-    @SerializedName("dream_world") val dreamWorld: Sprite?,
-    @SerializedName("official-artwork") val officialArtwork: Sprite?
+    @SerializedName("dream_world") val dreamWorld: Sprite,
+    @SerializedName("official-artwork") val officialArtwork: Sprite
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readParcelable(Sprite::class.java.classLoader),
-        parcel.readParcelable(Sprite::class.java.classLoader)
+        parcel.readParcelable(Sprite::class.java),
+        parcel.readParcelable(Sprite::class.java)
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

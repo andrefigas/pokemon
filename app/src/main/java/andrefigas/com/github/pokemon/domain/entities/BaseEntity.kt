@@ -1,13 +1,16 @@
 package andrefigas.com.github.pokemon.domain.entities
 
+import andrefigas.com.github.pokemon.utils.readStringOrEmpty
 import android.os.Parcel
 import android.os.Parcelable
 
-open class BaseEntity(var name: String, var url: String) : Parcelable {
+data class BaseEntity(override val name: String,
+                      override val url: String) : Parcelable,
+BaseEntityContract(){
 
     constructor(parcel: Parcel) : this(
-        parcel.readString() ?: "",
-        parcel.readString() ?: ""
+        parcel.readStringOrEmpty(),
+        parcel.readStringOrEmpty()
     )
 
     override fun equals(other: Any?): Boolean {

@@ -1,10 +1,15 @@
 package andrefigas.com.github.pokemon.viewmodel
 
+import andrefigas.com.github.pokemon.data.entities.FavoriteResponse
 import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.view.entities.PokemonDetailsData
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonDetailsUseCase
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonImageUseCase
 import andrefigas.com.github.pokemon.domain.usecases.UpdatePokemonFavoriteUseCase
+import andrefigas.com.github.pokemon.intent.ImagePageState
+import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEffect
+import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEvent
+import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageState
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
@@ -15,6 +20,7 @@ import coil.decode.SvgDecoder
 import coil.target.Target
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.subjects.PublishSubject
 import io.reactivex.schedulers.Schedulers
 
 class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonDetailsUseCase,
@@ -23,49 +29,52 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
             val mapperContract: MapperContract) :
     ViewModel() {
 
+    private val _pageState = MutableLiveData<PokemonDetailsPageState>()
+    val pageState : LiveData<PokemonDetailsPageState> = _pageState
 
-    private val _details = MutableLiveData<PokemonDetailsData.DetailsSuccess>()
-    val details : LiveData<PokemonDetailsData.DetailsSuccess> = _details
+    private val _imageState = MutableLiveData<ImagePageState>()
+    val imageState : LiveData<ImagePageState> = _imageState
 
-    private val _detailsError = MutableLiveData<PokemonDetailsData.DetailsError>()
-    val detailsError : LiveData<PokemonDetailsData.DetailsError> = _detailsError
-
-    private val _image = MutableLiveData<PokemonDetailsData.LoadImage>()
-    val image : LiveData<PokemonDetailsData.LoadImage> = _image
-
-    private val _updateFavorite = MutableLiveData<PokemonDetailsData.UpdateSuccess>()
-    val updateFavorite : LiveData<PokemonDetailsData.UpdateSuccess> = _updateFavorite
-
-    private val _updateFavoriteError = MutableLiveData<PokemonDetailsData.UpdateError>()
-    val updateFavoriteError : LiveData<PokemonDetailsData.UpdateError> = _updateFavoriteError
+    val effects = PublishSubject.create<PokemonDetailsPageEffect>()
 
     private var fetchDisposable: Disposable? = null
     private var updateDisposable: Disposable? = null
     private var imageDisposable: coil.request.Disposable? = null
 
-    fun fetchData(){
+    fun processEvent(event: PokemonDetailsPageEvent) {
+        when(event){
+            is PokemonDetailsPageEvent.OnCreate -> fetchData()
+            is PokemonDetailsPageEvent.OnRequestImage -> fetchImage(event.context)
+            PokemonDetailsPageEvent.OnAddToFavorites -> updateFavourite(true)
+            PokemonDetailsPageEvent.OnRemoveFromFavorites -> updateFavourite(false)
+        }
+    }
 
-        if(details.value != null){
+    private fun fetchData(){
+
+        if(_pageState.value != null){
             return
         }
+
+        _pageState.value = PokemonDetailsPageState.Loading
 
         fetchDisposable = getPokemonDetailsUseCase.provideDetails()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { details ->
-                    _details.value = PokemonDetailsData.DetailsSuccess(details)
+                    _pageState.value = PokemonDetailsPageState.DetailsSuccess(details)
                 },
                 {
-                    _detailsError.value = PokemonDetailsData.DetailsError
+                    _pageState.value = PokemonDetailsPageState.DetailsFail
                 }
             )
 
     }
 
-    fun fetchImage(context : Context){
+    private fun fetchImage(context : Context){
 
-        if(_image.value != null){
+        if(_imageState.value != null){
             return
         }
 
@@ -75,19 +84,19 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
 
         val target = object : Target {
             override fun onSuccess(result: Drawable) {
-                _image.value = PokemonDetailsData.LoadImage(result)
+                _imageState.value = ImagePageState.OnSuccess(result)
             }
 
             override fun onError(error: Drawable?) {
                 if(error != null){
-                    _image.value = PokemonDetailsData.LoadImage(error)
+                    _imageState.value = ImagePageState.OnFail(error)
                 }
 
             }
 
             override fun onStart(placeholder: Drawable?) {
                 if(placeholder != null){
-                    _image.value = PokemonDetailsData.LoadImage(placeholder)
+                    _imageState.value = ImagePageState.OnStart(placeholder)
                 }
             }
         }
@@ -95,19 +104,37 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
         imageDisposable = getPokemonImageUseCase.loadPokemonImage(target).let { imageLoader.enqueue(it) }
     }
 
-    fun updateFavourite(isChecked : Boolean){
+    private fun updateFavourite(isChecked : Boolean){
 
         if(isUpdateProgressing()) return
+
+        val pageData = _pageState.value as PokemonDetailsPageState.DetailsSuccess
 
         updateDisposable = updatePokemonFavouriteUseCase.updateFavourite(isChecked)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { favorite ->
-                    _updateFavorite.value = PokemonDetailsData.UpdateSuccess(favorite.favorite)
+                { favoriteResponse ->
+
+                    pageData.data.favoriteResponse.favorite = favoriteResponse.favorite
+
+                    val name = pageData.data.pokemon.name
+
+                    if(isChecked){
+                        effects.onNext(PokemonDetailsPageEffect.OnAddToFavoriteSuccess(name))
+                    }else{
+                        effects.onNext(PokemonDetailsPageEffect.OnRemoveFromFavoriteSuccess(name))
+                    }
+
+                    _pageState.value = pageData
                 },
                 {
-                    _updateFavoriteError.value = PokemonDetailsData.UpdateError(isChecked)
+                    val name = pageData.data.pokemon.name
+                    if(isChecked){
+                        effects.onNext(PokemonDetailsPageEffect.OnAddToFavoriteFail(name))
+                    }else{
+                        effects.onNext(PokemonDetailsPageEffect.OnRemoveFromFavoriteFail(name))
+                    }
                 }
             )
     }

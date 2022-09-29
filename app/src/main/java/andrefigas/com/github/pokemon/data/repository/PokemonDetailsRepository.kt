@@ -50,20 +50,24 @@ class PokemonDetailsRepository(context: Context, val pokemon: Pokemon,
 
         val zipper : Function<Array<Any>, PokemonDetailsDataModel> =
             Function{ results ->
-                val details = PokemonDetailsDataModel(pokemon)
+                var specie : Specie? = null
+                var favorite : FavoriteResponse? = null
+
                 results.forEach {  any ->
                     when(any){
                         is Specie->{
-                            details.species = any
+                            specie =  any
                         }
 
                         is FavoriteResponse->{
-                            details.favoriteResponse = any
+                            favorite = any
                         }
                     }
                 }
 
-                details
+                PokemonDetailsDataModel(pokemon,
+                    specie as Specie,
+                    favorite as FavoriteResponse)
             }
 
         return Single.zip(
@@ -75,23 +79,16 @@ class PokemonDetailsRepository(context: Context, val pokemon: Pokemon,
 
     override fun loadPokemonImage(target: Target): ImageRequest{
         val sprites = pokemon.spritesCollection
-        if (sprites != null) {
-            val imageUrl = sprites.getBetterImage()
-            if (imageUrl != null) {
-                return imageRequestBuilder
-                    .data(imageUrl)
-                    .target(target)
-                    .build()
-            }
-
-        }
-
-        return imageRequestBuilder.target(target).build()
+        val imageUrl = sprites.getBetterImage()
+        return imageRequestBuilder
+            .data(imageUrl)
+            .target(target)
+            .build()
     }
 
     override fun updateFavourite(favourite : Boolean) = webHookClient.updateFavoritePokemon(mapperContract.fromUIToData(pokemon.id, favourite))
 
-    private fun provideSpecie() = serviceClient.getSpecie(pokemon.species?.url?:"")//todo fix
+    private fun provideSpecie() = serviceClient.getSpecie(pokemon.species.url)
 
     private fun provideFavourite() = webHookClient.getFavoriteByPokemon(pokemon.id)
 

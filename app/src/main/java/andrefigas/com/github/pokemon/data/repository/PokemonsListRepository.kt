@@ -34,24 +34,17 @@ class PokemonRepository(
 
     override fun isInitialRequest() = url == BuildConfig.API_URL
 
-    override fun injectUrl(url: String) {
-        this.url = url
+    override fun injectUrl(url: String?) {
+        this.url = url ?: BuildConfig.API_URL
     }
 
     override fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest {
         val sprites = pokemon.spritesCollection
-        if (sprites != null) {
-            val imageUrl = sprites.getBetterImage()
-            if (imageUrl != null) {
-                return imageRequestBuilder
-                    .data(imageUrl)
-                    .target(target)
-                    .build()
-            }
-
-        }
-
-        return imageRequestBuilder.target(target).build()
+        val imageUrl = sprites.getBetterImage()
+        return imageRequestBuilder
+            .data(imageUrl)
+            .target(target)
+            .build()
     }
 
     private fun providePokemonList(): Single<ResultPage<BaseEntity>> {
@@ -83,9 +76,7 @@ class PokemonRepository(
     ): Single<Pokemon> {
         val request = serviceClient.getPokemon(baseEntity.url)
             .map { pokemon ->
-                pokemon.name = baseEntity.name
-                pokemon.url = baseEntity.url
-                pokemon
+                pokemon.copy(name = baseEntity.name, url = baseEntity.url)
             }
 
         return request
@@ -101,7 +92,7 @@ interface PokemonRepositoryContract {
 
     fun providePokemons(): Single<PokemonListDataModel>
     fun isInitialRequest(): Boolean
-    fun injectUrl(url: String)
+    fun injectUrl(url: String?)
     fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest
 
 }

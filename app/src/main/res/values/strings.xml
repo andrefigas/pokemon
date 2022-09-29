@@ -17,6 +17,10 @@
 
     <string name="remove_favorite_message">%s successfully removed from favorites</string>
 
+    <string name="add_favorite_error">Was not possible add %s to favorites</string>
+
+    <string name="remove_favorite_error">Was not possible remove %s from favorites</string>
+
     <string name="moves">Moves</string>
 
     <string name="types_separator" translatable="false">&#160;,&#160;</string>

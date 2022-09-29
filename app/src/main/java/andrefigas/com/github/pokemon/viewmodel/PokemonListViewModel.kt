@@ -4,6 +4,9 @@ import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.domain.usecases.GetPokemonsUseCase
+import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEffect
+import andrefigas.com.github.pokemon.intent.list.PokemonListPageEvent
+import andrefigas.com.github.pokemon.intent.list.PokemonListPageState
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.*
@@ -12,6 +15,7 @@ import coil.decode.SvgDecoder
 import coil.target.Target
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.subjects.PublishSubject
 import io.reactivex.schedulers.Schedulers
 
 
@@ -22,51 +26,58 @@ open class PokemonListViewModel (private val getPokemonsUseCase: GetPokemonsUseC
 
     private var disposable: Disposable? = null
 
-    private val _initialLoad = MutableLiveData<PokemonListData.InitialSuccess>()
-    val initialLoad : LiveData<PokemonListData.InitialSuccess> = _initialLoad
-
-    private val _increaseLoad = MutableLiveData<PokemonListData.IncreaseSuccess>()
-    val increaseLoad : LiveData<PokemonListData.IncreaseSuccess> = _increaseLoad
-
-    private val _initialError = MutableLiveData<PokemonListData.InitialError>()
-    val initialError : LiveData<PokemonListData.InitialError> = _initialError
-
-    private val _increaseError = MutableLiveData<PokemonListData.IncreaseError>()
-    val increaseError : LiveData<PokemonListData.IncreaseError> = _increaseError
-
     private val _image = MutableLiveData<PokemonListData.LoadImage>()
     val image : LiveData<PokemonListData.LoadImage> = _image
 
-    fun initialLoad(){
-        if(initialLoad.value == null){
-            fetchData()
+    private val _pageState = MutableLiveData<PokemonListPageState>()
+    val pageState : LiveData<PokemonListPageState> = _pageState
+
+    fun processEvent(event : PokemonListPageEvent){
+        when(event){
+            is PokemonListPageEvent.OnCreate -> {
+                if(pageState.value == null){
+                    fetchData()
+                }
+            }
+
+            is PokemonListPageEvent.OnScrollEnd,
+            is PokemonListPageEvent.OnRetry->{
+                fetchData()
+            }
+
         }
     }
 
-    fun fetchData(){
+    private fun fetchData(){
+
+        if(getPokemonsUseCase.isInitialRequest()){
+            _pageState.value = PokemonListPageState.InitialLoading
+        }else{
+            _pageState.value = PokemonListPageState.IncrementalLoading
+        }
 
         disposable = getPokemonsUseCase.providePokemons()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
 
-                getPokemonsUseCase.injectUrl(response.nextUrl?:"")//todo fix
+                getPokemonsUseCase.injectUrl(response.nextUrl)
 
                 if(response.previous.isNullOrEmpty()){
-                    _initialLoad.value = PokemonListData.InitialSuccess(response.pokemons)
+                    _pageState.value = PokemonListPageState.InitialSuccess(response.pokemons)
                 }else{
-                    _increaseLoad.value = PokemonListData.IncreaseSuccess(response.pokemons)
+                    _pageState.value = PokemonListPageState.IncrementalSuccess(response.pokemons)
                 }
 
-        }, {
+            }, {
 
-            if(getPokemonsUseCase.isInitialRequest()){
-                _initialError.value = PokemonListData.InitialError
-            }else{
-                _increaseError.value = PokemonListData.IncreaseError
-            }
+                if(getPokemonsUseCase.isInitialRequest()){
+                    _pageState.value = PokemonListPageState.InitialFail
+                }else{
+                    _pageState.value = PokemonListPageState.IncrementalFail
+                }
 
-        })
+            })
     }
 
     fun fetchImage(context : Context, pokemon: Pokemon){

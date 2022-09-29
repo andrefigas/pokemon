@@ -37,8 +37,8 @@ class AndroidMockPokemonsListRepository(private val imageRequestBuilder : ImageR
 
     override fun isInitialRequest() = url == BuildConfig.API_URL
 
-    override fun injectUrl(url: String) {
-        this.url = url
+    override fun injectUrl(url: String?) {
+        this.url = url ?: DEFAULT_URL
     }
 
     override fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest {
@@ -74,9 +74,7 @@ class AndroidMockPokemonsListRepository(private val imageRequestBuilder : ImageR
     ): Single<Pokemon> {
         val request = serviceClient.getPokemon(baseEntity.url)
             .map { pokemon ->
-                pokemon.name = baseEntity.name
-                pokemon.url = baseEntity.url
-                pokemon
+                pokemon.copy(baseEntity.name, baseEntity.url)
             }
 
         return request

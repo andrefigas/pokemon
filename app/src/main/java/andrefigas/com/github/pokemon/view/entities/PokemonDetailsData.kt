@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 
 sealed class PokemonDetailsData {
 
-    class DetailsSuccess(val data : PokemonDetailsDataModel) : PokemonDetailsData()
+    class DetailsSuccess(val data : PokemonDetailsDataModel, val drawable: Drawable) : PokemonDetailsData()
 
     class UpdateSuccess(val checked : Boolean) : PokemonDetailsData()
 

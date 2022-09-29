@@ -49,20 +49,25 @@ class MockPokemonDetailsRepository(private val pokemon: Pokemon, private val map
 
         val zipper : Function<Array<Any>, PokemonDetailsDataModel> =
             Function{ results ->
-                val details = PokemonDetailsDataModel(pokemon)
+                var specie : Specie? = null
+                var favoriteResponse : FavoriteResponse? = null
+
                 results.forEach {  any ->
+
                     when(any){
                         is Specie->{
-                            details.species = any
+                            specie = any
                         }
 
                         is FavoriteResponse->{
-                            details.favoriteResponse = any
+                            favoriteResponse = any
                         }
                     }
                 }
 
-                details
+                PokemonDetailsDataModel(pokemon,
+                    specie as Specie,
+                    favoriteResponse as FavoriteResponse)
             }
 
         return Single.zip(
@@ -78,7 +83,7 @@ class MockPokemonDetailsRepository(private val pokemon: Pokemon, private val map
 
     override fun updateFavourite(favourite : Boolean) = webHookClient.updateFavoritePokemon(mapperContract.fromUIToData(pokemon.id, favourite))
 
-    private fun provideSpecie() = serviceClient.getSpecie(pokemon.species?.url?:"")//todo fix
+    private fun provideSpecie() = serviceClient.getSpecie(pokemon.species.url)
 
     private fun provideFavourite() = webHookClient.getFavoriteByPokemon(pokemon.id)
 

@@ -2,6 +2,8 @@ package andrefigas.com.github.pokemon.tests
 
 
 import andrefigas.com.github.pokemon.data.DataTest
+import andrefigas.com.github.pokemon.intent.list.PokemonListPageEvent
+import andrefigas.com.github.pokemon.intent.list.PokemonListPageState
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import org.junit.Test
 import org.koin.java.KoinJavaComponent.inject
@@ -13,12 +15,15 @@ class PokemonListTest : BaseUnitTests() {
     @Test
     fun initialLoadData() {
 
-        pokemonListViewModel.initialLoad.assert(
-            { data ->
-                data.pokemons.contentEquals(arrayOf(DataTest.BULBASAUR))
+        pokemonListViewModel.pageState.assert(
+            waitFor = { data ->
+                data is PokemonListPageState.InitialSuccess
             },
-            {
-                pokemonListViewModel.fetchData()
+            assertion = { data ->
+                (data as PokemonListPageState.InitialSuccess).pokemons.contentEquals(arrayOf(DataTest.BULBASAUR))
+            },
+            trigger = {
+                pokemonListViewModel.processEvent(PokemonListPageEvent.OnCreate)
             }
         )
 
