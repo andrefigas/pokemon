@@ -1,13 +1,12 @@
 package andrefigas.com.github.pokemon.view.main
 
 import andrefigas.com.github.pokemon.R
-import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.utils.doOnScrollEnding
 import andrefigas.com.github.pokemon.utils.getDisplayWidth
 import andrefigas.com.github.pokemon.view.details.DetailsActivity
-import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
+import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import android.content.Intent
 import android.os.Bundle
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.request.ImageRequest
 import kotlinx.android.synthetic.main.activity_main.*
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.math.roundToInt
@@ -39,7 +37,7 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
-    lateinit var adapter: PokemonAdapter
+    private lateinit var adapter: PokemonAdapter
     private var infinityScrollListener: RecyclerView.OnScrollListener? = null
 
 

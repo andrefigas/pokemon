@@ -280,13 +280,6 @@ class DetailsActivity : AppCompatActivity(){
             .show()
     }
 
-    private fun toggleFavoriteCheck() {
-        menu.findItem(R.id.action_favorite_check).isVisible =
-            !menu.findItem(R.id.action_favorite_check).isVisible
-        menu.findItem(R.id.action_favorite_uncheck).isVisible =
-            !menu.findItem(R.id.action_favorite_uncheck).isVisible
-    }
-
     private fun showErrorOnAddFavorite(name: String) {
         Toast.makeText(
             this,

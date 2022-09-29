@@ -11,8 +11,7 @@ data class OtherImage(
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(Sprite::class.java.classLoader),
         parcel.readParcelable(Sprite::class.java.classLoader)
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeParcelable(dreamWorld, flags)

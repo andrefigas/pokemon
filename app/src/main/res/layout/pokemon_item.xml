@@ -15,7 +15,8 @@
         <ImageView
             style="@style/PokemonItemImage"
             android:id="@+id/pokemon_item_image"
-            android:layout_width="match_parent" />
+            android:layout_width="match_parent"
+            android:contentDescription="@string/pokemon_photo" />
 
         <TextView
             android:id="@+id/pokemon_item_name"

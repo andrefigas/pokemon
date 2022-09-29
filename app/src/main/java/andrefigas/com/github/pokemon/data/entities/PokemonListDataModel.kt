@@ -5,12 +5,12 @@ import andrefigas.com.github.pokemon.domain.entities.Pokemon
 
 class PokemonListDataModel() {
 
-    var initted: Boolean = false
-    var failed: Boolean = false
+    private var initted: Boolean = false
+    private var failed: Boolean = false
     var nextUrl: String? = null
     var previous: String? = null
     var pokemons: Array<Pokemon> = emptyArray()
-    var currentUrl: String? = null
+    private var currentUrl: String? = null
 
     constructor(
         pokemons: Array<Pokemon>,
@@ -39,10 +39,6 @@ class PokemonListDataModel() {
         } else if (other.pokemons!= null) {
             return false
         }
-
-
-        //todo fix
-        if (pokemons.get(0) != other.pokemons.get(0)) return false
 
         return true
     }

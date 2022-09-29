@@ -14,6 +14,6 @@
         android:id="@+id/action_favorite_check"
         android:title="@string/favorite_uncheck"
         android:icon="@drawable/ic_favorite_unchecked"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
 </menu>

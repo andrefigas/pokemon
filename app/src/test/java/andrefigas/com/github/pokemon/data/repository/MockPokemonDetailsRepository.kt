@@ -13,7 +13,7 @@ import io.reactivex.Single
 import io.reactivex.functions.Function
 
 
-class MockPokemonDetailsRepository(val pokemon: Pokemon, val mapperContract: MapperContract) :
+class MockPokemonDetailsRepository(private val pokemon: Pokemon, private val mapperContract: MapperContract) :
     MockRepository(
         listOf(ApiClient.PokemonClient::class.java,  ApiClient.WebHookClient::class.java),
         mapOf(

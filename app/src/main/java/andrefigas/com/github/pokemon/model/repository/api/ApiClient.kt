@@ -30,7 +30,7 @@ interface ApiClient {
             @Url url: String
         ): Single<ResultPage<BaseEntity>>
 
-        @GET()
+        @GET
         fun getPokemon(
             @Url url: String
         ): Single<Pokemon>
@@ -39,11 +39,6 @@ interface ApiClient {
         fun getSpecie(
             @Url url: String
         ): Single<Specie?>
-
-        @GET
-        fun getImage(
-            @Url url: String
-        ): Single<ResponseBody>
 
     }
 

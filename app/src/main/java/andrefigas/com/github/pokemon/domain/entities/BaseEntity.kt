@@ -37,22 +37,15 @@ open class BaseEntity(var name: String, var url: String) : Parcelable {
         return result
     }
 
-    companion object{
+    companion object CREATOR : Parcelable.Creator<BaseEntity> {
+        override fun createFromParcel(parcel: Parcel): BaseEntity {
+            return BaseEntity(parcel)
+        }
 
-        val ERROR = BaseEntity("","")
-
-        @JvmField
-        val CREATOR  = object : Parcelable.Creator<BaseEntity> {
-            override fun createFromParcel(parcel: Parcel): BaseEntity {
-                return BaseEntity(parcel)
-            }
-
-            override fun newArray(size: Int): Array<BaseEntity?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<BaseEntity?> {
+            return arrayOfNulls(size)
         }
     }
-
 
 
 }

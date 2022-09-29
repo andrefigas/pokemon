@@ -31,4 +31,6 @@
 
     <string name="pokemon_list_increase_data_error">Sorry, our server is not working at moment.</string>
 
+    <string name="pokemon_photo">photo</string>
+
 </resources>

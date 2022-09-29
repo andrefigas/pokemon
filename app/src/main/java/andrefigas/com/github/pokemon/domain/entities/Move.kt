@@ -6,8 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Move(@SerializedName("move") val content: BaseEntity?) : Parcelable {
 
-    constructor(parcel: Parcel) : this(parcel.readParcelable<BaseEntity>(BaseEntity::class.java.classLoader)) {
-    }
+    constructor(parcel: Parcel) : this(parcel.readParcelable<BaseEntity>(BaseEntity::class.java.classLoader))
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeParcelable(content, flags)

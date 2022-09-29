@@ -92,7 +92,7 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
             }
         }
 
-        imageDisposable = getPokemonImageUseCase.loadPokemonImage(target)?.let { imageLoader.enqueue(it) }
+        imageDisposable = getPokemonImageUseCase.loadPokemonImage(target).let { imageLoader.enqueue(it) }
     }
 
     fun updateFavourite(isChecked : Boolean){

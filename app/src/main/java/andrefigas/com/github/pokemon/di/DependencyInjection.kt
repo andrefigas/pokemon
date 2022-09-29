@@ -25,7 +25,7 @@ val modules = module {
     }
 
     factory<PokemonRepositoryContract> { params ->
-        PokemonRepository(androidContext(), params.get(), get())
+        PokemonRepository(androidContext(), params.get())
     }
 
     factory<PokemonDetailsRepositoryContract> { params ->

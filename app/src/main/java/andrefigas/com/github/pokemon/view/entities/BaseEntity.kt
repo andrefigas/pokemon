@@ -28,6 +28,10 @@ open class BaseEntity(var name: String) : Parcelable {
         return 0
     }
 
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
+
     companion object{
 
         val ERROR = BaseEntity("")

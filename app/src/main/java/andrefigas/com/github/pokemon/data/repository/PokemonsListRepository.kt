@@ -12,8 +12,8 @@ import coil.request.ImageRequest
 import coil.target.Target
 import io.reactivex.Single
 
-class PokemonRepository(context: Context, private val imageRequestBuilder : ImageRequest.Builder,
-                        private val mapperContract: MapperContract
+class PokemonRepository(
+    context: Context, private val imageRequestBuilder: ImageRequest.Builder
 ) :
     Repository(context, mapOf(BuildConfig.API_URL to ApiClient.PokemonClient::class.java)),
     PokemonRepositoryContract {
@@ -81,7 +81,7 @@ class PokemonRepository(context: Context, private val imageRequestBuilder : Imag
     private fun fetchPokemon(
         baseEntity: BaseEntity
     ): Single<Pokemon> {
-        var request = serviceClient.getPokemon(baseEntity.url)
+        val request = serviceClient.getPokemon(baseEntity.url)
             .map { pokemon ->
                 pokemon.name = baseEntity.name
                 pokemon.url = baseEntity.url

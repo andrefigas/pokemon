@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.IllegalArgumentException
 
 
-abstract class MockRepository(apis: List<Class<out ApiClient>>, val mapping: Map<String, String>) {
+abstract class MockRepository(apis: List<Class<out ApiClient>>, private val mapping: Map<String, String>) {
 
     companion object{
         const val DEFAULT_URL = "http://127.0.0.1/"
@@ -45,7 +45,7 @@ abstract class MockRepository(apis: List<Class<out ApiClient>>, val mapping: Map
 
 }
 
-class MockInterceptor(val mapping: Map<String, String>) : Interceptor{
+class MockInterceptor(private val mapping: Map<String, String>) : Interceptor{
 
 
     override fun intercept(chain: Interceptor.Chain): Response {

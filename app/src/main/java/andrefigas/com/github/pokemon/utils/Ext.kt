@@ -9,8 +9,6 @@ import android.view.WindowInsets
 import android.view.WindowMetrics
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.Single
-import kotlin.reflect.KProperty0
 
 /**
  *EXTENSION FUNCTIONS

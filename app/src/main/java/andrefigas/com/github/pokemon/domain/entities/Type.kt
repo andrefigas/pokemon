@@ -12,8 +12,7 @@ data class Type(
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readParcelable(BaseEntity::class.java.classLoader)
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(slot)

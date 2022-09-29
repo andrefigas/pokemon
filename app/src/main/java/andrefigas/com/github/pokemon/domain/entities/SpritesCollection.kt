@@ -27,8 +27,7 @@ data class SpritesCollection(
         parcel.readString(),
         parcel.readString(),
         parcel.readParcelable(OtherImage::class.java.classLoader)
-    ) {
-    }
+    )
 
     fun getBetterImage(): String? {
         val all = listOfNotNull(
@@ -40,9 +39,9 @@ data class SpritesCollection(
 
         )
 
-        val SVG = ".svg"
+        val svg = ".svg"
 
-        return all.firstOrNull { it.endsWith(SVG, true) } ?: all.firstOrNull()
+        return all.firstOrNull { it.endsWith(svg, true) } ?: all.firstOrNull()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

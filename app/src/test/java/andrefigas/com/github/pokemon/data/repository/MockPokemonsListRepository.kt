@@ -71,7 +71,7 @@ class MockPokemonsListRepository:
     private fun fetchPokemon(
         baseEntity: BaseEntity
     ): Single<Pokemon> {
-        var request = serviceClient.getPokemon(baseEntity.url)
+        val request = serviceClient.getPokemon(baseEntity.url)
             .map { pokemon ->
                 pokemon.name = baseEntity.name
                 pokemon.url = baseEntity.url

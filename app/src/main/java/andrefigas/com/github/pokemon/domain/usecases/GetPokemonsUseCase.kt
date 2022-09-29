@@ -1,13 +1,12 @@
 package andrefigas.com.github.pokemon.domain.usecases
 
-import andrefigas.com.github.pokemon.data.repository.PokemonRepositoryContract
 import andrefigas.com.github.pokemon.data.entities.PokemonListDataModel
+import andrefigas.com.github.pokemon.data.repository.PokemonRepositoryContract
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
-import coil.request.ImageRequest
 import coil.target.Target
 import io.reactivex.Single
 
-class GetPokemonsUseCase(val repo: PokemonRepositoryContract) {
+class GetPokemonsUseCase(private val repo: PokemonRepositoryContract) {
 
     fun providePokemons() : Single<PokemonListDataModel> = repo.providePokemons()
 

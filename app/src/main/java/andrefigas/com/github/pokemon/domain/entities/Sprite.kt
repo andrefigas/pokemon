@@ -6,8 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 class Sprite(@SerializedName("front_default") val image: String?) : Parcelable {
 
-    constructor(parcel: Parcel) : this(parcel.readString()) {
-    }
+    constructor(parcel: Parcel) : this(parcel.readString())
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(image)
