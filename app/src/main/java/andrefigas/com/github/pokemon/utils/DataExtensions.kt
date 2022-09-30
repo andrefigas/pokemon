@@ -2,6 +2,13 @@ package andrefigas.com.github.pokemon.utils
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.subjects.PublishSubject
 
 /**
  * build a string with data list and a string separator
@@ -33,6 +40,19 @@ inline fun  <reified T : Parcelable?> Parcel.readParcelableArray(loader : Class<
 
 fun Parcel.readStringOrEmpty(): String{
     return readString()?:""
+}
+
+fun <T> PublishSubject<T>.observe(lifecycleOwner: LifecycleOwner, onNext : Consumer<T> ): Disposable {
+    val disposable = subscribe(onNext)
+    lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        fun onDestroy() {
+            lifecycleOwner.lifecycle.removeObserver(this)
+            disposable.dispose()
+        }
+    })
+
+    return disposable
 }
 
 

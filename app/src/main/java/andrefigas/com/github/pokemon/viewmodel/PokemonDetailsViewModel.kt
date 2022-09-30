@@ -116,7 +116,7 @@ class PokemonDetailsViewModel (private val getPokemonDetailsUseCase: GetPokemonD
 
                     val name = pageData.data.pokemon.name
 
-                    if(isChecked){
+                    if(favoriteResponse.favorite){
                         effects.onNext(PokemonDetailsPageEffect.OnAddToFavoriteSuccess(name))
                     }else{
                         effects.onNext(PokemonDetailsPageEffect.OnRemoveFromFavoriteSuccess(name))

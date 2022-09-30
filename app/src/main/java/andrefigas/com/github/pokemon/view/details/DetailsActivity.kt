@@ -6,6 +6,7 @@ import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEffect
 import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEvent
 import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageState
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
+import andrefigas.com.github.pokemon.utils.observe
 import andrefigas.com.github.pokemon.view.entities.PokemonUI
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
 import android.os.Bundle
@@ -17,6 +18,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import coil.request.ImageRequest
+import io.reactivex.rxjava3.functions.Consumer
 import kotlinx.android.synthetic.main.activity_details.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -27,7 +29,7 @@ class DetailsActivity : AppCompatActivity() {
     private val pokemonDetailsViewModel: PokemonDetailsViewModel by viewModel {
         parametersOf(
             IntentArgsUtils.getPokemonByArgs(intent),
-            ImageRequest.Builder(DetailsActivity@ this)
+            ImageRequest.Builder(this)
                 .crossfade(true)
                 .crossfade(500)
                 .placeholder(R.drawable.ic_pokeball_pb)
@@ -65,9 +67,9 @@ class DetailsActivity : AppCompatActivity() {
             renderState(state)
         })
 
-        pokemonDetailsViewModel.effects.subscribe {  effect ->
+        pokemonDetailsViewModel.effects.observe(this, Consumer{ effect ->
             showEffet(effect)
-        }
+        })
 
     }
 
