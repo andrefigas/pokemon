@@ -2,6 +2,13 @@
 
 This is a demo app that shows some pokemons provided by [pokeapi.co](https://pokeapi.co/)
 
+
+Portrait            |  Landscape
+:-------------------------:|:-------------------------:
+![portrait](portrait.jpeg) |  ![portrait](landscape.jpeg) 
+
+
+
 ## Features
 
 ### • Grid
@@ -23,7 +30,7 @@ The user can check or uncheck the favarite
 
 ***Disclaimer*** : *At the moment this feature consumes a mock service. So, they always will see this selector unchecked when they enter to details screen and see it checked if click on the heart icon*
 
-### • Screen Rotation
+### • Screen rotation
 
 Feel free to rotate your device. Our ViewModels is able to recycle information
 
