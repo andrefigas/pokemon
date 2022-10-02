@@ -28,10 +28,6 @@ class MockPokemonsListRepository:
         }
     }
 
-    override fun injectUrl(url: String?) {
-        this.url = url ?: BuildConfig.API_URL
-    }
-
     override fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest {
        throw NotImplementedError()
     }

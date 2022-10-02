@@ -12,7 +12,6 @@ class GetInitialPokemonsPageUseCase(repo: PokemonRepositoryContract) : BasePokem
 
     override operator fun invoke(onSuccess: Consumer<PokemonListDataModel>, onFail: Consumer<Throwable>) {
         disposable = repo.fetchInitialPokemonsPage().flatMap { resultPage ->
-            repo.injectUrl(resultPage.next)
             fetchPokemonsForPage(resultPage)
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

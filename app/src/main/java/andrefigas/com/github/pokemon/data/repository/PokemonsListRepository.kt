@@ -25,7 +25,7 @@ class PokemonRepository(
         }
     }
 
-    override fun injectUrl(url: String?) {
+    fun injectUrl(url: String?) {
         this.url = url ?: BuildConfig.API_URL
     }
 
@@ -38,9 +38,15 @@ class PokemonRepository(
             .build()
     }
 
-    override fun fetchInitialPokemonsPage(): Single<ResultPage<BaseEntity>> = serviceClient.fetchPokemons()
+    override fun fetchInitialPokemonsPage(): Single<ResultPage<BaseEntity>> = serviceClient.fetchPokemons().map {page->
+        injectUrl(page.next)
+        page
+    }
 
-    override fun fetchNextPokemonsPage(): Single<ResultPage<BaseEntity>> =serviceClient.fetchPokemons(url)
+    override fun fetchNextPokemonsPage(): Single<ResultPage<BaseEntity>> = serviceClient.fetchPokemons(url).map {page->
+        injectUrl(page.next)
+        page
+    }
 
     override fun fetchPokemon(
         baseEntity: BaseEntity
@@ -57,7 +63,6 @@ class PokemonRepository(
 
 interface PokemonRepositoryContract {
 
-    fun injectUrl(url: String?)
     fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest
     fun fetchInitialPokemonsPage(): Single<ResultPage<BaseEntity>>
     fun fetchNextPokemonsPage(): Single<ResultPage<BaseEntity>>
