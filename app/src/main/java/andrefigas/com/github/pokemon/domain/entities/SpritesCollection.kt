@@ -40,7 +40,13 @@ data class SpritesCollection(
 
         val svg = ".svg"
 
-        return all.first { it.endsWith(svg, true) }
+        val svgUrl = all.firstOrNull { it.endsWith(svg, true) }
+
+        if(svgUrl != null){
+            return svgUrl
+        }
+
+        return all.first()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
