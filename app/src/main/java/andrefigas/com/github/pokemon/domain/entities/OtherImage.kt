@@ -37,7 +37,7 @@ data class OtherImage(
 
     override fun hashCode(): Int {
         var result = dreamWorld.hashCode()
-        result = 31 * result + officialArtwork?.hashCode()
+        result = 31 * result + officialArtwork.hashCode()
         return result
     }
 

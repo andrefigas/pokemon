@@ -4,12 +4,10 @@ import andrefigas.com.github.pokemon.BuildConfig
 import andrefigas.com.github.pokemon.data.entities.ResultPage
 import andrefigas.com.github.pokemon.domain.entities.BaseEntity
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
-import andrefigas.com.github.pokemon.data.entities.PokemonListDataModel
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 import coil.request.ImageRequest
 import coil.target.Target
 import io.reactivex.Single
-import andrefigas.com.github.pokemon.R
 
 class AndroidMockPokemonsListRepository(private val imageRequestBuilder : ImageRequest.Builder) :
     MockRepository(listOf(ApiClient.PokemonClient::class.java),
@@ -30,58 +28,33 @@ class AndroidMockPokemonsListRepository(private val imageRequestBuilder : ImageR
         }
     }
 
-    override fun providePokemons(): Single<PokemonListDataModel> =
-        providePokemonList().flatMap { resultPage ->
-            fetchPokemonsForPage(resultPage, url)
-        }
-
-    override fun isInitialRequest() = url == BuildConfig.API_URL
-
     override fun injectUrl(url: String?) {
-        this.url = url ?: DEFAULT_URL
+        this.url = url ?: BuildConfig.API_URL
     }
 
     override fun loadPokemonImage(pokemon: Pokemon, target: Target): ImageRequest {
-        return imageRequestBuilder.data(R.drawable.ic_pokeball).target(target).build()
+        val sprites = pokemon.spritesCollection
+        val imageUrl = sprites.getBetterImage()
+        return imageRequestBuilder
+            .data(imageUrl)
+            .target(target)
+            .build()
     }
 
-    private fun providePokemonList(): Single<ResultPage<BaseEntity>> {
-        return if (isInitialRequest()) initialRequest() else nextRequest()
-    }
+    override fun fetchInitialPokemonsPage(): Single<ResultPage<BaseEntity>> = serviceClient.fetchPokemons()
 
-    private fun fetchPokemonsForPage(
-        resultPage: ResultPage<BaseEntity>,
-        url: String?
-    ): Single<PokemonListDataModel> {
-        return Single.zip(resultPage.results.map { baseEntity ->
-            fetchPokemon(baseEntity)
-        }) { pokemonPages ->
-            pokemonPages.map { pokemon ->
-                pokemon as Pokemon
-            }.toTypedArray()
-        }.map { pokemons ->
-            PokemonListDataModel(
-                pokemons,
-                resultPage,
-                url
-            )
-        }
+    override fun fetchNextPokemonsPage(): Single<ResultPage<BaseEntity>> =serviceClient.fetchPokemons(url)
 
-    }
-
-    private fun fetchPokemon(
+    override fun fetchPokemon(
         baseEntity: BaseEntity
     ): Single<Pokemon> {
         val request = serviceClient.getPokemon(baseEntity.url)
             .map { pokemon ->
-                pokemon.copy(baseEntity.name, baseEntity.url)
+                pokemon.copy(name = baseEntity.name, url = baseEntity.url)
             }
 
         return request
     }
 
-    private fun initialRequest() = serviceClient.fetchPokemons()
-
-    private fun nextRequest() = serviceClient.fetchPokemons(url)
 
 }

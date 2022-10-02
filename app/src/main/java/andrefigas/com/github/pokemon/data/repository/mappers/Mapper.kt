@@ -34,12 +34,12 @@ class Mapper(val context: Context) : MapperContract {
 
         return PokemonDetailsUI(
             name,
-            description,
             height,
             weight,
-            habitat,
             types.toString(context.getString(R.string.types_separator)),
             moves.toString(context.getString(R.string.types_separator)),
+            description,
+            habitat,
             favourite
         )
     }

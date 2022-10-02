@@ -17,7 +17,7 @@ abstract class Repository(val context: Context, map: Map<String, Class<out ApiCl
         const val CACHE_SIZE = 10L * 1024 * 1024
     }
 
-    abstract fun processClient(api: ApiClient)
+    protected abstract fun processClient(api: ApiClient)
 
     init {
 

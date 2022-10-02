@@ -1,12 +1,13 @@
 package andrefigas.com.github.pokemon.view.entities
 
+import andrefigas.com.github.pokemon.utils.readStringOrEmpty
 import android.os.Parcel
 import android.os.Parcelable
 
 open class BaseEntity(var name: String) : Parcelable {
 
     constructor(parcel: Parcel) : this(
-        parcel.readString() ?: ""
+        parcel.readStringOrEmpty()
     )
 
     override fun equals(other: Any?): Boolean {
@@ -32,8 +33,14 @@ open class BaseEntity(var name: String) : Parcelable {
         return name.hashCode()
     }
 
-    companion object{
+    companion object CREATOR : Parcelable.Creator<BaseEntity> {
+        override fun createFromParcel(parcel: Parcel): BaseEntity {
+            return BaseEntity(parcel)
+        }
 
+        override fun newArray(size: Int): Array<BaseEntity?> {
+            return arrayOfNulls(size)
+        }
     }
 
 }

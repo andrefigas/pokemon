@@ -14,7 +14,7 @@ object DataTest {
         height = 7,
 
         spritesCollection = SpritesCollection(
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png",
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.svg",
             null, null, null, null, null, null, null, null
         ),
 

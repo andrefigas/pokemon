@@ -1,69 +1,57 @@
 package andrefigas.com.github.pokemon.di
 
 
-import andrefigas.com.github.pokemon.data.repository.MockPokemonDetailsRepository
-import andrefigas.com.github.pokemon.data.repository.MockPokemonsListRepository
-import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
+import andrefigas.com.github.pokemon.data.repository.*
 import andrefigas.com.github.pokemon.data.repository.mappers.MockMapper
-import andrefigas.com.github.pokemon.data.repository.PokemonDetailsRepositoryContract
-import andrefigas.com.github.pokemon.data.repository.PokemonRepositoryContract
-import andrefigas.com.github.pokemon.domain.usecases.GetPokemonDetailsUseCase
-import andrefigas.com.github.pokemon.domain.usecases.GetPokemonImageUseCase
-import andrefigas.com.github.pokemon.domain.usecases.GetPokemonsUseCase
-import andrefigas.com.github.pokemon.domain.usecases.UpdatePokemonFavoriteUseCase
+import andrefigas.com.github.pokemon.domain.usecases.details.GetPokemonDetailsUseCase
+import andrefigas.com.github.pokemon.domain.usecases.details.GetPokemonDetailsUseCaseContract
+import andrefigas.com.github.pokemon.domain.usecases.details.GetPokemonDetailsImageUseCase
+import andrefigas.com.github.pokemon.domain.usecases.details.GetPokemonDetailsImageUseCaseContract
+import andrefigas.com.github.pokemon.domain.usecases.details.UpdatePokemonFavoriteUseCase
+import andrefigas.com.github.pokemon.domain.usecases.details.UpdatePokemonFavoriteUseCaseContract
+import andrefigas.com.github.pokemon.domain.usecases.list.*
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val modules = module {
 
+    //single
 
-    factory {
+    single {
         MockMapper
     }
 
-    factory<PokemonRepositoryContract> {
+    single<PokemonRepositoryContract> {
         MockPokemonsListRepository()
     }
+
+    //details
 
     factory<PokemonDetailsRepositoryContract> { params ->
         MockPokemonDetailsRepository(params.get(), get())
     }
 
-    factory { params ->
-        GetPokemonImageUseCase(get {
-            params
-        })
-    }
-
-    factory { params ->
-        UpdatePokemonFavoriteUseCase(get {
-            params
-        })
-    }
-
-    factory { params ->
+    factory<GetPokemonDetailsUseCaseContract>{ params ->
         GetPokemonDetailsUseCase(get {
             params
         })
     }
 
-    factory { params ->
-        GetPokemonsUseCase(get {
+    factory<GetPokemonDetailsImageUseCaseContract>{ params ->
+        GetPokemonDetailsImageUseCase(get {
             params
         })
     }
 
-    single { params ->
-        PokemonListViewModel(
-            get {
-                params
-            },
-            get())
-
+    factory<UpdatePokemonFavoriteUseCaseContract> { params ->
+        UpdatePokemonFavoriteUseCase(get {
+            params
+        })
     }
 
-    single { params ->
+    viewModel { params ->
         PokemonDetailsViewModel(
             get {
                 params
@@ -73,5 +61,42 @@ val modules = module {
                 params
             }, get())
     }
+
+
+    //list
+
+    factory<GetchInitialPokemonsPageUseCaseContract> { params ->
+        GetInitialPokemonsPageUseCase(get {
+            params
+        })
+    }
+
+    factory<GetNextPokemonsPageUseCaseContract> { params ->
+        GetNextPokemonsPageUseCase(get {
+            params
+        })
+    }
+
+    factory<GetPokemonListImageUseCaseContract> { params ->
+        GetPokemonListImageUseCase(get {
+            params
+        })
+    }
+
+    viewModel { params ->
+        PokemonListViewModel(
+            get {
+                params
+            },
+            get {
+                params
+            },
+            get {
+                params
+            },
+            get())
+
+    }
+
 
 }

@@ -1,19 +1,14 @@
 package andrefigas.com.github.pokemon.data.repository
 
 import andrefigas.com.github.pokemon.BuildConfig
-import andrefigas.com.github.pokemon.data.entities.FavoriteResponse
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
-import andrefigas.com.github.pokemon.data.entities.PokemonDetailsDataModel
 import andrefigas.com.github.pokemon.data.repository.mappers.MapperContract
-import andrefigas.com.github.pokemon.domain.entities.Specie
 import andrefigas.com.github.pokemon.model.repository.api.ApiClient
 import coil.request.ImageRequest
 import coil.target.Target
-import io.reactivex.Single
-import io.reactivex.functions.Function
 
 
-class MockPokemonDetailsRepository(private val pokemon: Pokemon, private val mapperContract: MapperContract) :
+class MockPokemonDetailsRepository(override val pokemon: Pokemon, private val mapperContract: MapperContract) :
     MockRepository(
         listOf(ApiClient.PokemonClient::class.java,  ApiClient.WebHookClient::class.java),
         mapOf(
@@ -41,50 +36,14 @@ class MockPokemonDetailsRepository(private val pokemon: Pokemon, private val map
 
     }
 
-    override fun provideDetails(): Single<PokemonDetailsDataModel> {
-        val request = listOf(
-            provideSpecie(),
-            provideFavourite()
-        )
-
-        val zipper : Function<Array<Any>, PokemonDetailsDataModel> =
-            Function{ results ->
-                var specie : Specie? = null
-                var favoriteResponse : FavoriteResponse? = null
-
-                results.forEach {  any ->
-
-                    when(any){
-                        is Specie->{
-                            specie = any
-                        }
-
-                        is FavoriteResponse->{
-                            favoriteResponse = any
-                        }
-                    }
-                }
-
-                PokemonDetailsDataModel(pokemon,
-                    specie as Specie,
-                    favoriteResponse as FavoriteResponse)
-            }
-
-        return Single.zip(
-            request,
-            zipper
-        )
-
-    }
-
     override fun loadPokemonImage(target: Target): ImageRequest{
-       throw NotImplementedError()
+        throw NotImplementedError()
     }
 
     override fun updateFavourite(favourite : Boolean) = webHookClient.updateFavoritePokemon(mapperContract.fromUIToData(pokemon.id, favourite))
 
-    private fun provideSpecie() = serviceClient.getSpecie(pokemon.species.url)
+    override fun provideSpecie() = serviceClient.getSpecie(pokemon.species.url)
 
-    private fun provideFavourite() = webHookClient.getFavoriteByPokemon(pokemon.id)
+    override fun provideFavourite() = webHookClient.getFavoriteByPokemon(pokemon.id)
 
 }

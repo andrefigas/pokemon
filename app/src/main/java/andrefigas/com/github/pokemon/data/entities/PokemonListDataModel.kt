@@ -7,8 +7,8 @@ class PokemonListDataModel() {
 
     private var initted: Boolean = false
     private var failed: Boolean = false
-    var nextUrl: String? = null
-    var previous: String? = null
+    private var nextUrl: String? = null
+    private var previous: String? = null
     var pokemons: Array<Pokemon> = emptyArray()
     private var currentUrl: String? = null
 
@@ -31,12 +31,7 @@ class PokemonListDataModel() {
 
         other as PokemonListDataModel
 
-        if (pokemons != null) {
-            if (other.pokemons == null) return false
-            if (!pokemons.contentEquals(other.pokemons)) return false
-        } else if (other.pokemons!= null) {
-            return false
-        }
+        if (!pokemons.contentEquals(other.pokemons)) return false
 
         return true
     }

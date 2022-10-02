@@ -211,7 +211,7 @@
     "url": "https://pokeapi.co/api/v2/pokemon-species/1/"
   },
   "sprites": {
-    "back_default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png"
+    "back_default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.svg"
   },
   "stats": [
     {

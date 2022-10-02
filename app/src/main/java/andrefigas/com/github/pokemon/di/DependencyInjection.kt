@@ -7,10 +7,8 @@ import andrefigas.com.github.pokemon.data.repository.PokemonDetailsRepository
 import andrefigas.com.github.pokemon.data.repository.PokemonDetailsRepositoryContract
 import andrefigas.com.github.pokemon.data.repository.PokemonRepository
 import andrefigas.com.github.pokemon.data.repository.PokemonRepositoryContract
-import andrefigas.com.github.pokemon.domain.usecases.GetPokemonDetailsUseCase
-import andrefigas.com.github.pokemon.domain.usecases.GetPokemonImageUseCase
-import andrefigas.com.github.pokemon.domain.usecases.GetPokemonsUseCase
-import andrefigas.com.github.pokemon.domain.usecases.UpdatePokemonFavoriteUseCase
+import andrefigas.com.github.pokemon.domain.usecases.details.*
+import andrefigas.com.github.pokemon.domain.usecases.list.*
 import andrefigas.com.github.pokemon.viewmodel.PokemonDetailsViewModel
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import org.koin.android.ext.koin.androidContext
@@ -19,50 +17,38 @@ import org.koin.dsl.module
 
 val modules = module {
 
+    //single
 
-    factory<MapperContract> {
+    single<MapperContract> {
         Mapper(androidContext())
     }
 
-    factory<PokemonRepositoryContract> { params ->
+    single<PokemonRepositoryContract> { params ->
         PokemonRepository(androidContext(), params.get())
     }
+
+    //details
 
     factory<PokemonDetailsRepositoryContract> { params ->
         PokemonDetailsRepository(get(), params.get(), params.get(), get())
     }
 
-    factory { params ->
-        GetPokemonImageUseCase(get {
-            params
-        })
-    }
-
-    factory { params ->
-        UpdatePokemonFavoriteUseCase(get {
-            params
-        })
-    }
-
-    factory { params ->
+    factory<GetPokemonDetailsUseCaseContract>{ params ->
         GetPokemonDetailsUseCase(get {
             params
         })
     }
 
-    factory { params ->
-        GetPokemonsUseCase(get {
+    factory<GetPokemonDetailsImageUseCaseContract>{ params ->
+        GetPokemonDetailsImageUseCase(get {
             params
         })
     }
 
-    viewModel { params ->
-        PokemonListViewModel(
-            get {
-                params
-            },
-            get())
-
+    factory<UpdatePokemonFavoriteUseCaseContract> { params ->
+        UpdatePokemonFavoriteUseCase(get {
+            params
+        })
     }
 
     viewModel { params ->
@@ -74,6 +60,42 @@ val modules = module {
             }, get {
                 params
             }, get())
+    }
+
+
+    //list
+
+    factory<GetchInitialPokemonsPageUseCaseContract> { params ->
+        GetInitialPokemonsPageUseCase(get {
+            params
+        })
+    }
+
+    factory<GetNextPokemonsPageUseCaseContract> { params ->
+        GetNextPokemonsPageUseCase(get {
+            params
+        })
+    }
+
+    factory<GetPokemonListImageUseCaseContract> { params ->
+        GetPokemonListImageUseCase(get {
+            params
+        })
+    }
+
+    viewModel { params ->
+        PokemonListViewModel(
+            get {
+                params
+            },
+            get {
+                params
+            },
+            get {
+                params
+            },
+            get())
+
     }
 
 }

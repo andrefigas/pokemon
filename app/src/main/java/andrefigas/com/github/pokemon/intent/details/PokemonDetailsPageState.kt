@@ -6,6 +6,8 @@ sealed class PokemonDetailsPageState {
 
     object Loading : PokemonDetailsPageState()
 
+    object UpdateFavoriteInProgress : PokemonDetailsPageState()
+
     class DetailsSuccess(val data : PokemonDetailsDataModel) : PokemonDetailsPageState()
 
     object DetailsFail: PokemonDetailsPageState()

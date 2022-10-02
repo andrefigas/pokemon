@@ -7,7 +7,6 @@ import andrefigas.com.github.pokemon.intent.ImagePageState
 import andrefigas.com.github.pokemon.intent.list.PokemonListPageEvent
 import andrefigas.com.github.pokemon.utils.IntentArgsUtils
 import andrefigas.com.github.pokemon.view.details.DetailsActivity
-import andrefigas.com.github.pokemon.view.entities.PokemonListData
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import android.content.Context
 import android.content.Intent

@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity(),
                 pokemonListViewModel.processEvent(PokemonListPageEvent.OnScrollEnd)
             },
             {
-                pokemonListViewModel.isProgressing()
+                pokemonListViewModel.isLoading()
             }
         )
     }
