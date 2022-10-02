@@ -97,6 +97,8 @@ open class PokemonListViewModel (private val getInitialPokemonsPageUseCase: Getc
     override fun onCleared() {
         super.onCleared()
         getInitialPokemonsPageUseCase.dispose()
+        getNextPokemonsPageUseCase.dispose()
+        getPokemonsImageUseCaseContract.dispose()
     }
 
     fun isLoading()  = when(pageState.value){
