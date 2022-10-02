@@ -47,6 +47,8 @@ open class PokemonListViewModel (private val getInitialPokemonsPageUseCase: Getc
     }
 
     private fun fetchInitialPage(){
+        _pageState.value = PokemonListPageState.InitialLoading
+
         getInitialPokemonsPageUseCase.invoke(Consumer { response ->
             _pageState.value = PokemonListPageState.InitialSuccess(response.pokemons)
         }, Consumer {
@@ -55,6 +57,8 @@ open class PokemonListViewModel (private val getInitialPokemonsPageUseCase: Getc
     }
 
     private fun fetchNextPage(){
+        _pageState.value = PokemonListPageState.IncrementalLoading
+
         getNextPokemonsPageUseCase(Consumer { response ->
             _pageState.value = PokemonListPageState.IncrementalSuccess(response.pokemons)
         }, Consumer {

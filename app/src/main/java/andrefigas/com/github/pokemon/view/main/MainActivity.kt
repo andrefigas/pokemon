@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity(),
     private fun incrementalLoadSuccess(state: PokemonListPageState.IncrementalSuccess){
         hideIncreasingDataProgress()
         increasePokemonList(state.pokemons)
+        configureInfinityScroll()
     }
 
     private fun initialLoadFail(){
@@ -116,7 +117,6 @@ class MainActivity : AppCompatActivity(),
 
         rv_pokemons.adapter = adapter
         configureLayoutManager(adapter)
-        configureInfinityScroll()
     }
 
     private fun configureLayoutManager(adapter: PokemonAdapter) {
@@ -143,6 +143,7 @@ class MainActivity : AppCompatActivity(),
         infinityScrollListener = rv_pokemons.doOnScrollEnding(
             offsetTriggerScroll,
             {
+                disableInfinityScroll()
                 pokemonListViewModel.processEvent(PokemonListPageEvent.OnScrollEnd)
             },
             {
