@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity(),
                 showIncreasingDataProgress()
             }
 
+            is PokemonListPageState.Recycled,
             is PokemonListPageState.InitialSuccess -> {
                 initialLoadSuccess(intent)
             }
@@ -84,11 +85,14 @@ class MainActivity : AppCompatActivity(),
             is PokemonListPageState.IncrementalFail -> {
                 initialLoadFail()
             }
+            PokemonListPageState.Idle -> {
+                //do nothing
+            }
         }
     }
 
 
-    private fun initialLoadSuccess(state: PokemonListPageState.InitialSuccess){
+    private fun initialLoadSuccess(state: PokemonListPageState){
         createPokemonList()
         hideStartingDataProgress()
         increasePokemonList(state.pokemons)
@@ -171,8 +175,8 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
-    override fun increasePokemonList(pokemons: Array<Pokemon>) {
-        adapter.addPokemons(pokemons.toList())
+    override fun increasePokemonList(pokemons: List<Pokemon>) {
+        adapter.addPokemons(pokemons)
     }
 
     override fun showIncreasingDataProgress() {
@@ -217,5 +221,10 @@ class MainActivity : AppCompatActivity(),
 
         infinityScrollListener = null
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        pokemonListViewModel.release()
     }
 }

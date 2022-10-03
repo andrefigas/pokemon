@@ -20,7 +20,7 @@ class PokemonListTest : BaseUnitTests() {
                 data is PokemonListPageState.InitialSuccess
             },
             assertion = { data ->
-                (data as PokemonListPageState.InitialSuccess).pokemons.contentEquals(arrayOf(DataTest.BULBASAUR))
+                (data as PokemonListPageState.InitialSuccess).pokemons.toTypedArray().contentEquals(arrayOf(DataTest.BULBASAUR))
             },
             trigger = {
                 pokemonListViewModel.processEvent(PokemonListPageEvent.OnCreate)

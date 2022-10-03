@@ -1,5 +1,7 @@
 package andrefigas.com.github.pokemon.intent.details
 
+import android.graphics.drawable.Drawable
+
 sealed class PokemonDetailsPageEffect(val name : String) {
 
     class OnAddToFavoriteFail(name : String) : PokemonDetailsPageEffect(name)

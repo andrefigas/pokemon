@@ -8,6 +8,7 @@ import andrefigas.com.github.pokemon.domain.usecases.list.GetchInitialPokemonsPa
 import andrefigas.com.github.pokemon.intent.ImagePageState
 import andrefigas.com.github.pokemon.intent.list.PokemonListPageEvent
 import andrefigas.com.github.pokemon.intent.list.PokemonListPageState
+import andrefigas.com.github.pokemon.utils.changeState
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
@@ -15,6 +16,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import coil.target.Target
 import io.reactivex.functions.Consumer
+import io.reactivex.rxjava3.subjects.PublishSubject
 
 
 open class PokemonListViewModel (private val getInitialPokemonsPageUseCase: GetchInitialPokemonsPageUseCaseContract,
@@ -23,16 +25,20 @@ open class PokemonListViewModel (private val getInitialPokemonsPageUseCase: Getc
                                  val mapperContract: MapperContract) :
     ViewModel() {
 
-    private val _pageState = MutableLiveData<PokemonListPageState>()
-    val pageState : LiveData<PokemonListPageState> = _pageState
+    private val _pageState : MutableLiveData<PokemonListPageState>
+    val pageState : LiveData<PokemonListPageState>
+    val imageState : PublishSubject<Pair<String, Drawable?>>
 
-    private val _imageState = MutableLiveData<ImagePageState>()
-    val imageState : LiveData<ImagePageState> = _imageState
+    init {
+        _pageState = MutableLiveData(PokemonListPageState.Idle)
+        pageState  = _pageState
+        imageState = PublishSubject.create()
+    }
 
     fun processEvent(event : PokemonListPageEvent){
         when(event){
             is PokemonListPageEvent.OnCreate -> {
-                if(pageState.value == null){
+                if(pageState.value == PokemonListPageState.Idle){
                     fetchInitialPage()
                 }
             }
@@ -47,22 +53,35 @@ open class PokemonListViewModel (private val getInitialPokemonsPageUseCase: Getc
     }
 
     private fun fetchInitialPage(){
-        _pageState.value = PokemonListPageState.InitialLoading
+        _pageState.changeState {
+            it.initialLoading()
+        }
 
         getInitialPokemonsPageUseCase.invoke(Consumer { response ->
-            _pageState.value = PokemonListPageState.InitialSuccess(response.pokemons)
+            _pageState.changeState {
+                it.initialSuccess(response.pokemons)
+            }
+
+
         }, Consumer {
-            _pageState.value = PokemonListPageState.InitialFail
+            _pageState.changeState {
+                it.initialFail()
+            }
         })
     }
 
     private fun fetchNextPage(){
-        _pageState.value = PokemonListPageState.IncrementalLoading
+
+        _pageState.value = _pageState.value?.incrementalLoading()
 
         getNextPokemonsPageUseCase(Consumer { response ->
-            _pageState.value = PokemonListPageState.IncrementalSuccess(response.pokemons)
+            _pageState.changeState {
+                it.incrementalSuccess(response.pokemons)
+            }
         }, Consumer {
-            _pageState.value = PokemonListPageState.IncrementalFail
+            _pageState.changeState {
+                it.incrementalFail()
+            }
         })
     }
 
@@ -70,23 +89,19 @@ open class PokemonListViewModel (private val getInitialPokemonsPageUseCase: Getc
 
         val context : Context = event.context
         val pokemon: Pokemon = event.pokemon
+        val url = pokemon.url
 
         val target = object : Target {
             override fun onSuccess(result: Drawable) {
-                _imageState.value = ImagePageState.OnSuccess(result, pokemon.url)
+                imageState.onNext(Pair(url, result))
             }
 
             override fun onError(error: Drawable?) {
-                if(error != null){
-                    _imageState.value = ImagePageState.OnFail(error, pokemon.url)
-                }
-
+                imageState.onNext(Pair(url, error))
             }
 
             override fun onStart(placeholder: Drawable?) {
-                if(placeholder != null){
-                    _imageState.value = ImagePageState.OnStart(placeholder, pokemon.url)
-                }
+                imageState.onNext(Pair(url, placeholder))
             }
         }
 
@@ -96,9 +111,32 @@ open class PokemonListViewModel (private val getInitialPokemonsPageUseCase: Getc
 
     override fun onCleared() {
         super.onCleared()
+        release()
+    }
+
+    fun release(){
+       releaseUseCases()
+       recyclePageState()
+    }
+
+    private fun releaseUseCases(){
         getInitialPokemonsPageUseCase.dispose()
         getNextPokemonsPageUseCase.dispose()
         getPokemonsImageUseCaseContract.dispose()
+    }
+
+    private fun recyclePageState(){
+        _pageState.changeState {
+            when(it){
+                is PokemonListPageState.InitialLoading,
+                is PokemonListPageState.InitialFail ->{
+                    it.idle()
+                }
+                else->{
+                    it.recycled()
+                }
+            }
+        }
     }
 
     fun isLoading()  = when(pageState.value){

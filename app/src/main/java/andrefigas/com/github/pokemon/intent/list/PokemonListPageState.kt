@@ -3,17 +3,42 @@ package andrefigas.com.github.pokemon.intent.list
 import andrefigas.com.github.pokemon.domain.entities.Pokemon
 
 
-sealed class PokemonListPageState {
+sealed class PokemonListPageState(val pokemons : MutableList<Pokemon>) {
 
-    object InitialLoading : PokemonListPageState()
+    fun idle() = Idle
 
-    object IncrementalLoading : PokemonListPageState()
+    object Idle : PokemonListPageState(mutableListOf())
 
-    object InitialFail : PokemonListPageState()
+    fun recycled() = Recycled(pokemons)
 
-    object IncrementalFail : PokemonListPageState()
+    class Recycled(pokemons : MutableList<Pokemon>) : PokemonListPageState(pokemons)
 
-    class InitialSuccess(val pokemons : Array<Pokemon>) : PokemonListPageState()
+    fun initialLoading() = InitialLoading(pokemons)
 
-    class IncrementalSuccess(val pokemons : Array<Pokemon>) : PokemonListPageState()
+    class InitialLoading(pokemons : MutableList<Pokemon>) : PokemonListPageState(pokemons)
+
+    fun incrementalLoading() = IncrementalLoading(pokemons)
+
+    class IncrementalLoading(pokemons : MutableList<Pokemon>) : PokemonListPageState(pokemons)
+
+    fun initialFail() = InitialFail(pokemons)
+
+    class InitialFail(pokemons : MutableList<Pokemon>) : PokemonListPageState(pokemons)
+
+    fun incrementalFail() = IncrementalFail(pokemons)
+
+    class IncrementalFail(pokemons : MutableList<Pokemon>) : PokemonListPageState(pokemons)
+
+    fun initialSuccess(newPokemons : Array<Pokemon>): InitialSuccess {
+        pokemons.addAll(newPokemons)
+        return InitialSuccess(pokemons)
+    }
+    class InitialSuccess(pokemons : MutableList<Pokemon>) : PokemonListPageState(pokemons)
+
+    fun incrementalSuccess(newPokemons : Array<Pokemon>): IncrementalSuccess {
+        pokemons.addAll(newPokemons)
+        return IncrementalSuccess(pokemons)
+    }
+
+    class IncrementalSuccess(pokemons : MutableList<Pokemon>) : PokemonListPageState(pokemons)
 }

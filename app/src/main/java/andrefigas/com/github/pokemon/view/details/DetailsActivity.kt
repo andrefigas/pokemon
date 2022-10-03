@@ -1,6 +1,7 @@
 package andrefigas.com.github.pokemon.view.details
 
 import andrefigas.com.github.pokemon.R
+import andrefigas.com.github.pokemon.data.entities.PokemonDetailsDataModel
 import andrefigas.com.github.pokemon.intent.ImagePageState
 import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEffect
 import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEvent
@@ -29,7 +30,7 @@ class DetailsActivity : AppCompatActivity() {
     private val pokemonDetailsViewModel: PokemonDetailsViewModel by viewModel {
         parametersOf(
             IntentArgsUtils.getPokemonByArgs(intent),
-            ImageRequest.Builder(this)
+            ImageRequest.Builder(applicationContext)
                 .crossfade(true)
                 .crossfade(500)
                 .placeholder(R.drawable.ic_pokeball_pb)
@@ -68,12 +69,12 @@ class DetailsActivity : AppCompatActivity() {
         })
 
         pokemonDetailsViewModel.effects.observe(this, Consumer{ effect ->
-            showEffet(effect)
+            showEffect(effect)
         })
 
     }
 
-    private fun showEffet(effect: PokemonDetailsPageEffect) {
+    private fun showEffect(effect: PokemonDetailsPageEffect) {
         when(effect){
             is PokemonDetailsPageEffect.OnAddToFavoriteFail -> showAddFavoriteUpdateFail(effect)
             is PokemonDetailsPageEffect.OnAddToFavoriteSuccess -> showAddFavoriteUpdateSuccess(effect)
@@ -85,10 +86,12 @@ class DetailsActivity : AppCompatActivity() {
 
     private fun renderState(state: ImagePageState) {
         when (state) {
-            is ImagePageState.OnSuccess,
-            is ImagePageState.OnFail,
-            is ImagePageState.OnStart -> {
+            is ImagePageState.Recycled,
+            is ImagePageState.OnSuccess -> {
                 showPokemonImage(state)
+            }
+            is ImagePageState.OnFail -> {
+                showPokemonImageFail(state)
             }
 
         }
@@ -100,6 +103,8 @@ class DetailsActivity : AppCompatActivity() {
                 showStartingDataProgress()
             }
 
+            is PokemonDetailsPageState.Recycled,
+            is PokemonDetailsPageState.UpdateFavoriteInSuccess,
             is PokemonDetailsPageState.DetailsSuccess -> {
                 showDetails(state)
             }
@@ -111,13 +116,13 @@ class DetailsActivity : AppCompatActivity() {
     }
 
 
-    private fun showDetails(state: PokemonDetailsPageState.DetailsSuccess) {
+    private fun showDetails(state: PokemonDetailsPageState) {
         hideStartingDataProgress()
         showPreloadedInfo(getPokemonAttachedInIntent())
 
         showAllFields()
 
-        val data = pokemonDetailsViewModel.mapperContract.fromDataToUI(state.data)
+        val data = pokemonDetailsViewModel.mapperContract.fromDataToUI(state.data as PokemonDetailsDataModel)
         showPokemonDescription(data.description)
         showHabitat(data.habitat)
         showAllFields()
@@ -166,7 +171,11 @@ class DetailsActivity : AppCompatActivity() {
     }
 
     private fun showPokemonImage(state: ImagePageState) {
-        details_image.setImageDrawable(state.drawable)
+        details_image.setImageDrawable(state.image)
+    }
+
+    private fun showPokemonImageFail(state: ImagePageState) {
+        details_image.setImageDrawable(state.error)
     }
 
     private fun showPokemonName(name: String) {
@@ -304,4 +313,8 @@ class DetailsActivity : AppCompatActivity() {
             .show()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        pokemonDetailsViewModel.release()
+    }
 }

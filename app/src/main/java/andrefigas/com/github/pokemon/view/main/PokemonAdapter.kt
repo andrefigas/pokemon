@@ -10,6 +10,7 @@ import andrefigas.com.github.pokemon.view.details.DetailsActivity
 import andrefigas.com.github.pokemon.viewmodel.PokemonListViewModel
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.subjects.PublishSubject
 import kotlinx.android.synthetic.main.pokemon_item.view.*
 
 
@@ -84,9 +88,10 @@ class PokemonAdapter(
         }
 
         val startIndex = itemCount
-        val count = pokemons.size
-        pokemonList.addAll(pokemons)
-        notifyItemRangeInserted(startIndex, count)
+        val endIndex = pokemons.size
+        val incrementSize = endIndex - startIndex
+        pokemonList.addAll(pokemons.subList(startIndex, endIndex))
+        notifyItemRangeInserted(startIndex, incrementSize)
     }
 
     fun setProgressing(progressing: Boolean) {
@@ -105,34 +110,43 @@ class PokemonAdapter(
         super.onViewAttachedToWindow(holder)
         if (holder is ItemViewHolder) {
             holder.drawView(viewModel.mapperContract)
-            viewModel.imageState.observeForever(holder)
+            holder.subscribe(viewModel.imageState)
             viewModel.processEvent(PokemonListPageEvent.OnLoadCard(holder.itemView.context, holder.pokemon))
-
         }
     }
 
     override fun onViewDetachedFromWindow(holder: ViewHolder) {
         super.onViewDetachedFromWindow(holder)
         if (holder is ItemViewHolder) {
-            viewModel.imageState.removeObserver(holder)
+            holder.unsubscribe()
         }
     }
 
     class ItemViewHolder(
         itemView: View) :
-        ViewHolder(itemView) , Observer<ImagePageState>{
+        ViewHolder(itemView) ,Consumer<Pair<String, Drawable?>>{
         lateinit var pokemon: Pokemon
+
+        var disposable : Disposable? = null
 
         fun drawView(mapperContract: MapperContract) {
             val tvName = itemView.pokemon_item_name
             tvName.text = mapperContract.fromDataToUI(pokemon).name
         }
 
-        override fun onChanged(state: ImagePageState) {
-            if(pokemon.url == state.url){
-                itemView.pokemon_item_image.setImageDrawable(state.drawable)
+        override fun accept(map: Pair<String, Drawable?>) {
+            if(map.first == pokemon.url){
+                itemView.pokemon_item_image.setImageDrawable(map.second)
             }
 
+        }
+
+        fun subscribe(subject : PublishSubject<Pair<String, Drawable?>>){
+            disposable = subject.subscribe(this)
+        }
+
+        fun unsubscribe(){
+            disposable?.dispose()
         }
 
     }

@@ -7,7 +7,7 @@ interface MainActivityContract {
 
     fun createPokemonList()
 
-    fun  increasePokemonList(pokemons: Array<Pokemon>)
+    fun  increasePokemonList(pokemons: List<Pokemon>)
 
     fun  showIncreasingDataProgress()
 

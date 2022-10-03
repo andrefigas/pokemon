@@ -8,6 +8,7 @@ import andrefigas.com.github.pokemon.intent.ImagePageState
 import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEffect
 import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageEvent
 import andrefigas.com.github.pokemon.intent.details.PokemonDetailsPageState
+import andrefigas.com.github.pokemon.utils.changeState
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
@@ -25,14 +26,23 @@ class PokemonDetailsViewModel(
 ) :
     ViewModel() {
 
-    private val _pageState = MutableLiveData<PokemonDetailsPageState>()
-    val pageState: LiveData<PokemonDetailsPageState> = _pageState
+    private val _pageState : MutableLiveData<PokemonDetailsPageState>
+    val pageState: LiveData<PokemonDetailsPageState>
 
-    private val _imageState = MutableLiveData<ImagePageState>()
-    val imageState: LiveData<ImagePageState> = _imageState
+    private val _imageState : MutableLiveData<ImagePageState>
+    val imageState: LiveData<ImagePageState>
 
-    val effects: PublishSubject<PokemonDetailsPageEffect> =
-        PublishSubject.create<PokemonDetailsPageEffect>()
+    val effects: PublishSubject<PokemonDetailsPageEffect>
+
+    init {
+        _pageState = MutableLiveData(PokemonDetailsPageState.Idle)
+        pageState = _pageState
+
+        _imageState = MutableLiveData(ImagePageState.Idle)
+        imageState = _imageState
+
+       effects = PublishSubject.create<PokemonDetailsPageEffect>()
+    }
 
     fun processEvent(event: PokemonDetailsPageEvent) {
         when (event) {
@@ -45,18 +55,24 @@ class PokemonDetailsViewModel(
 
     private fun fetchData() {
 
-        if (_pageState.value != null) {
+        if (_pageState.value !is PokemonDetailsPageState.Idle) {
             return
         }
 
-        _pageState.value = PokemonDetailsPageState.Loading
+        _pageState.changeState {
+            it.loading()
+        }
 
         getPokemonDetailsUseCase(
             Consumer { details ->
-                _pageState.value = PokemonDetailsPageState.DetailsSuccess(details)
+                _pageState.changeState {
+                    it.detailsSuccess(details)
+                }
             },
             Consumer {
-                _pageState.value = PokemonDetailsPageState.DetailsFail
+                _pageState.changeState {
+                    it.detailsFail()
+                }
             }
         )
 
@@ -64,24 +80,28 @@ class PokemonDetailsViewModel(
 
     private fun fetchImage(context: Context) {
 
-        if (_imageState.value != null) {
+        if (_imageState.value != ImagePageState.Idle) {
             return
         }
 
         getPokemonImageUseCase(context, object : Target {
             override fun onSuccess(result: Drawable) {
-                _imageState.value = ImagePageState.OnSuccess(result)
+                _imageState.changeState {
+                    it.success(result)
+                }
             }
 
             override fun onError(error: Drawable?) {
-                if (error != null) {
-                    _imageState.value = ImagePageState.OnFail(error)
+                _imageState.changeState {
+                    it.fail(error)
                 }
 
             }
 
             override fun onStart(placeholder: Drawable?) {
-                //do nothing
+                _imageState.changeState {
+                    it.fail(placeholder)
+                }
             }
         })
 
@@ -91,16 +111,14 @@ class PokemonDetailsViewModel(
 
         if (isUpdateProgressing()) return
 
-        val pageData = _pageState.value as PokemonDetailsPageState.DetailsSuccess
+        _pageState.changeState {
+            it.updateFavoriteInProgress()
+        }
 
-        _pageState.value = PokemonDetailsPageState.UpdateFavoriteInProgress
+        val name = pageState.value?.data?.pokemon?.name?:return
 
         updatePokemonFavouriteUseCase(isChecked,
             Consumer { favoriteResponse ->
-
-                pageData.data.favoriteResponse.favorite = favoriteResponse.favorite
-
-                val name = pageData.data.pokemon.name
 
                 if (favoriteResponse.favorite) {
                     effects.onNext(PokemonDetailsPageEffect.OnAddToFavoriteSuccess(name))
@@ -108,10 +126,11 @@ class PokemonDetailsViewModel(
                     effects.onNext(PokemonDetailsPageEffect.OnRemoveFromFavoriteSuccess(name))
                 }
 
-                _pageState.value = pageData
+                _pageState.changeState {
+                    it.updateFavoriteInSuccess(favoriteResponse)
+                }
             },
             Consumer {
-                val name = pageData.data.pokemon.name
                 if (isChecked) {
                     effects.onNext(PokemonDetailsPageEffect.OnAddToFavoriteFail(name))
                 } else {
@@ -122,13 +141,51 @@ class PokemonDetailsViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        release()
+    }
+
+    fun release(){
+        releaseUseCases()
+        recycleImageState()
+        recyclePageState()
+    }
+
+    private fun releaseUseCases(){
         getPokemonDetailsUseCase.dispose()
         getPokemonImageUseCase.dispose()
         updatePokemonFavouriteUseCase.dispose()
     }
 
+    private fun recyclePageState(){
+        when(pageState.value){
+            is PokemonDetailsPageState.DetailsFail,
+            is PokemonDetailsPageState.Loading ->{
+                _pageState.changeState {
+                    it.idle()
+                }
+            }
+            else -> {
+                _pageState.changeState {
+                    it.recycled()
+                }
+            }
+        }
+    }
+
+    private fun recycleImageState(){
+        if(imageState.value is ImagePageState.OnSuccess){
+            _imageState.changeState {
+                it.recycle()
+            }
+        } else {
+            _imageState.changeState {
+                it.idle()
+            }
+        }
+    }
+
     private fun isUpdateProgressing(): Boolean {
-        return _pageState.value == PokemonDetailsPageState.UpdateFavoriteInProgress
+        return _pageState.value is PokemonDetailsPageState.UpdateFavoriteInProgress
     }
 
 }

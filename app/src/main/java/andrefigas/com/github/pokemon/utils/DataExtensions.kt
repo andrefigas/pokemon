@@ -2,10 +2,7 @@ package andrefigas.com.github.pokemon.utils
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.*
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -55,4 +52,10 @@ fun <T> PublishSubject<T>.observe(lifecycleOwner: LifecycleOwner, onNext : Consu
     return disposable
 }
 
+fun <T> MutableLiveData<T>.changeState(change : (T)->T){
+    val lastState = value
+    lastState?.let {
+        value = change(lastState)
+    }
 
+}
