@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
+import org.junit.After
 import org.junit.Before
 import org.koin.core.context.GlobalContext
 
@@ -17,6 +18,11 @@ open class BaseUnitTests {
         setupDependencies()
         setupRx()
         setupThread()
+    }
+
+    @After
+    fun tearDown() {
+        GlobalContext.stopKoin()
     }
 
     private fun setupDependencies(){
