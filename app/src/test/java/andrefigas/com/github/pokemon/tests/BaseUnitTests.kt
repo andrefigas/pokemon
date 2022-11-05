@@ -27,7 +27,11 @@ open class BaseUnitTests {
 
     private fun setupDependencies(){
         GlobalContext.startKoin {
-            modules(listOf(andrefigas.com.github.pokemon.di.modules))
+
+            modules(
+                listOf(andrefigas.com.github.pokemon.di.modules)
+            )
+
         }
     }
 
